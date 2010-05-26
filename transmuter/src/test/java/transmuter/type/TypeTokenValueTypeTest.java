@@ -3,6 +3,8 @@ package transmuter.type;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static transmuter.type.TypeToken.ValueType.BOOLEAN;
 import static transmuter.type.TypeToken.ValueType.BYTE;
 import static transmuter.type.TypeToken.ValueType.CHARACTER;
@@ -22,6 +24,7 @@ import java.lang.reflect.Type;
 import org.junit.Test;
 
 import transmuter.type.TypeToken.ValueType;
+import transmuter.util.ObjectUtils;
 
 public class TypeTokenValueTypeTest {
   private static final Class<?>[] PRIMITIVE_TYPES;
@@ -249,5 +252,382 @@ public class TypeTokenValueTypeTest {
     assertEquals("ValueType<long>", ValueType.LONG.toString());
     assertEquals("ValueType<short>", ValueType.SHORT.toString());
     assertEquals("ValueType<void>", ValueType.VOID.toString());
+  }
+  
+  @Test
+  public void testCastingToBoolean() {
+    assertEquals(true, ValueType.BOOLEAN.cast(true));
+    assertEquals(false, ValueType.BOOLEAN.cast(false));
+    
+    try {
+      ValueType.BOOLEAN.cast(null);
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+    
+    try {
+      ValueType.BOOLEAN.cast((byte) 1);
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+    
+    try {
+      ValueType.BOOLEAN.cast('a');
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+    
+    try {
+      ValueType.BOOLEAN.cast(1.0);
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+    
+    try {
+      ValueType.BOOLEAN.cast(1.0f);
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+    
+    try {
+      ValueType.BOOLEAN.cast(1);
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+    
+    try {
+      ValueType.BOOLEAN.cast(1L);
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+    
+    try {
+      ValueType.BOOLEAN.cast((short) 1);
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+    
+    try {
+      ValueType.BOOLEAN.cast(new Object());
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+  }
+  
+  // TODO should test the outer limits
+  @Test
+  public void testCastingToByte() {
+    assertEquals(new Byte((byte) 1), ValueType.BYTE.cast((byte) 1));
+    assertTrue(ObjectUtils.areEqual((byte) 255, ValueType.BYTE.cast((byte) 255)));
+    
+    try {
+      ValueType.BYTE.cast(null);
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+    
+    try {
+      ValueType.BYTE.cast(false);
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+    
+    assertEquals(new Byte((byte) 'a'), ValueType.BYTE.cast('a'));
+    assertEquals(new Byte((byte) 1.0), ValueType.BYTE.cast(1.0));
+    assertEquals(new Byte((byte) 1.0f), ValueType.BYTE.cast(1.0f));
+    assertEquals(new Byte((byte) 1), ValueType.BYTE.cast(1));
+    assertEquals(new Byte((byte) 1L), ValueType.BYTE.cast(1L));
+    assertEquals(new Byte((byte) 1), ValueType.BYTE.cast((short) 1));
+    
+    try {
+      ValueType.BYTE.cast(new Object());
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+  }
+  
+  // TODO should test the outer limits
+  @Test
+  public void testCastingToCharacter() {
+    assertEquals(new Character('a'), ValueType.CHARACTER.cast('a'));
+    
+    try {
+      ValueType.CHARACTER.cast(null);
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+    
+    try {
+      ValueType.CHARACTER.cast(false);
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+    
+    assertEquals(new Character((char) ((byte) 1)), ValueType.CHARACTER.cast((byte) 1));
+    assertEquals(new Character((char) 1.0), ValueType.CHARACTER.cast(1.0));
+    assertEquals(new Character((char) 1.0f), ValueType.CHARACTER.cast(1.0f));
+    assertEquals(new Character((char) 1), ValueType.CHARACTER.cast(1));
+    assertEquals(new Character((char) 1L), ValueType.CHARACTER.cast(1L));
+    assertEquals(new Character((char) ((short) 1)), ValueType.CHARACTER.cast((short) 1));
+    
+    try {
+      ValueType.CHARACTER.cast(new Object());
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+  }
+  
+  // TODO should test the outer limits
+  @Test
+  public void testCastingToDouble() {
+    assertEquals(new Double(1.0), ValueType.DOUBLE.cast(1.0));
+    
+    try {
+      ValueType.DOUBLE.cast(null);
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+    
+    try {
+      ValueType.DOUBLE.cast(false);
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+    
+    assertEquals(new Double((byte) 1), ValueType.DOUBLE.cast((byte) 1));
+    assertEquals(new Double('a'), ValueType.DOUBLE.cast('a'));
+    assertEquals(new Double(1.0f), ValueType.DOUBLE.cast(1.0f));
+    assertEquals(new Double(1), ValueType.DOUBLE.cast(1));
+    assertEquals(new Double(1L), ValueType.DOUBLE.cast(1L));
+    assertEquals(new Double((short) 1), ValueType.DOUBLE.cast((short) 1));
+    
+    try {
+      ValueType.DOUBLE.cast(new Object());
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+  }
+  
+  // TODO should test the outer limits
+  @Test
+  public void testCastingToFloat() {
+    assertEquals(new Float(1.0f), ValueType.FLOAT.cast(1.0f));
+    
+    try {
+      ValueType.FLOAT.cast(null);
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+    
+    try {
+      ValueType.FLOAT.cast(false);
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+    
+    assertEquals(new Float((byte) 1), ValueType.FLOAT.cast((byte) 1));
+    assertEquals(new Float('a'), ValueType.FLOAT.cast('a'));
+    assertEquals(new Float(1.0), ValueType.FLOAT.cast(1.0));
+    assertEquals(new Float(1), ValueType.FLOAT.cast(1));
+    assertEquals(new Float(1L), ValueType.FLOAT.cast(1L));
+    assertEquals(new Float((short) 1), ValueType.FLOAT.cast((short) 1));
+    
+    try {
+      ValueType.FLOAT.cast(new Object());
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+  }
+  
+  // TODO should test the outer limits
+  @Test
+  public void testCastingToInt() {
+    assertEquals(new Integer(1), ValueType.INTEGER.cast(1));
+    
+    try {
+      ValueType.INTEGER.cast(null);
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+    
+    try {
+      ValueType.INTEGER.cast(false);
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+    
+    assertEquals(new Integer((byte) 1), ValueType.INTEGER.cast((byte) 1));
+    assertEquals(new Integer('a'), ValueType.INTEGER.cast('a'));
+    assertEquals(new Integer((int) 1.0), ValueType.INTEGER.cast(1.0));
+    assertEquals(new Integer((int) 1.0f), ValueType.INTEGER.cast(1.0f));
+    assertEquals(new Integer((int) 1L), ValueType.INTEGER.cast(1L));
+    assertEquals(new Integer((short) 1), ValueType.INTEGER.cast((short) 1));
+    
+    try {
+      ValueType.INTEGER.cast(new Object());
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+  }
+  
+  // TODO should test the outer limits
+  @Test
+  public void testCastingToLong() {
+    assertEquals(new Long(1L), ValueType.LONG.cast(1L));
+    
+    try {
+      ValueType.LONG.cast(null);
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+    
+    try {
+      ValueType.LONG.cast(false);
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+    
+    assertEquals(new Long((byte) 1), ValueType.LONG.cast((byte) 1));
+    assertEquals(new Long('a'), ValueType.LONG.cast('a'));
+    assertEquals(new Long((long) 1.0), ValueType.LONG.cast(1.0));
+    assertEquals(new Long((long) 1.0f), ValueType.LONG.cast(1.0f));
+    assertEquals(new Long(1), ValueType.LONG.cast(1));
+    assertEquals(new Long((short) 1), ValueType.LONG.cast((short) 1));
+    
+    try {
+      ValueType.LONG.cast(new Object());
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+  }
+  
+  // TODO should test the outer limits
+  @Test
+  public void testCastingToShort() {
+    assertEquals(new Short((short) 1), ValueType.SHORT.cast((short) 1));
+    
+    try {
+      ValueType.SHORT.cast(null);
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+    
+    try {
+      ValueType.SHORT.cast(false);
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+    
+    assertEquals(new Short((byte) 1), ValueType.SHORT.cast((byte) 1));
+    assertEquals(new Short((short) 'a'), ValueType.SHORT.cast('a'));
+    assertEquals(new Short((short) 1.0), ValueType.SHORT.cast(1.0));
+    assertEquals(new Short((short) 1.0f), ValueType.SHORT.cast(1.0f));
+    assertEquals(new Short((short) 1), ValueType.SHORT.cast(1));
+    assertEquals(new Short((short) 1L), ValueType.SHORT.cast(1L));
+    
+    try {
+      ValueType.SHORT.cast(new Object());
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+  }
+  
+  // TODO should test the outer limits
+  @Test
+  public void testCastingToVoid() {
+    assertNull(ValueType.VOID.cast(null));
+    
+    try {
+      ValueType.VOID.cast(false);
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+    
+    try {
+      ValueType.VOID.cast((byte) 1);
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+    
+    try {
+      ValueType.VOID.cast('a');
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+    
+    try {
+      ValueType.VOID.cast(1.0);
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+    
+    try {
+      ValueType.VOID.cast(1.0f);
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+    
+    try {
+      ValueType.VOID.cast(1);
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+    
+    try {
+      ValueType.VOID.cast(1L);
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+    
+    try {
+      ValueType.VOID.cast((short) 1);
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
+    
+    try {
+      ValueType.VOID.cast(new Object());
+      fail();
+    } catch(ClassCastException e) {
+      // empty block
+    }
   }
 }
