@@ -69,9 +69,9 @@ public abstract class TypeToken<T> {
    * It behaves logically like an enum, except that Java's enums don't take 
    * generic parameters.
    * 
-   * @param <T> a wrapper type or {@code void}.
+   * @param <T> a wrapper type or {@code Void}.
    */
-  public static final class ValueType<T> {
+  public static abstract class ValueType<T> {
     public static final ValueType<Boolean> BOOLEAN;
     public static final ValueType<Byte> BYTE;
     public static final ValueType<Character> CHARACTER;
@@ -86,19 +86,120 @@ public abstract class TypeToken<T> {
     private static Map<Class<?>, ValueType<?>> wrapperReverseMap;
     
     static {
-      // must be instanced first for the constructor to register the new instances
+      // must be instanced first to enable the constructor to register the new instances
       primitiveReverseMap = new HashMap<Class<?>, ValueType<?>>();
       wrapperReverseMap = new HashMap<Class<?>, ValueType<?>>();
       
-      BOOLEAN = new ValueType<Boolean>(boolean.class, Boolean.class);
-      BYTE = new ValueType<Byte>(byte.class, Byte.class);
-      CHARACTER = new ValueType<Character>(char.class, Character.class);
-      DOUBLE = new ValueType<Double>(double.class, Double.class);
-      FLOAT = new ValueType<Float>(float.class, Float.class);
-      INTEGER = new ValueType<Integer>(int.class, Integer.class);
-      LONG = new ValueType<Long>(long.class, Long.class);
-      SHORT = new ValueType<Short>(short.class, Short.class);
-      VOID = new ValueType<Void>(void.class, Void.class);
+      BOOLEAN = new ValueType<Boolean>(boolean.class, Boolean.class) {
+        @Override
+        protected Boolean castValue(Object value) {
+          throw new ClassCastException(value + " is not a boolean!");
+        }
+      };
+      BYTE = new ValueType<Byte>(byte.class, Byte.class) {
+        @Override
+        protected Byte castValue(Object value) {
+          if(value == null 
+          || BOOLEAN.matches(value.getClass()) 
+          || VOID.matches(value.getClass()))
+            throw new ClassCastException(value + " is not a byte!");
+          
+          if(CHARACTER.matches(value.getClass()))
+            return (byte) ((Character) value).charValue();
+          
+          return ((Number) value).byteValue();
+        }
+      };
+      CHARACTER = new ValueType<Character>(char.class, Character.class) {
+        @Override
+        protected Character castValue(Object value) {
+          if(value == null
+          || BOOLEAN.matches(value.getClass()) 
+          || VOID.matches(value.getClass()))
+            throw new ClassCastException(value + " is not a char!");
+          
+          return (char) ((Number) value).intValue();
+        }
+      };
+      DOUBLE = new ValueType<Double>(double.class, Double.class) {
+        @Override
+        protected Double castValue(Object value) {
+          if(value == null
+          || BOOLEAN.matches(value.getClass()) 
+          || VOID.matches(value.getClass()))
+            throw new ClassCastException(value + " is not a double!");
+          
+          if(CHARACTER.matches(value.getClass()))
+            return (double) ((Character) value).charValue();
+          
+          return ((Number) value).doubleValue();
+        }
+      };
+      FLOAT = new ValueType<Float>(float.class, Float.class) {
+        @Override
+        protected Float castValue(Object value) {
+          if(value == null
+          || BOOLEAN.matches(value.getClass()) 
+          || VOID.matches(value.getClass()))
+            throw new ClassCastException(value + " is not a float!");
+          
+          if(CHARACTER.matches(value.getClass()))
+            return (float) ((Character) value).charValue();
+          
+          return ((Number) value).floatValue();
+        }
+      };
+      INTEGER = new ValueType<Integer>(int.class, Integer.class) {
+        @Override
+        protected Integer castValue(Object value) {
+          if(value == null
+          || BOOLEAN.matches(value.getClass()) 
+          || VOID.matches(value.getClass()))
+            throw new ClassCastException(value + " is not an int!");
+          
+          if(CHARACTER.matches(value.getClass()))
+            return (int) ((Character) value).charValue();
+          
+          return ((Number) value).intValue();
+        }
+      };
+      LONG = new ValueType<Long>(long.class, Long.class) {
+        @Override
+        protected Long castValue(Object value) {
+          if(value == null
+          || BOOLEAN.matches(value.getClass()) 
+          || VOID.matches(value.getClass()))
+            throw new ClassCastException(value + " is not an int!");
+          
+          if(CHARACTER.matches(value.getClass()))
+            return (long) ((Character) value).charValue();
+          
+          return ((Number) value).longValue(); 
+        }
+      };
+      SHORT = new ValueType<Short>(short.class, Short.class) {
+        @Override
+        protected Short castValue(Object value) {
+          if(value == null
+          || BOOLEAN.matches(value.getClass()) 
+          || VOID.matches(value.getClass()))
+            throw new ClassCastException(value + " is not an int!");
+          
+          if(CHARACTER.matches(value.getClass()))
+            return (short) ((Character) value).charValue();
+          
+          return ((Number) value).shortValue(); 
+        }
+      };
+      VOID = new ValueType<Void>(void.class, Void.class) {
+        @Override
+        protected Void castValue(Object value) {
+          if(value == null)
+            return null;
+          
+          throw new ClassCastException(value + " is not a void!");
+        }
+      };
     }
     
     /** A type token representing the primitive type expressed in {@code T}. */
@@ -119,13 +220,28 @@ public abstract class TypeToken<T> {
     // utility methods
     @Override
     public String toString() {
-      return getClass().getSimpleName() + "<" + primitive + ">";
+      return "ValueType<" + primitive + ">";
     }
     
     // instance methods
+    public T cast(Object value) {
+      ValueType<?> valueType = valueOf(
+          value == null ? void.class : value.getClass());
+      
+      if(valueType == null)
+        throw new ClassCastException("not a primitive nor a wrapper instance");
+      
+      if(this.equals(valueType))
+        return (T) value;
+      
+      return castValue(value);
+    }
+    
+    protected abstract T castValue(Object value);
+    
     /**
      * @param type a generic type.
-     * @return {@code true} if {@code type} represents the same primitive 
+     * @return {@code true} if {@code type} represents the same value 
      * type as this instance.
      */
     public boolean matches(Type type) {
@@ -134,7 +250,7 @@ public abstract class TypeToken<T> {
     
     /**
      * @param token a type token.
-     * @return {@code true} if {@code token} represents the same primitive 
+     * @return {@code true} if {@code token} represents the same value 
      * type as this instance.
      */
     public boolean matches(TypeToken<?> token) {

@@ -12,6 +12,13 @@ public class ObjectUtils {
     return object;
   }
   
+  public static Class<?> classOf(Object object) {
+    if(object == null)
+      return null;
+    
+    return object.getClass();
+  }
+  
   public static int hashCodeOf(Object object) {
     return (object == null) ? 0 : object.hashCode();
   }
