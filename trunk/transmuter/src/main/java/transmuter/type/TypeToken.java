@@ -394,11 +394,11 @@ public abstract class TypeToken<T> {
     }
     
     /**
-     * Returns the instance of this class which matches {@code cls}, or {@code null} if none does.
+     * Returns the instance of this class which matches {@code token}, or {@code null} if none does.
      * 
      * @param <E> the specific type {@code token} represents.
      * @param token a type token.
-     * @return the instance of this class which matches {@code cls}, or {@code null} if none does.
+     * @return the instance of this class which matches {@code token}, or {@code null} if none does.
      */
     @SuppressWarnings("unchecked")
     public static <E> ValueType<E> valueOf(TypeToken<E> token) {
