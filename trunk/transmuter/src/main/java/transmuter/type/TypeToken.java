@@ -92,13 +92,13 @@ public abstract class TypeToken<T> {
       
       BOOLEAN = new ValueType<Boolean>(boolean.class, Boolean.class) {
         @Override
-        protected Boolean castValue(Object value) {
+        protected Boolean castToThis(Object value) {
           throw new ClassCastException(value + " is not a boolean!");
         }
       };
       BYTE = new ValueType<Byte>(byte.class, Byte.class) {
         @Override
-        protected Byte castValue(Object value) {
+        protected Byte castToThis(Object value) {
           if(value == null 
           || BOOLEAN.matches(value.getClass()) 
           || VOID.matches(value.getClass()))
@@ -112,7 +112,7 @@ public abstract class TypeToken<T> {
       };
       CHARACTER = new ValueType<Character>(char.class, Character.class) {
         @Override
-        protected Character castValue(Object value) {
+        protected Character castToThis(Object value) {
           if(value == null
           || BOOLEAN.matches(value.getClass()) 
           || VOID.matches(value.getClass()))
@@ -123,7 +123,7 @@ public abstract class TypeToken<T> {
       };
       DOUBLE = new ValueType<Double>(double.class, Double.class) {
         @Override
-        protected Double castValue(Object value) {
+        protected Double castToThis(Object value) {
           if(value == null
           || BOOLEAN.matches(value.getClass()) 
           || VOID.matches(value.getClass()))
@@ -137,7 +137,7 @@ public abstract class TypeToken<T> {
       };
       FLOAT = new ValueType<Float>(float.class, Float.class) {
         @Override
-        protected Float castValue(Object value) {
+        protected Float castToThis(Object value) {
           if(value == null
           || BOOLEAN.matches(value.getClass()) 
           || VOID.matches(value.getClass()))
@@ -151,7 +151,7 @@ public abstract class TypeToken<T> {
       };
       INTEGER = new ValueType<Integer>(int.class, Integer.class) {
         @Override
-        protected Integer castValue(Object value) {
+        protected Integer castToThis(Object value) {
           if(value == null
           || BOOLEAN.matches(value.getClass()) 
           || VOID.matches(value.getClass()))
@@ -165,7 +165,7 @@ public abstract class TypeToken<T> {
       };
       LONG = new ValueType<Long>(long.class, Long.class) {
         @Override
-        protected Long castValue(Object value) {
+        protected Long castToThis(Object value) {
           if(value == null
           || BOOLEAN.matches(value.getClass()) 
           || VOID.matches(value.getClass()))
@@ -179,7 +179,7 @@ public abstract class TypeToken<T> {
       };
       SHORT = new ValueType<Short>(short.class, Short.class) {
         @Override
-        protected Short castValue(Object value) {
+        protected Short castToThis(Object value) {
           if(value == null
           || BOOLEAN.matches(value.getClass()) 
           || VOID.matches(value.getClass()))
@@ -193,7 +193,7 @@ public abstract class TypeToken<T> {
       };
       VOID = new ValueType<Void>(void.class, Void.class) {
         @Override
-        protected Void castValue(Object value) {
+        protected Void castToThis(Object value) {
           if(value == null)
             return null;
           
@@ -224,6 +224,16 @@ public abstract class TypeToken<T> {
     }
     
     // instance methods
+    /**
+     * Attempts to cast {@code value} to the wrapper type {@code T} 
+     * represented by this instance. A value of {@code null} is 
+     * interpreted as an instance of {@code Void}, and {@code null} is
+     * returned, accordingly "cast".
+     *  
+     * @param value an object. 
+     * @return {@code value} as an object of type {@code T}.
+     * @throws ClassCastException if {@code value} cannot be cast to {@code T}. 
+     */
     @SuppressWarnings("unchecked")
     public T cast(Object value) {
       ValueType<?> valueType = valueOf(
@@ -235,10 +245,19 @@ public abstract class TypeToken<T> {
       if(this.equals(valueType))
         return (T) value;
       
-      return castValue(value);
+      return castToThis(value);
     }
     
-    protected abstract T castValue(Object value);
+    /**
+     * Attempts to cast {@code value}, which is a value type but not an 
+     * instance of {@code T}, to {@code T}. Called by 
+     * {@link #cast(Object) cast}  when the constraints above have been 
+     * demonstrated. 
+     * 
+     * @param value an object which is not of type {@code T}.
+     * @see {@link #cast(Object)} 
+     */
+    protected abstract T castToThis(Object value);
     
     /**
      * @param type a generic type.
