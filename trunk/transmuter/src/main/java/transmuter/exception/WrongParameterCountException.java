@@ -28,29 +28,4 @@ public class WrongParameterCountException extends RuntimeException {
   public int getActual() {
     return actual;
   }
-
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + actual;
-    result = prime * result + expected;
-    return result;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if(this == obj)
-      return true;
-    if(obj == null)
-      return false;
-    if(getClass() != obj.getClass())
-      return false;
-    WrongParameterCountException other = (WrongParameterCountException) obj;
-    if(actual != other.actual)
-      return false;
-    if(expected != other.expected)
-      return false;
-    return true;
-  }
 }
