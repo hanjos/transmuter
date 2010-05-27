@@ -30,6 +30,9 @@ import java.lang.reflect.TypeVariable;
 import java.util.HashMap;
 import java.util.Map;
 
+import transmuter.type.exception.MissingTypeParameterException;
+import transmuter.type.exception.UnexpectedTypeException;
+
 /**
  * Represents a generic type {@code T}.
  *
@@ -210,8 +213,8 @@ public abstract class TypeToken<T> {
     
     // no instancing going on without us knowing about it
     private ValueType(Class<T> primitive, Class<T> wrapper) {
-      this.primitive = TypeToken.get(primitive);
-      this.wrapper = TypeToken.get(wrapper);
+      this.primitive = TypeToken.get(nonNull(primitive, "primitive"));
+      this.wrapper = TypeToken.get(nonNull(wrapper, "wrapper"));
       
       primitiveReverseMap.put(primitive, this);
       wrapperReverseMap.put(wrapper, this);
@@ -726,6 +729,9 @@ public abstract class TypeToken<T> {
    * @return the corresponding type token.
    */
   public static TypeToken<?> get(Type type) {
+    if(type == null)
+      return null;
+    
     return new SimpleTypeToken<Object>(type);
   }
 
@@ -736,9 +742,12 @@ public abstract class TypeToken<T> {
    * @return the corresponding type token.
    */
   public static <T> TypeToken<T> get(Class<T> type) {
+    if(type == null)
+      return null;
+    
     return new SimpleTypeToken<T>(type);
   }
-
+  
   /**
    * Private static class to not create more anonymous classes than
    * necessary.

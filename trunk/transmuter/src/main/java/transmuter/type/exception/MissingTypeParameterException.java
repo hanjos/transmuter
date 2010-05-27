@@ -1,4 +1,4 @@
-package transmuter.type;
+package transmuter.type.exception;
 
 public class MissingTypeParameterException extends RuntimeException {
   private static final long serialVersionUID = 1L;

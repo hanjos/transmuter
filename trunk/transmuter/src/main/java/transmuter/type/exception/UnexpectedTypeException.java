@@ -1,4 +1,4 @@
-package transmuter.type;
+package transmuter.type.exception;
 
 import java.lang.reflect.Type;
 import java.util.Arrays;

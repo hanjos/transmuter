@@ -11,6 +11,8 @@ import java.lang.reflect.Method;
 import org.junit.Before;
 import org.junit.Test;
 
+import transmuter.util.exception.BindingInvocationException;
+
 public class BindingTest {
   private Binding substring;
   private String string;

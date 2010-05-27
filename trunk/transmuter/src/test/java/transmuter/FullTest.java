@@ -13,5 +13,6 @@ import transmuter.util.PairTest;
   TypeTokenValueTypeTest.class, 
   BindingTest.class,
   ObjectUtilsTest.class, 
-  PairTest.class })
+  PairTest.class,
+  TransmuterTest.class })
 public class FullTest { /* empty block */ }
