@@ -17,8 +17,8 @@ public class Pair {
   }
   
   public Pair(TypeToken<?> fromType, TypeToken<?> toType) {
-    this.fromType = nonNull(fromType);
-    this.toType = nonNull(toType);
+    this.fromType = nonNull(fromType, "fromType");
+    this.toType = nonNull(toType, "toType");
   }
 
   // operations
@@ -33,7 +33,7 @@ public class Pair {
   // utility methods
   @Override
   public String toString() {
-    return "Pair[" + fromType + ", " + toType + "]";
+    return fromType + " -> " + toType;
   }
     
   @Override

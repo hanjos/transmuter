@@ -5,6 +5,8 @@ import static transmuter.util.ObjectUtils.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import transmuter.util.exception.BindingInvocationException;
+
 public class Binding {
   private final Object instance;
   private final Method method;
