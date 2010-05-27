@@ -224,6 +224,7 @@ public abstract class TypeToken<T> {
     }
     
     // instance methods
+    @SuppressWarnings("unchecked")
     public T cast(Object value) {
       ValueType<?> valueType = valueOf(
           value == null ? void.class : value.getClass());
@@ -329,6 +330,7 @@ public abstract class TypeToken<T> {
      * <li>{@code null} if {@code cls} is neither.</li>
      * </ul>
      */
+    @SuppressWarnings("unchecked")
     public static <E> Class<E> matching(Class<E> cls) {
       return (Class<E>) matching((Type) cls);
     }
@@ -386,6 +388,7 @@ public abstract class TypeToken<T> {
      * @param cls a class object.
      * @return the instance of this class which matches {@code cls}, or {@code null} if none does.
      */
+    @SuppressWarnings("unchecked")
     public static <E> ValueType<E> valueOf(Class<E> cls) {
       return (ValueType<E>) valueOf((Type) cls);
     }
@@ -397,6 +400,7 @@ public abstract class TypeToken<T> {
      * @param token a type token.
      * @return the instance of this class which matches {@code cls}, or {@code null} if none does.
      */
+    @SuppressWarnings("unchecked")
     public static <E> ValueType<E> valueOf(TypeToken<E> token) {
       if(token == null)
         return null;
