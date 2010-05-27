@@ -1,6 +1,6 @@
 package transmuter;
 
-import static transmuter.util.ObjectUtils.*;
+import static transmuter.util.ObjectUtils.nonNull;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -12,6 +12,8 @@ import java.util.Map;
 import transmuter.exception.ConverterCollisionException;
 import transmuter.exception.ConverterRegistrationException;
 import transmuter.exception.InvalidReturnTypeException;
+import transmuter.exception.MultipleCausesException;
+import transmuter.exception.PairIncompatibleWithBindingException;
 import transmuter.exception.SameClassConverterCollisionException;
 import transmuter.exception.WrongParameterCountException;
 import transmuter.type.TypeToken;
@@ -19,10 +21,71 @@ import transmuter.util.Binding;
 import transmuter.util.Pair;
 
 public class Transmuter {
+  private class PairBindingMap extends HashMap<Pair, Binding> {
+    private static final long serialVersionUID = 1L;
+
+    public PairBindingMap() { /* empty block */ }
+
+    // TODO pile up the exceptions like in register?
+    @Override
+    public Binding put(Pair pair, Binding binding) {
+      nonNull(pair, "pair"); nonNull(binding, "binding");
+      
+      // check for collisions here
+      if(containsKey(pair)) {
+        if(binding.equals(get(pair))) // redundant call, ignore it
+          return null;
+
+        // converter collision, throw up
+        throw new SameClassConverterCollisionException(
+            TypeToken.get(binding.getMethod().getDeclaringClass()), pair);
+      }
+      
+      // check for collisions in the transmuter
+      if(Transmuter.this.getConverterMap().containsKey(pair))  {
+        if(binding.equals(Transmuter.this.getConverterMap().get(pair))) // redundant call, ignore it
+          return null;
+
+        // converter collision, throw up
+        throw new ConverterCollisionException(pair);
+      }
+      
+      // check if the binding matches the pair
+      if(! pair.isAssignableFrom(Transmuter.this.extractTypes(binding.getMethod())))
+        throw new PairIncompatibleWithBindingException(pair, binding);
+      
+      return super.put(pair, binding);
+    }
+    
+    @Override
+    public void putAll(Map<? extends Pair, ? extends Binding> map) {
+      if(map == null || map.isEmpty())
+        return;
+      
+      super.putAll(map);
+    }
+    
+    @Override
+    public boolean containsKey(Object key) {
+      if(key == null)
+        return false;
+      
+      return super.containsKey(key);
+    }
+    
+    @Override
+    public Binding remove(Object key) {
+      if(key == null)
+        return null;
+      
+      return super.remove(key);
+    }
+  }
+  
   private Map<Pair, Binding> converterMap;
   
   public Transmuter() {
-    converterMap = new HashMap<Pair, Binding>();
+    converterMap = new PairBindingMap();
   }
   
   // operations
@@ -30,7 +93,7 @@ public class Transmuter {
     if(object == null)
       return;
     
-    Map<Pair, Binding> temp = new HashMap<Pair, Binding>();
+    Map<Pair, Binding> temp = new PairBindingMap();
     List<Exception> exceptions = new ArrayList<Exception>();
     
     for(Method method : object.getClass().getMethods()) {
@@ -38,23 +101,19 @@ public class Transmuter {
         continue;
       
       try {
-        temp.put(extractTypes(method, temp), new Binding(object, method));
+        temp.put(extractTypes(method), new Binding(object, method));
       } catch(Exception e) {
-        exceptions.add(e);
+        if(e.getClass() != MultipleCausesException.class)
+          exceptions.add(e);
+        else
+          exceptions.addAll(((MultipleCausesException) e).getCauses());
       }
     }
     
     if(exceptions.size() > 0) // errors during registration
       throw new ConverterRegistrationException(exceptions);
     
-    converterMap.putAll(temp);
-  }
-  
-  public boolean isRegistered(Pair pair) {
-    if(pair == null)
-      return false;
-    
-    return converterMap.containsKey(pair);
+    getConverterMap().putAll(temp);
   }
   
   public boolean isRegistered(Type fromType, Type toType) {
@@ -65,36 +124,46 @@ public class Transmuter {
     return isRegistered(new Pair(fromType, toType));
   }
   
+  public boolean isRegistered(Pair pair) {
+    return getConverterMap().containsKey(pair);
+  }
+  
+  public void unregister(Type fromType, Type toType) {
+    unregister(TypeToken.get(fromType), TypeToken.get(toType));
+  }
+  
+  public void unregister(TypeToken<?> fromType, TypeToken<?> toType) {
+    unregister(new Pair(fromType, toType));
+  }
+  
   // helper operations
   // TODO varargs shouldn't be a problem, right?
   protected Pair extractTypes(Method method) {
-    return extractTypes(method, new HashMap<Pair, Binding>());
+    List<Exception> exceptions = new ArrayList<Exception>();
+    
+    if(method == null)
+      exceptions.add(new IllegalArgumentException("method"));
+    
+    final Type[] parameterTypes = method.getGenericParameterTypes();
+    final int parameterCount = parameterTypes.length;
+    if(parameterCount == 0 || parameterCount > 1)
+      exceptions.add(new WrongParameterCountException(1, parameterCount));
+    
+    final Type returnType = method.getGenericReturnType();
+    if(TypeToken.ValueType.VOID.matches(returnType))
+      exceptions.add(new InvalidReturnTypeException(returnType));
+    
+    if(exceptions.size() > 0)
+      throw new MultipleCausesException(exceptions);
+    
+    return new Pair(parameterTypes[0], returnType);
   }
   
-  protected Pair extractTypes(Method method, Map<Pair, Binding> temporaryBindings) {
-    nonNull(method, "method"); 
-    nonNull(temporaryBindings, "temporaryBindings");
-    
-    final Type[] genericParameterTypes = method.getGenericParameterTypes();
-    final int parameterCount = genericParameterTypes.length;
-    if(parameterCount == 0 || parameterCount > 1)
-      throw new WrongParameterCountException(1, parameterCount);
-    
-    final Type genericReturnType = method.getGenericReturnType();
-    if(TypeToken.ValueType.VOID.matches(genericReturnType))
-      throw new InvalidReturnTypeException(genericReturnType);
-    
-    Pair pair = new Pair(
-        genericParameterTypes[0], 
-        genericReturnType);
-    
-    if(temporaryBindings.containsKey(pair))
-      throw new SameClassConverterCollisionException(
-          TypeToken.get(method.getDeclaringClass()), pair.getFromType(), pair.getToType());
-    
-    if(converterMap.containsKey(pair))
-      throw new ConverterCollisionException(pair.getFromType(), pair.getToType());
-    
-    return pair;
+  protected Binding unregister(Pair pair) {
+    return getConverterMap().remove(pair);
+  }
+  
+  protected Map<Pair, Binding> getConverterMap() {
+    return converterMap;
   }
 }
