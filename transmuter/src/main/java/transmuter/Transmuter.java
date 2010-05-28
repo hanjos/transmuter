@@ -16,6 +16,7 @@ import transmuter.exception.InvalidReturnTypeException;
 import transmuter.exception.MultipleCausesException;
 import transmuter.exception.PairIncompatibleWithBindingException;
 import transmuter.exception.SameClassConverterCollisionException;
+import transmuter.exception.TypeExtractionException;
 import transmuter.exception.WrongParameterCountException;
 import transmuter.type.TypeToken;
 import transmuter.util.Binding;
@@ -110,7 +111,7 @@ public class Transmuter {
       try {
         temp.put(extractTypes(method), new Binding(object, method));
       } catch(Exception e) {
-        if(e.getClass() != MultipleCausesException.class)
+        if(! (e instanceof MultipleCausesException))
           exceptions.add(e);
         else
           exceptions.addAll(((MultipleCausesException) e).getCauses());
@@ -144,7 +145,7 @@ public class Transmuter {
   }
   
   // helper operations
-  // TODO maybe put this methods somewhere else?
+  // TODO maybe put this method somewhere else?
   protected Pair extractTypes(Method method) {
     List<Exception> exceptions = new ArrayList<Exception>();
     
@@ -168,7 +169,7 @@ public class Transmuter {
         parameterToken = TypeToken.get(parameterTypes[0]);
       } catch(Exception e) { // type token building may throw exceptions
         exceptions.add(e);
-      }
+      } 
     }
     
     try {
@@ -178,7 +179,7 @@ public class Transmuter {
     }
     
     if(exceptions.size() > 0)
-      throw new MultipleCausesException(exceptions);
+      throw new TypeExtractionException(exceptions);
     
     return new Pair(parameterToken, returnToken);
   }

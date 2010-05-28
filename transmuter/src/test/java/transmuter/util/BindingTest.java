@@ -8,11 +8,17 @@ import static org.junit.Assert.fail;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import transmuter.type.TypeToken;
+import transmuter.util.exception.BindingInstantiationException;
 import transmuter.util.exception.BindingInvocationException;
+import transmuter.util.exception.InaccessibleMethodException;
+import transmuter.util.exception.MethodInstanceIncompatibilityException;
+import transmuter.util.exception.NullInstanceWithNonStaticMethodException;
 
 public class BindingTest {
   private Binding substring;
@@ -42,11 +48,69 @@ public class BindingTest {
     assertEquals("something", b.invoke("something"));
   }
   
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void constructorWithNullMethod() {
-    new Binding(new Object(), null);
+    try {
+      new Binding(new Object(), null);
+      fail();
+    } catch(BindingInstantiationException e) {
+      assertEquals(1, e.getCauses().size());
+      assertEquals(IllegalArgumentException.class, e.getCauses().get(0).getClass());
+    }
   }
 
+  @Test
+  public void constructorWithInstanceAndInheritedMethod() throws SecurityException, NoSuchMethodException {
+    final Method waitMethod = extractMethod(Object.class, "wait");
+    Binding b = new Binding(string, waitMethod);
+    
+    assertEquals(string, b.getInstance());
+    assertEquals(waitMethod, b.getMethod());
+  }
+  
+  @Test
+  public void constructorWithIncompatibleInstanceAndMethod() throws SecurityException, NoSuchMethodException {
+    try {
+      new Binding("0123456789", extractMethod(Pair.class, "getFromType"));
+      fail();
+    } catch(BindingInstantiationException e) {
+      assertEquals(1, e.getCauses().size());
+      assertEquals(MethodInstanceIncompatibilityException.class, e.getCauses().get(0).getClass());
+      
+      MethodInstanceIncompatibilityException ex = (MethodInstanceIncompatibilityException) e.getCauses().get(0);
+      assertEquals("0123456789", ex.getInstance());
+      assertEquals(extractMethod(Pair.class, "getFromType"), ex.getMethod());
+    }
+  }
+  
+  @Test
+  public void constructorWithNullInstanceAndNonStaticMethod() throws SecurityException, NoSuchMethodException {
+    try {
+      new Binding(null, extractMethod(Pair.class, "getFromType"));
+      fail();
+    } catch(BindingInstantiationException e) {
+      assertEquals(1, e.getCauses().size());
+      assertEquals(NullInstanceWithNonStaticMethodException.class, e.getCauses().get(0).getClass());
+      
+      NullInstanceWithNonStaticMethodException ex = (NullInstanceWithNonStaticMethodException) e.getCauses().get(0);
+      assertEquals(extractMethod(Pair.class, "getFromType"), ex.getMethod());
+    }
+  }
+  
+  @Test
+  public void constructorWithNonPublicMethod() throws SecurityException, NoSuchMethodException {
+    try {
+      new Binding(null, extractMethod(TypeToken.class, "getRawType", Type.class));
+      fail();
+    } catch(BindingInstantiationException e) {
+      assertEquals(1, e.getCauses().size());
+      assertEquals(InaccessibleMethodException.class, e.getCauses().get(0).getClass());
+      
+      InaccessibleMethodException ex = (InaccessibleMethodException) e.getCauses().get(0);
+      assertEquals(extractMethod(TypeToken.class, "getRawType", Type.class), ex.getMethod());
+    }
+  }
+  
   @Test
   public void equals() throws SecurityException, NoSuchMethodException {
     assertEquals(substring, substring);
@@ -91,7 +155,7 @@ public class BindingTest {
   
   private Method extractMethod(Class<?> cls, String name, Class<?>... parameterTypes) 
   throws NoSuchMethodException, SecurityException {
-    return cls.getMethod(name, parameterTypes);
+    return cls.getDeclaredMethod(name, parameterTypes);
   }
   
   private void assertType(Class<?> cls, Object object) {
