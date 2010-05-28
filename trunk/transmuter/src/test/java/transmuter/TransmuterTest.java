@@ -4,10 +4,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static transmuter.util.ObjectUtils.areEqual;
 
-import static transmuter.util.ObjectUtils.*;
-
+import java.lang.reflect.Method;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +23,7 @@ import transmuter.exception.InvalidReturnTypeException;
 import transmuter.exception.SameClassConverterCollisionException;
 import transmuter.exception.WrongParameterCountException;
 import transmuter.type.TypeToken;
+import transmuter.type.exception.UnexpectedTypeException;
 import transmuter.util.Binding;
 import transmuter.util.Pair;
 
@@ -55,7 +58,7 @@ public class TransmuterTest {
   }
   
   @Test
-  public void registerFlawedConverter() {
+  public void registerFlawedConverter() throws SecurityException, NoSuchMethodException {
     @SuppressWarnings("unused") // just to shut up Eclipse's warnings
     Object flawed = new Object() {
       @Converter
@@ -97,13 +100,14 @@ public class TransmuterTest {
     assertTrue(t.getConverterMap().isEmpty());
     assertFalse(t.isRegistered(double.class, String.class));
     
-    t.register(new Object() {
+    final Object working = new Object() {
       @SuppressWarnings("unused") // just to shut up Eclipse's warnings
       @Converter
       public String test(double d) {
         return "double: " + d;
       }
-    });
+    };
+    t.register(working);
     
     assertEquals(1, t.getConverterMap().size());
     assertTrue(t.isRegistered(double.class, String.class));
@@ -113,19 +117,38 @@ public class TransmuterTest {
       fail();
     } catch(ConverterRegistrationException e) {
       final List<? extends Exception> causes = e.getCauses();
+      final Class<?> flawedClass = flawed.getClass();
+      final TypeToken<Void> voidClass = TypeToken.get(void.class);
       
       assertEquals(7, causes.size());
-      assertWrongParameterCount(causes, new WrongParameterCountException(1, 0), 1);
-      assertWrongParameterCount(causes, new WrongParameterCountException(1, 4), 1);
-      assertWrongParameterCount(causes, new WrongParameterCountException(1, 2), 1);
-      assertInvalidReturnType(causes, new InvalidReturnTypeException(void.class), 2);
-      assertSameClassConverterCollision(
-          causes, 
-          new SameClassConverterCollisionException(flawed.getClass(), new Pair(int.class, boolean.class)),
+      
+      assertWrongParameterCount(causes,
+          extractMethod(flawedClass, "tooManyParameters", Object.class, Object.class),
+          1, 1);
+      assertWrongParameterCount(causes, 
+          extractMethod(flawedClass, "tooFewParameters"),
+          1, 1);
+      assertWrongParameterCount(causes, 
+          extractMethod(flawedClass, "voidAndTooManyParameters", int.class, int.class, int.class, int.class),
+          1, 1);
+      assertInvalidReturnType(causes, 
+          extractMethod(flawedClass, "voidAsReturnType", Object.class), 
+          voidClass, 1);
+      assertInvalidReturnType(causes, 
+          extractMethod(flawedClass, "voidAndTooManyParameters", int.class, int.class, int.class, int.class), 
+          voidClass, 1);
+      assertSameClassConverterCollision(causes, 
+          TypeToken.get(flawedClass), 
+          new Pair(int.class, boolean.class), 
+          Arrays.asList(
+              extractMethod(flawedClass, "intraClassCollision1", int.class),
+              extractMethod(flawedClass, "intraClassCollision2", int.class)),
           1);
-      assertConverterCollision(
-          causes, 
-          new ConverterCollisionException(new Pair(double.class, String.class)), 
+      assertConverterCollision(causes, 
+          new Pair(double.class, String.class), 
+          Arrays.asList(
+              extractMethod(flawedClass, "extraClassCollision", double.class),
+              extractMethod(working.getClass(), "test", double.class)),
           1);
     }
     
@@ -133,16 +156,22 @@ public class TransmuterTest {
     assertTrue(t.isRegistered(double.class, String.class));
   }
   
+  private Method extractMethod(Class<?> cls, String name, Class<?>... parameterTypes) 
+  throws SecurityException, NoSuchMethodException {
+    return cls.getMethod(name, parameterTypes);
+  }
+  
   private void assertWrongParameterCount(final List<? extends Exception> causes, 
-      WrongParameterCountException e, int expectedCount) {
+      Method method, int expected, int expectedCount) {
     int count = 0;
     for(Exception cause : causes) {
-      if(cause.getClass() != e.getClass())
+      if(cause.getClass() != WrongParameterCountException.class)
         continue;
       
       WrongParameterCountException cause2 = (WrongParameterCountException) cause;
-      if(cause2.getActual() == e.getActual()
-      && cause2.getExpected() == e.getExpected())
+      if(areEqual(cause2.getMethod(), method)
+      && cause2.getActual() == method.getParameterTypes().length
+      && cause2.getExpected() == expected)
         count++;
     }
     
@@ -150,14 +179,15 @@ public class TransmuterTest {
   }
   
   private void assertInvalidReturnType(final List<? extends Exception> causes, 
-      InvalidReturnTypeException e, int expectedCount) {
+      Method method, TypeToken<?> returnType, int expectedCount) {
     int count = 0;
     for(Exception cause : causes) {
-      if(cause.getClass() != e.getClass())
+      if(cause.getClass() != InvalidReturnTypeException.class)
         continue;
       
       InvalidReturnTypeException cause2 = (InvalidReturnTypeException) cause;
-      if(areEqual(cause2.getReturnType(), e.getReturnType()))
+      if(areEqual(cause2.getMethod(), method)
+      && areEqual(cause2.getReturnType(), returnType))
         count++;
     }
     
@@ -165,15 +195,16 @@ public class TransmuterTest {
   }
   
   private void assertSameClassConverterCollision(final List<? extends Exception> causes, 
-      SameClassConverterCollisionException e, int expectedCount) {
+      TypeToken<?> declaringType, Pair pair, List<Method> methods, int expectedCount) {
     int count = 0;
     for(Exception cause : causes) {
-      if(cause.getClass() != e.getClass())
+      if(cause.getClass() != SameClassConverterCollisionException.class)
         continue;
       
       SameClassConverterCollisionException cause2 = (SameClassConverterCollisionException) cause;
-      if(areEqual(cause2.getPair(), e.getPair())
-      && areEqual(cause2.getDeclaringType(), e.getDeclaringType()))
+      if(areEqual(cause2.getPair(), pair)
+      && (cause2.getMethods().containsAll(methods) && methods.containsAll(cause2.getMethods()))
+      && areEqual(cause2.getDeclaringType(), declaringType))
         count++;
     }
     
@@ -181,14 +212,15 @@ public class TransmuterTest {
   }
   
   private void assertConverterCollision(final List<? extends Exception> causes, 
-      ConverterCollisionException e, int expectedCount) {
+      Pair pair, List<Method> methods, int expectedCount) {
     int count = 0;
     for(Exception cause : causes) {
-      if(cause.getClass() != e.getClass())
+      if(cause.getClass() != ConverterCollisionException.class)
         continue;
       
       ConverterCollisionException cause2 = (ConverterCollisionException) cause;
-      if(areEqual(cause2.getPair(), e.getPair()))
+      if(areEqual(cause2.getPair(), pair)
+      && (cause2.getMethods().containsAll(methods) && methods.containsAll(cause2.getMethods())))
         count++;
     }
     
@@ -208,27 +240,117 @@ public class TransmuterTest {
     assertTrue(t.getConverterMap().isEmpty());
   }
   
+  // TODO is this what should happen, or should an exception be thrown?
+  @Test
+  public void registerPrivate() {
+    assertFalse(t.isRegistered(Object.class, String.class));
+    
+    t.register(new Object() {
+      @SuppressWarnings("unused") // just to shut up Eclipse's warnings
+      @Converter
+      private String stringify(Object o) {
+        return String.valueOf(o);
+      }
+    });
+    
+    assertFalse(t.isRegistered(Object.class, String.class));
+  }
+  
+  @Test
+  public void registerPackagePrivate() {
+    assertFalse(t.isRegistered(Object.class, String.class));
+    
+    t.register(new Object() {
+      @SuppressWarnings("unused") // just to shut up Eclipse's warnings
+      @Converter
+      String stringify(Object o) {
+        return String.valueOf(o);
+      }
+    });
+    
+    assertFalse(t.isRegistered(Object.class, String.class));
+  }
+  
+  @Test
+  public void registerProtected() {
+    assertFalse(t.isRegistered(Object.class, String.class));
+    
+    t.register(new Object() {
+      @SuppressWarnings("unused") // just to shut up Eclipse's warnings
+      @Converter
+      protected String stringify(Object o) {
+        return String.valueOf(o);
+      }
+    });
+    
+    assertFalse(t.isRegistered(Object.class, String.class));
+  }
+  
+  @Test
+  public void registerVararg() {
+    assertFalse(t.isRegistered(Object[].class, String.class));
+    
+    t.register(new Object() {
+      @SuppressWarnings("unused") // just to shut up Eclipse's warnings
+      @Converter
+      public String stringifyArray(Object... o) {
+        return String.valueOf(o);
+      }
+    });
+    
+    assertTrue(t.isRegistered(Object[].class, String.class));
+  }
+  
+  @Test
+  public void registerGenericType() {
+    assertTrue(t.getConverterMap().isEmpty());
+    
+    try {
+      t.register(new Object() {
+        @SuppressWarnings("unused") // just to shut up Eclipse's warnings
+        @Converter
+        public <T> T nonNull(T o) {
+          if(o == null)
+            throw new IllegalArgumentException();
+          
+          return o;
+        }
+      });
+    } catch(ConverterRegistrationException e) {
+      assertEquals(2, e.getCauses().size());
+      
+      assertEquals(UnexpectedTypeException.class, e.getCauses().get(0).getClass());
+      assertTrue(((UnexpectedTypeException) e.getCauses().get(0)).getType() instanceof TypeVariable);
+      
+      assertEquals(UnexpectedTypeException.class, e.getCauses().get(1).getClass());
+      assertTrue(((UnexpectedTypeException) e.getCauses().get(1)).getType() instanceof TypeVariable);
+      // TODO go into details
+    }
+    
+    assertTrue(t.getConverterMap().isEmpty());
+  }
+  
   @Test
   public void unregisterNullAndNonexistent() {
     t.register(new Object() {
       @SuppressWarnings("unused") // just to shut up Eclipse's warnings
       @Converter
-      public String test(double d) {
+      public String test(Object... d) {
         return "double: " + d;
       }
     });
     
-    assertTrue(t.isRegistered(double.class, String.class));
+    assertTrue(t.isRegistered(Object[].class, String.class));
     assertEquals(1, t.getConverterMap().size());
     
     t.unregister(null); // nothing happens
     
-    assertTrue(t.isRegistered(double.class, String.class));
+    assertTrue(t.isRegistered(Object[].class, String.class));
     assertEquals(1, t.getConverterMap().size());
     
-    t.unregister(boolean.class, int.class); // nothing happens
+    t.unregister(boolean.class, int.class); // doesn't exist, nothing happens
     
-    assertTrue(t.isRegistered(double.class, String.class));
+    assertTrue(t.isRegistered(Object[].class, String.class));
     assertEquals(1, t.getConverterMap().size());
   }
   

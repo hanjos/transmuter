@@ -8,7 +8,7 @@ import java.util.List;
 public class UnexpectedTypeException extends RuntimeException {
   private static final long serialVersionUID = 1L;
   
-  private static String buildMessage(Type token, Class<?>... expected) {
+  private static String buildMessage(Type type, Class<?>... expected) {
     StringBuilder message = new StringBuilder();
     
     if(expected == null || expected.length == 0) {
@@ -20,27 +20,27 @@ public class UnexpectedTypeException extends RuntimeException {
         message.append(clazz.getName()).append(", ");
     }
     
-    if(token != null)
-      message.append("but got: ").append(token.getClass().getName())
-          .append(", for type token: ").append(token).append('.');
+    if(type != null)
+      message.append("but got: ").append(type.getClass().getName())
+          .append(", for type: ").append(type).append('.');
     else
-      message.append("but got a null type token.");
+      message.append("but got a null type.");
 
     return message.toString();
   }
   
-  private Type token;
+  private Type type;
   private List<Class<?>> expected;
 
-  public UnexpectedTypeException(Type token, Class<?>... expected) {
-    super(buildMessage(token, expected));
+  public UnexpectedTypeException(Type type, Class<?>... expected) {
+    super(buildMessage(type, expected));
     
-    this.token = token;
+    this.type = type;
     this.expected = Collections.unmodifiableList(Arrays.asList(expected));
   }
 
-  public Type getToken() {
-    return token;
+  public Type getType() {
+    return type;
   }
 
   public List<Class<?>> getExpected() {

@@ -2,15 +2,11 @@ package transmuter.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static transmuter.util.ObjectUtils.areEqual;
-import static transmuter.util.ObjectUtils.classOf;
 import static transmuter.util.ObjectUtils.hashCodeOf;
 import static transmuter.util.ObjectUtils.nonNull;
-
-import java.util.ArrayList;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -64,13 +60,5 @@ public class ObjectUtilsTest {
     assertTrue(areEqual(42, new Integer(42)));
     assertTrue(areEqual(0.0, 0.0f));
     assertTrue(areEqual(42L, new Integer(42)));
-  }
-  
-  @Test
-  public void testClassOf() {
-    assertNull(classOf(null));
-    assertEquals(Object.class, classOf(new Object()));
-    assertEquals(String.class, classOf("abcdef"));
-    assertEquals(ArrayList.class, classOf(new ArrayList<String>()));
   }
 }

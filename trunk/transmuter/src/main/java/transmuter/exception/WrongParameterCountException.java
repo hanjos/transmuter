@@ -1,5 +1,7 @@
 package transmuter.exception;
 
+import java.lang.reflect.Method;
+
 public class WrongParameterCountException extends RuntimeException {
   private static final long serialVersionUID = 1L;
 
@@ -7,18 +9,22 @@ public class WrongParameterCountException extends RuntimeException {
     return "Expected " + expected + ", got " + actual;
   }
 
-  private int actual;
+  private Method method;
   private int expected;
   
-  public WrongParameterCountException(int expected, int actual) {
-    this(expected, actual, buildMessage(expected, actual));
+  public WrongParameterCountException(Method method, int expected) {
+    this(method, expected, buildMessage(expected, (method != null) ? method.getParameterTypes().length : 0));
   }
 
-  public WrongParameterCountException(int expected, int actual, String message) {
+  public WrongParameterCountException(Method method, int expected, String message) {
     super(message);
     
+    this.method = method;
     this.expected = expected;
-    this.actual = actual;
+  }
+  
+  public Method getMethod() {
+    return method;
   }
 
   public int getExpected() {
@@ -26,6 +32,6 @@ public class WrongParameterCountException extends RuntimeException {
   }
   
   public int getActual() {
-    return actual;
+    return (method != null) ? method.getParameterTypes().length : 0;
   }
 }
