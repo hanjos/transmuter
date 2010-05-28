@@ -13,7 +13,7 @@ public class ConverterCollisionException extends RuntimeException {
   private Pair pair;
   
   private static String buildMessage(List<Method> methods, Pair pair) {
-    return "More than one converter for " + pair + ": " + methods;
+    return "more than one converter for " + pair + ": " + methods;
   }
   
   public ConverterCollisionException(List<Method> methods, Pair pair) {

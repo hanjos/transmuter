@@ -5,15 +5,16 @@ import java.lang.reflect.Method;
 public class WrongParameterCountException extends RuntimeException {
   private static final long serialVersionUID = 1L;
 
-  private static String buildMessage(int expected, int actual) {
-    return "Expected " + expected + ", got " + actual;
+  private static String buildMessage(int expected, Method method) {
+    return "expected " + expected + ", got " 
+         + ((method != null) ? method.getParameterTypes().length : 0) + " from " + method;
   }
 
   private Method method;
   private int expected;
   
   public WrongParameterCountException(Method method, int expected) {
-    this(method, expected, buildMessage(expected, (method != null) ? method.getParameterTypes().length : 0));
+    this(method, expected, buildMessage(expected, method));
   }
 
   public WrongParameterCountException(Method method, int expected, String message) {

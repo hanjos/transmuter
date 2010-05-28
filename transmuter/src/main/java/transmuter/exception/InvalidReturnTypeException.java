@@ -18,11 +18,7 @@ public class InvalidReturnTypeException extends RuntimeException {
   private TypeToken<?> returnType;
 
   public InvalidReturnTypeException(Method method) {
-    this(method, getReturnTypeOf(method) + " is not a valid return type!");
-  }
-  
-  public InvalidReturnTypeException(Method method, String message) {
-    super(message);
+    super(getReturnTypeOf(method) + " is not a valid return type for " + method);
     
     this.method = method;
     this.returnType = getReturnTypeOf(method);
