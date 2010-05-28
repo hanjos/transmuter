@@ -1,6 +1,7 @@
 package transmuter.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
@@ -46,6 +47,18 @@ public class BindingTest {
     new Binding(new Object(), null);
   }
 
+  @Test
+  public void equals() throws SecurityException, NoSuchMethodException {
+    assertEquals(substring, substring);
+    assertEquals(substring, new Binding(string, substringMethod));
+    assertEquals(substring, new Binding(new String(string), substringMethod));
+    
+    assertFalse(substring.equals(null));
+    assertFalse(substring.equals(new Binding(string, substringMethod) {}));
+    assertFalse(substring.equals(new Binding("woeihoiwefn", substringMethod) {}));
+    assertFalse(substring.equals(new Binding(string, extractMethod(String.class, "valueOf", Object.class)) {}));
+  }
+  
   @Test
   public void invoke() {
     assertEquals("012", substring.invoke(0, 3));
