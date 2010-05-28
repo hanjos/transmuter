@@ -166,6 +166,8 @@ public class TransmuterTest {
               extractMethod(flawedClass, "extraClassCollision", double.class),
               extractMethod(working.getClass(), "test", double.class)),
           1);
+      
+      //e.printStackTrace();
     }
     
     assertEquals(1, t.getConverterMap().size());
