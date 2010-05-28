@@ -1,6 +1,8 @@
 package transmuter.exception;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.List;
 
 import transmuter.type.TypeToken;
 import transmuter.util.Pair;
@@ -14,20 +16,24 @@ public class SameClassConverterCollisionException extends ConverterCollisionExce
   
   private TypeToken<?> declaringType;
 
-  public SameClassConverterCollisionException(Type declaringType, Pair pair) {
-    this(TypeToken.get(declaringType), pair);
+  public SameClassConverterCollisionException(List<Method> methods, 
+      Type declaringType, Pair pair) {
+    this(methods, TypeToken.get(declaringType), pair);
   }
 
-  public SameClassConverterCollisionException(Type declaringType, Pair pair, String message) {
-    this(TypeToken.get(declaringType), pair, message);
+  public SameClassConverterCollisionException(List<Method> methods, 
+      Type declaringType, Pair pair, String message) {
+    this(methods, TypeToken.get(declaringType), pair, message);
   }
 
-  public SameClassConverterCollisionException(TypeToken<?> declaringType, Pair pair) {
-    this(declaringType, pair, buildMessage(declaringType, pair));
+  public SameClassConverterCollisionException(List<Method> methods, 
+      TypeToken<?> declaringType, Pair pair) {
+    this(methods, declaringType, pair, buildMessage(declaringType, pair));
   }
 
-  public SameClassConverterCollisionException(TypeToken<?> declaringType, Pair pair, String message) {
-    super(pair, message);
+  public SameClassConverterCollisionException(List<Method> methods, 
+      TypeToken<?> declaringType, Pair pair, String message) {
+    super(methods, pair, message);
     
     this.declaringType = declaringType;
   }

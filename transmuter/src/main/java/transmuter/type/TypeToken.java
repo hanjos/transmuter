@@ -495,6 +495,7 @@ public abstract class TypeToken<T> {
       if (rawType instanceof Class<?>) {
         return (Class<?>) rawType;
       }
+      
       throw new UnexpectedTypeException(rawType, Class.class);
     } else if (type instanceof GenericArrayType) {
       GenericArrayType genericArrayType = (GenericArrayType) type;
