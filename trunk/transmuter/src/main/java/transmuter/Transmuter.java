@@ -144,6 +144,7 @@ public class Transmuter {
   }
   
   // helper operations
+  // TODO maybe put this methods somewhere else?
   protected Pair extractTypes(Method method) {
     List<Exception> exceptions = new ArrayList<Exception>();
     

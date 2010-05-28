@@ -29,10 +29,20 @@ import transmuter.util.Pair;
 
 public class TransmuterTest {
   private Transmuter t;
+  private Map<Pair, Binding> map;
+
+  private static class A {
+    @SuppressWarnings("unused") // just to shut up Eclipse's warnings
+    @Converter
+    public String stringify(Object object) {
+      return String.valueOf(object);
+    }
+  }
   
   @Before
   public void setUp() {
     t = new Transmuter();
+    map = t.getConverterMap();
   }
   
   @Test
@@ -379,7 +389,6 @@ public class TransmuterTest {
   
   @Test
   public void converterMap() throws SecurityException, NoSuchMethodException {
-    Map<Pair, Binding> map = t.getConverterMap();
     assertTrue(map.isEmpty());
     
     t.register(new Object() {
@@ -450,7 +459,6 @@ public class TransmuterTest {
   
   @Test
   public void converterMapWithNulls() throws SecurityException, NoSuchMethodException {
-    Map<Pair, Binding> map = t.getConverterMap();
     Object o = new Object() {
       @SuppressWarnings("unused") // just to shut up Eclipse's warnings
       @Converter
@@ -484,5 +492,23 @@ public class TransmuterTest {
     map.putAll(new HashMap<Pair, Binding>());
     
     assertTrue(map.isEmpty());
+  }
+  
+  @Test
+  public void converterMapWithRedundantPut() throws SecurityException, NoSuchMethodException {
+    assertFalse(t.isRegistered(Object.class, String.class));
+    assertTrue(map.isEmpty());
+    
+    final A a = new A();
+    final Method stringify = A.class.getMethod("stringify", Object.class);
+    map.put(new Pair(Object.class, String.class), new Binding(a, stringify));
+    
+    assertTrue(t.isRegistered(Object.class, String.class));
+    assertEquals(1, map.size());
+    
+    map.put(new Pair(Object.class, String.class), new Binding(a, stringify));
+    
+    assertTrue(t.isRegistered(Object.class, String.class));
+    assertEquals(1, map.size());
   }
 }
