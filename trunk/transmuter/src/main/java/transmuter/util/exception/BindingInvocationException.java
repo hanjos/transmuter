@@ -12,7 +12,7 @@ public class BindingInvocationException extends RuntimeException {
   }
   
   public BindingInvocationException(Binding binding, Throwable cause) {
-    super(cause);
+    super(cause != null ? cause.getMessage() : null, cause);
     
     this.binding = binding;
   }
