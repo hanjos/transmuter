@@ -20,6 +20,7 @@ import org.junit.Test;
 import transmuter.exception.ConverterCollisionException;
 import transmuter.exception.ConverterRegistrationException;
 import transmuter.exception.InvalidReturnTypeException;
+import transmuter.exception.PairIncompatibleWithBindingException;
 import transmuter.exception.SameClassConverterCollisionException;
 import transmuter.exception.WrongParameterCountException;
 import transmuter.type.TypeToken;
@@ -36,6 +37,11 @@ public class TransmuterTest {
     @Converter
     public String stringify(Object object) {
       return String.valueOf(object);
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+      return o instanceof A;
     }
   }
   
@@ -248,6 +254,23 @@ public class TransmuterTest {
     t.register(new Object()); // nothing happens
     
     assertTrue(t.getConverterMap().isEmpty());
+  }
+  
+  // The class A must implement equals() for this to work properly
+  @Test
+  public void registerWithRedundantPut() throws SecurityException, NoSuchMethodException {
+    assertFalse(t.isRegistered(Object.class, String.class));
+    assertTrue(map.isEmpty());
+    
+    t.register(new A());
+    
+    assertTrue(t.isRegistered(Object.class, String.class));
+    assertEquals(1, map.size());
+    
+    t.register(new A());
+    
+    assertTrue(t.isRegistered(Object.class, String.class));
+    assertEquals(1, map.size());
   }
   
   // TODO is this what should happen, or should an exception be thrown?
@@ -510,5 +533,17 @@ public class TransmuterTest {
     
     assertTrue(t.isRegistered(Object.class, String.class));
     assertEquals(1, map.size());
+  }
+  
+  @Test(expected = PairIncompatibleWithBindingException.class)
+  public void converterMapWithIncompatiblePairAndBinding() throws SecurityException, NoSuchMethodException {
+    map.put(
+        new Pair(String.class, double.class), 
+        new Binding(new A(), A.class.getMethod("stringify", Object.class)));
+  }
+  
+  @Test
+  public void converterMapContainsNullKeyP() {
+    assertFalse(map.containsKey(null));
   }
 }
