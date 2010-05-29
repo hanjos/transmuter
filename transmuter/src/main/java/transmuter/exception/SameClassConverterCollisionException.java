@@ -7,12 +7,22 @@ import java.util.List;
 import transmuter.type.TypeToken;
 import transmuter.util.Pair;
 import transmuter.util.ReflectionUtils;
+import transmuter.util.StringUtils;
+import transmuter.util.StringUtils.Stringifier;
 
 public class SameClassConverterCollisionException extends ConverterCollisionException {
   private static final long serialVersionUID = 1L;
   
   private static String buildMessage(List<Method> methods, TypeToken<?> declaringType, Pair pair) {
-    return "more than one converter for " + pair + " found in " + declaringType + ": " + ReflectionUtils.listMethodsToString(methods);
+    return "more than one converter for " + pair + " found in " + declaringType + ": [" 
+        + StringUtils.concatenate(
+          new Stringifier<Method>() {
+            @Override
+            public String stringify(Method o) {
+              return ReflectionUtils.simpleMethodToString(o);
+            }
+          }, ", ", methods) 
+        + "]";
   }
   
   private TypeToken<?> declaringType;

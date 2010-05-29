@@ -7,6 +7,7 @@ import transmuter.type.TypeTokenValueTypeTest;
 import transmuter.util.BindingTest;
 import transmuter.util.ObjectUtilsTest;
 import transmuter.util.PairTest;
+import transmuter.util.ReflectionUtilsTest;
 import transmuter.util.StringUtilsTest;
 
 @RunWith(Suite.class)
@@ -15,6 +16,7 @@ import transmuter.util.StringUtilsTest;
   BindingTest.class,
   StringUtilsTest.class,
   ObjectUtilsTest.class,
+  ReflectionUtilsTest.class,
   PairTest.class,
   TransmuterTest.class })
 public class FullTest { /* empty block */ }

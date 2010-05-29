@@ -6,6 +6,8 @@ import java.util.List;
 
 import transmuter.util.Pair;
 import transmuter.util.ReflectionUtils;
+import transmuter.util.StringUtils;
+import transmuter.util.StringUtils.Stringifier;
 
 public class ConverterCollisionException extends RuntimeException {
   private static final long serialVersionUID = 1L;
@@ -14,10 +16,16 @@ public class ConverterCollisionException extends RuntimeException {
   private Pair pair;
   
   private static String buildMessage(List<Method> methods, Pair pair) {
-    return "more than one converter for " + pair + ": " + ReflectionUtils.listMethodsToString(methods);
+    return "more than one converter for " + pair + ": [" 
+      + StringUtils.concatenate(
+        new Stringifier<Method>() {
+          @Override
+          public String stringify(Method o) {
+            return ReflectionUtils.simpleMethodToString(o);
+          }
+        }, ", ", methods) 
+      + "]";
   }
-  
-  
   
   public ConverterCollisionException(List<Method> methods, Pair pair) {
     this(methods, pair, buildMessage(methods, pair));
