@@ -336,6 +336,7 @@ public class TransmuterTest {
     assertTrue(t.isRegistered(Object[].class, String.class));
   }
   
+  @SuppressWarnings("unchecked") // just to shut up Eclipse's warnings
   @Test
   public void registerGenericType() {
     assertTrue(t.getConverterMap().isEmpty());
