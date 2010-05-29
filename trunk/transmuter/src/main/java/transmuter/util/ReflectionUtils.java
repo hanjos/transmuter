@@ -3,12 +3,9 @@ package transmuter.util;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
-import java.util.List;
 
-import transmuter.util.StringUtils.Stringifier;
-
-public final class ReflectionUtils {
-  static final String[] EMPTY_STRING_ARRAY = new String[0];
+public class ReflectionUtils {
+  private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
   private ReflectionUtils() { /* empty block */ }
 
@@ -18,7 +15,7 @@ public final class ReflectionUtils {
     
     StringBuilder sb = new StringBuilder();
     
-    sb.append(Modifier.toString(method.getModifiers()));
+    sb.append(Modifier.toString(method.getModifiers())).append(" ");
     
     Type[] typeparms = method.getTypeParameters();
     if (typeparms.length > 0)
@@ -26,7 +23,14 @@ public final class ReflectionUtils {
     
     sb.append(getTypeName(method.getGenericReturnType())).append(" ");
     sb.append(method.getName()).append("(");
-    sb.append(StringUtils.concatenate(", ", getTypeNames(method.getGenericParameterTypes()))).append(")");
+    
+    String[] typeNames = getTypeNames(method.getGenericParameterTypes());
+    if(method.isVarArgs()) {
+      String last = typeNames[typeNames.length - 1];
+      typeNames[typeNames.length - 1] = last.substring(0, last.length() - "[]".length()) + "...";
+    }
+    
+    sb.append(StringUtils.concatenate(", ", typeNames)).append(")");
     
     Type[] exceptions = method.getGenericExceptionTypes(); // avoid clone
     if(exceptions.length > 0)
@@ -46,23 +50,16 @@ public final class ReflectionUtils {
   
     Class<?> cls = (Class<?>) type;
     if (cls.isArray()) {
-      try {
-        Class<?> cl = cls;
-        int dimensions = 0;
-        while (cl.isArray()) {
-          dimensions++;
-          cl = cl.getComponentType();
-        }
-  
-        StringBuilder sb = new StringBuilder().append(cl.getName());
-        for (int i = 0; i < dimensions; i++) {
-          sb.append("[]");
-        }
-  
-        return sb.toString();
-      } catch (Throwable e) {
-        /* FALLTHRU */
+      // XXX in Field.getTypeName, this block was wrapped with a try block
+      // which allowed a Throwable to simply fall through. Why? 
+      Class<?> cl = cls;
+      StringBuilder rank = new StringBuilder();
+      while (cl.isArray()) {
+        rank.append("[]");
+        cl = cl.getComponentType();
       }
+
+      return new StringBuilder(cl.getName()).append(rank.toString()).toString();
     }
   
     return cls.getName();
@@ -77,25 +74,5 @@ public final class ReflectionUtils {
       typesAsStrings[i] = getTypeName(types[i]);
     
     return typesAsStrings;
-  }
-
-  public static String listMethodsToString(List<Method> methods) {
-    return "[" + StringUtils.concatenate(
-        new Stringifier<Method>() {
-          @Override
-          public String stringify(Method o) {
-            return simpleMethodToString(o);
-          }
-        },
-        ", ",
-        methods) + "]";
-  }
-
-  public static Method extractMethod(Class<?> cls, String name,
-      Class<?>... parameterTypes) throws NoSuchMethodException,
-      SecurityException {
-    return cls.getDeclaredMethod(name, parameterTypes);
-  }
-  
-  
+  }  
 }
