@@ -7,12 +7,14 @@ import transmuter.type.TypeTokenValueTypeTest;
 import transmuter.util.BindingTest;
 import transmuter.util.ObjectUtilsTest;
 import transmuter.util.PairTest;
+import transmuter.util.StringUtilsTest;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({ 
   TypeTokenValueTypeTest.class, 
   BindingTest.class,
-  ObjectUtilsTest.class, 
+  StringUtilsTest.class,
+  ObjectUtilsTest.class,
   PairTest.class,
   TransmuterTest.class })
 public class FullTest { /* empty block */ }
