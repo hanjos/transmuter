@@ -20,6 +20,7 @@ public class ConverterCollisionException extends RuntimeException {
     this(methods, pair, buildMessage(methods, pair));
   }
 
+  @SuppressWarnings("unchecked")
   public ConverterCollisionException(List<Method> methods, Pair pair, String message) {
     super(message);
     
