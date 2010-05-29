@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import transmuter.util.exception.BindingInstantiationException;
@@ -58,6 +59,25 @@ public class Binding {
   }
   
   // utility methods
+  @Override
+  public String toString() {
+    if(instance == null) // static method
+      return "Binding[static " + methodToString() + "]";
+    
+    return "Binding[" + instance + "." + methodToString() + "]";
+  }
+  
+  private String methodToString() {
+    String[] params = ReflectionUtils.getTypeNames(method.getGenericParameterTypes());
+    String paramsAsString = Arrays.toString(params);
+    if(paramsAsString.startsWith("[") && paramsAsString.endsWith("]"))
+      paramsAsString = paramsAsString.substring(1, paramsAsString.length() - 1);
+    
+    String returnTypeAsString = ReflectionUtils.getTypeName(method.getGenericReturnType());
+    
+    return method.getName() + "(" + paramsAsString + "): " + returnTypeAsString;
+  }
+  
   @Override
   public int hashCode() {
     final int prime = 31;
