@@ -1,6 +1,7 @@
 package transmuter.util;
 
-public final class ObjectUtils {
+public class ObjectUtils {
+  // ensuring non-instantiability and non-inheritability
   private ObjectUtils() { /* empty block */ }
   
   public static <T> T nonNull(T object) {

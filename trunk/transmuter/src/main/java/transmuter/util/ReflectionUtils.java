@@ -7,6 +7,7 @@ import java.lang.reflect.Type;
 public class ReflectionUtils {
   private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
+  // ensuring non-instantiability and non-inheritability
   private ReflectionUtils() { /* empty block */ }
 
   public static String simpleMethodToString(Method method) {
