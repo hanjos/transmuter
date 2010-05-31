@@ -33,8 +33,12 @@ public class Transmuter {
     public Binding put(Pair pair, Binding binding) {
       nonNull(pair, "pair"); nonNull(binding, "binding");
       
-      // check for collisions here
+      // check if the binding matches the pair
       final Method bindingMethod = binding.getMethod();
+      if(! pair.isAssignableFrom(Transmuter.this.extractTypes(bindingMethod)))
+        throw new PairIncompatibleWithBindingException(pair, binding);
+      
+      // check for collisions here
       if(containsKey(pair)) {
         if(binding.equals(get(pair))) // redundant call, ignore it
           return null;
@@ -57,10 +61,6 @@ public class Transmuter {
             Arrays.asList(bindingMethod, converterMap.get(pair).getMethod()), 
             pair);
       }
-      
-      // check if the binding matches the pair
-      if(! pair.isAssignableFrom(Transmuter.this.extractTypes(bindingMethod)))
-        throw new PairIncompatibleWithBindingException(pair, binding);
       
       return super.put(pair, binding);
     }
