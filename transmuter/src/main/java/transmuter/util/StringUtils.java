@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public final class StringUtils {
+  // ensuring non-instantiability and non-inheritability
   private StringUtils() { /* empty block */ }
 
   public static interface Stringifier<T> {
