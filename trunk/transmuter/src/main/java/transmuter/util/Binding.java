@@ -31,7 +31,7 @@ public class Binding {
     if(method == null)
       throw new BindingInstantiationException(new IllegalArgumentException("method cannot be null!"));
     
-    List<RuntimeException> exceptions = new ArrayList<RuntimeException>();
+    List<Exception> exceptions = new ArrayList<Exception>();
     if(! Modifier.isPublic(method.getModifiers()))
       exceptions.add(new InaccessibleMethodException(method));
       
