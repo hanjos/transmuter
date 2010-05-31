@@ -6,12 +6,16 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.awt.Point;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import transmuter.exception.InvalidReturnTypeException;
+import transmuter.exception.PairCreationException;
+import transmuter.exception.WrongParameterCountException;
 import transmuter.type.TypeToken;
 
 public class PairTest {
@@ -87,6 +91,61 @@ public class PairTest {
     
     assertTrue(object2string.isAssignableFrom(new Pair(String.class, String.class)));
     assertFalse(object2string.isAssignableFrom(new Pair(String.class, Object.class)));
+    assertFalse(object2string.isAssignableFrom(null));
+  }
+
+  @Test
+  public void testFromMethod() throws PairCreationException, SecurityException, NoSuchMethodException {
+    assertEquals(new Pair(int.class, String.class), Pair.fromMethod(String.class.getMethod("substring", int.class)));
+    
+    try {
+      Pair.fromMethod(null);
+      fail();
+    } catch(PairCreationException e) {
+      assertEquals(1, e.getCauses().size());
+      assertEquals(IllegalArgumentException.class, e.getCauses().get(0).getClass());
+    }
+    
+    Method substring_2 = String.class.getMethod("substring", int.class, int.class);
+    try {
+      Pair.fromMethod(substring_2);
+      fail();
+    } catch(PairCreationException e) {
+      assertEquals(1, e.getCauses().size());
+      assertEquals(WrongParameterCountException.class, e.getCauses().get(0).getClass());
+      
+      WrongParameterCountException ex = (WrongParameterCountException) e.getCauses().get(0);
+      assertEquals(1, ex.getExpected());
+      assertEquals(2, ex.getActual());
+      assertEquals(substring_2, ex.getMethod());
+    }
+    
+    Method toString = String.class.getMethod("toString");
+    try {
+      Pair.fromMethod(toString);
+      fail();
+    } catch(PairCreationException e) {
+      assertEquals(1, e.getCauses().size());
+      assertEquals(WrongParameterCountException.class, e.getCauses().get(0).getClass());
+      
+      WrongParameterCountException ex = (WrongParameterCountException) e.getCauses().get(0);
+      assertEquals(1, ex.getExpected());
+      assertEquals(0, ex.getActual());
+      assertEquals(toString, ex.getMethod());
+    }
+    
+    Method wait_timeout = Object.class.getMethod("wait", long.class);
+    try {
+      Pair.fromMethod(wait_timeout);
+      fail();
+    } catch(PairCreationException e) {
+      assertEquals(1, e.getCauses().size());
+      assertEquals(InvalidReturnTypeException.class, e.getCauses().get(0).getClass());
+      
+      InvalidReturnTypeException ex = (InvalidReturnTypeException) e.getCauses().get(0);
+      assertEquals(TypeToken.ValueType.VOID.primitive, ex.getReturnType());
+      assertEquals(wait_timeout, ex.getMethod());
+    }
   }
   
   // TODO primitive/wrapper problem
