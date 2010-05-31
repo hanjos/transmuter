@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static transmuter.util.ObjectUtils.areEqual;
+import static transmuter.type.TypeToken.ValueType.*;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.TypeVariable;
@@ -67,7 +68,7 @@ public class TransmuterTest {
     assertEquals(1, t.getConverterMap().size());
     assertTrue(t.isRegistered(int.class, boolean.class));
     
-    t.unregister(int.class, boolean.class);
+    t.unregister(INTEGER.primitive, BOOLEAN.primitive);
     
     assertTrue(t.getConverterMap().isEmpty());
     assertFalse(t.isRegistered(int.class, boolean.class));
@@ -262,16 +263,19 @@ public class TransmuterTest {
   @Test
   public void registerWithRedundantPut() throws SecurityException, NoSuchMethodException {
     assertFalse(t.isRegistered(Object.class, String.class));
+    assertFalse(t.isRegistered(TypeToken.OBJECT, TypeToken.STRING));
     assertTrue(map.isEmpty());
     
     t.register(new A());
     
     assertTrue(t.isRegistered(Object.class, String.class));
+    assertTrue(t.isRegistered(TypeToken.OBJECT, TypeToken.STRING));
     assertEquals(1, map.size());
     
     t.register(new A());
     
     assertTrue(t.isRegistered(Object.class, String.class));
+    assertTrue(t.isRegistered(TypeToken.OBJECT, TypeToken.STRING));
     assertEquals(1, map.size());
   }
   

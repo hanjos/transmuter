@@ -12,12 +12,9 @@ import java.util.Map;
 
 import transmuter.exception.ConverterCollisionException;
 import transmuter.exception.ConverterRegistrationException;
-import transmuter.exception.InvalidReturnTypeException;
 import transmuter.exception.MultipleCausesException;
 import transmuter.exception.PairIncompatibleWithBindingException;
 import transmuter.exception.SameClassConverterCollisionException;
-import transmuter.exception.TypeExtractionException;
-import transmuter.exception.WrongParameterCountException;
 import transmuter.type.TypeToken;
 import transmuter.util.Binding;
 import transmuter.util.Pair;
@@ -35,7 +32,7 @@ public class Transmuter {
       
       // check if the binding matches the pair
       final Method bindingMethod = binding.getMethod();
-      if(! pair.isAssignableFrom(Transmuter.this.extractTypes(bindingMethod)))
+      if(! pair.isAssignableFrom(Pair.fromMethod(bindingMethod)))
         throw new PairIncompatibleWithBindingException(pair, binding);
       
       // check for collisions here
@@ -109,7 +106,7 @@ public class Transmuter {
         continue;
       
       try {
-        temp.put(extractTypes(method), new Binding(object, method));
+        temp.put(Pair.fromMethod(method), new Binding(object, method));
       } catch(Exception e) {
         if(! (e instanceof MultipleCausesException))
           exceptions.add(e);
@@ -137,57 +134,18 @@ public class Transmuter {
   }
   
   public void unregister(Type fromType, Type toType) {
-    unregister(TypeToken.get(fromType), TypeToken.get(toType));
+    unregister(new Pair(fromType, toType));
   }
   
   public void unregister(TypeToken<?> fromType, TypeToken<?> toType) {
     unregister(new Pair(fromType, toType));
   }
   
-  // helper operations
-  // TODO maybe put this method somewhere else?
-  protected Pair extractTypes(Method method) {
-    List<Exception> exceptions = new ArrayList<Exception>();
-    
-    if(method == null)
-      exceptions.add(new IllegalArgumentException("method"));
-    
-    final Type[] parameterTypes = method.getGenericParameterTypes();
-    final int parameterCount = parameterTypes.length;
-    if(parameterCount == 0 || parameterCount > 1)
-      exceptions.add(new WrongParameterCountException(method, 1));
-    
-    final Type returnType = method.getGenericReturnType();
-    if(TypeToken.ValueType.VOID.matches(returnType))
-      exceptions.add(new InvalidReturnTypeException(method));
-    
-    TypeToken<?> parameterToken = null;
-    TypeToken<?> returnToken = null;
-    
-    if(parameterCount == 1) {
-      try {
-        parameterToken = TypeToken.get(parameterTypes[0]);
-      } catch(Exception e) { // type token building may throw exceptions
-        exceptions.add(e);
-      } 
-    }
-    
-    try {
-      returnToken = TypeToken.get(returnType);
-    } catch(Exception e) { // type token building may throw exceptions
-      exceptions.add(e);
-    }
-    
-    if(exceptions.size() > 0)
-      throw new TypeExtractionException(exceptions);
-    
-    return new Pair(parameterToken, returnToken);
-  }
-  
-  protected Binding unregister(Pair pair) {
+  public Binding unregister(Pair pair) {
     return getConverterMap().remove(pair);
   }
   
+  // properties
   protected Map<Pair, Binding> getConverterMap() {
     return converterMap;
   }
