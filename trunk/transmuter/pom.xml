@@ -21,6 +21,12 @@
     <url>http://code.google.com/p/transmuter/issues/list</url>
   </issueManagement>
 
+  <scm>
+    <connection>https://transmuter.googlecode.com/svn/trunk</connection>
+    <developerConnection>https://transmuter.googlecode.com/svn/trunk</developerConnection>
+    <url>https://transmuter.googlecode.com/svn/trunk</url>
+  </scm>
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -32,7 +38,9 @@
 
   <build>
     <defaultGoal>package</defaultGoal>
+    
     <plugins>
+      <!-- Using Java 6 -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -41,6 +49,8 @@
           <target>1.6</target>
         </configuration>
       </plugin>
+      
+      <!-- Packaging releases -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
@@ -54,6 +64,8 @@
           </execution>
         </executions>
       </plugin>
+      
+      <!-- Attaching sources -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
@@ -67,6 +79,8 @@
           </execution>
         </executions>
       </plugin>
+      
+      <!-- Generating Javadocs -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
@@ -86,9 +100,15 @@
           <show>public</show>
         </configuration>
       </plugin>
+      
+      <!-- Tagging releases -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <tagBase>https://transmuter.googlecode.com/svn/tags</tagBase>
+          <scmCommentPrefix>release:</scmCommentPrefix>
+        </configuration>
       </plugin>
     </plugins>
   </build>
