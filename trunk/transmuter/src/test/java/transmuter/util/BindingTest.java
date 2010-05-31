@@ -131,12 +131,20 @@ public class BindingTest {
   }
   
   @Test
+  public void invokeWithPrimitives() {
+    assertEquals("012", substring.invoke(new Integer(0), new Integer(3)));
+    assertEquals("34", substring.invoke(new Integer(3), 5)); // mixing it up
+    assertEquals(string, substring.invoke(new Integer(0), new Integer(string.length())));
+  }
+  
+  @Test
   public void invokeWithIllegalArguments() {
     try {
       substring.invoke(false, 0.0);
       fail();
     } catch(Exception e) {
       assertType(BindingInvocationException.class, e);
+      assertEquals(substring, ((BindingInvocationException) e).getBinding());
       assertType(IllegalArgumentException.class, e.getCause());
     }
   }
@@ -148,6 +156,7 @@ public class BindingTest {
       fail();
     } catch(Exception e) {
       assertType(BindingInvocationException.class, e);
+      assertEquals(substring, ((BindingInvocationException) e).getBinding());
       assertType(InvocationTargetException.class, e.getCause());
       assertType(StringIndexOutOfBoundsException.class, e.getCause().getCause());
     }
