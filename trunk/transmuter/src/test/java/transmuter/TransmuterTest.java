@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static transmuter.type.TypeToken.ValueType.DOUBLE;
 import static transmuter.util.ObjectUtils.areEqual;
-import static transmuter.type.TypeToken.ValueType.*;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.TypeVariable;
@@ -33,8 +33,74 @@ public class TransmuterTest {
   private Transmuter t;
   private Map<Pair, Binding> map;
 
-  private static class A {
-    @SuppressWarnings("unused") // just to shut up Eclipse's warnings
+  public static final class GenericConverter {
+    @Converter
+    public <T> T nonNull(T o) {
+      if(o == null)
+        throw new IllegalArgumentException();
+      
+      return o;
+    }
+  }
+
+  public static final class VarargConverter {
+    @Converter
+    public String stringifyArray(Object... o) {
+      return String.valueOf(o);
+    }
+  }
+
+  public static final class FlawedConverter {
+    @Converter
+    public boolean intraClassCollision1(int i) {
+      return (i == 0) ? false : true;
+    }
+    
+    @Converter
+    public boolean intraClassCollision2(int i) {
+      return i % 2 == 0;
+    }
+    
+    @Converter
+    public void voidAsReturnType(Object whatever) {
+      // empty block
+    }
+    
+    @Converter
+    public Object tooManyParameters(Object a, Object b) {
+      return null;
+    }
+    
+    @Converter
+    public Object tooFewParameters() {
+      return null;
+    }
+    
+    @Converter
+    public String extraClassCollision(double d) {
+      return String.valueOf(d);
+    }
+    
+    @Converter
+    public void voidAndTooManyParameters(int a, int b, int c, int d) {
+      // empty block
+    }
+  }
+
+  public static final class MultipleConverter {
+    @Converter
+    public String converter(double d) {
+      return "double: " + d;
+    }
+    
+    @SuppressWarnings("serial")
+    @Converter
+    public List<String> convert(final String s) {
+      return new ArrayList<String>() {{ add(s); }};
+    }
+  }
+
+  public static class StringConverter {
     @Converter
     public String stringify(Object object) {
       return String.valueOf(object);
@@ -42,7 +108,12 @@ public class TransmuterTest {
     
     @Override
     public boolean equals(Object o) {
-      return o instanceof A;
+      return o instanceof StringConverter;
+    }
+    
+    @Override
+    public String toString() {
+     return "StringConverter!"; 
     }
   }
   
@@ -55,79 +126,36 @@ public class TransmuterTest {
   @Test
   public void registerAndIsRegisteredAndUnregister() {
     assertTrue(t.getConverterMap().isEmpty());
-    assertFalse(t.isRegistered(int.class, boolean.class));
+    assertFalse(t.isRegistered(double.class, String.class));
+    assertFalse(t.isRegistered(TypeToken.STRING, new TypeToken<List<String>>() {}));
     
-    t.register(new Object() {
-      @SuppressWarnings("unused") // just to shut up Eclipse's warnings
-      @Converter
-      public boolean toBoolean(int i) {
-        return (i == 0) ? false : true;
-      }
-    });
+    t.register(new MultipleConverter());
+    
+    assertEquals(2, t.getConverterMap().size());
+    assertTrue(t.isRegistered(double.class, String.class));
+    assertTrue(t.isRegistered(TypeToken.STRING, new TypeToken<List<String>>() {}));
+    
+    t.unregister(DOUBLE.primitive, TypeToken.STRING);
     
     assertEquals(1, t.getConverterMap().size());
-    assertTrue(t.isRegistered(int.class, boolean.class));
-    
-    t.unregister(INTEGER.primitive, BOOLEAN.primitive);
-    
-    assertTrue(t.getConverterMap().isEmpty());
-    assertFalse(t.isRegistered(int.class, boolean.class));
+    assertFalse(t.isRegistered(double.class, String.class));
+    assertTrue(t.isRegistered(TypeToken.STRING, new TypeToken<List<String>>() {}));
   }
   
   @Test
   public void registerFlawedConverter() throws SecurityException, NoSuchMethodException {
-    @SuppressWarnings("unused") // just to shut up Eclipse's warnings
-    Object flawed = new Object() {
-      @Converter
-      public boolean intraClassCollision1(int i) {
-        return (i == 0) ? false : true;
-      }
-      
-      @Converter
-      public boolean intraClassCollision2(int i) {
-        return i % 2 == 0;
-      }
-      
-      @Converter
-      public void voidAsReturnType(Object whatever) {
-        // empty block
-      }
-      
-      @Converter
-      public Object tooManyParameters(Object a, Object b) {
-        return null;
-      }
-      
-      @Converter
-      public Object tooFewParameters() {
-        return null;
-      }
-      
-      @Converter
-      public String extraClassCollision(double d) {
-        return String.valueOf(d);
-      }
-      
-      @Converter
-      public void voidAndTooManyParameters(int a, int b, int c, int d) {
-        // empty block
-      }
-    };
+    Object flawed = new FlawedConverter();
     
     assertTrue(t.getConverterMap().isEmpty());
     assertFalse(t.isRegistered(double.class, String.class));
+    assertFalse(t.isRegistered(TypeToken.STRING, new TypeToken<List<String>>() {}));
     
-    final Object working = new Object() {
-      @SuppressWarnings("unused") // just to shut up Eclipse's warnings
-      @Converter
-      public String test(double d) {
-        return "double: " + d;
-      }
-    };
+    final Object working = new MultipleConverter();
     t.register(working);
     
-    assertEquals(1, t.getConverterMap().size());
+    assertEquals(2, t.getConverterMap().size());
     assertTrue(t.isRegistered(double.class, String.class));
+    assertTrue(t.isRegistered(TypeToken.STRING, new TypeToken<List<String>>() {}));
     
     try {
       t.register(flawed);
@@ -165,14 +193,15 @@ public class TransmuterTest {
           new Pair(double.class, String.class), 
           Arrays.asList(
               extractMethod(flawedClass, "extraClassCollision", double.class),
-              extractMethod(working.getClass(), "test", double.class)),
+              extractMethod(working.getClass(), "converter", double.class)),
           1);
       
       //e.printStackTrace();
     }
     
-    assertEquals(1, t.getConverterMap().size());
+    assertEquals(2, t.getConverterMap().size());
     assertTrue(t.isRegistered(double.class, String.class));
+    assertTrue(t.isRegistered(TypeToken.STRING, new TypeToken<List<String>>() {}));
   }
   
   private Method extractMethod(Class<?> cls, String name, Class<?>... parameterTypes) 
@@ -266,13 +295,13 @@ public class TransmuterTest {
     assertFalse(t.isRegistered(TypeToken.OBJECT, TypeToken.STRING));
     assertTrue(map.isEmpty());
     
-    t.register(new A());
+    t.register(new StringConverter());
     
     assertTrue(t.isRegistered(Object.class, String.class));
     assertTrue(t.isRegistered(TypeToken.OBJECT, TypeToken.STRING));
     assertEquals(1, map.size());
     
-    t.register(new A());
+    t.register(new StringConverter());
     
     assertTrue(t.isRegistered(Object.class, String.class));
     assertTrue(t.isRegistered(TypeToken.OBJECT, TypeToken.STRING));
@@ -329,13 +358,7 @@ public class TransmuterTest {
   public void registerVararg() {
     assertFalse(t.isRegistered(Object[].class, String.class));
     
-    t.register(new Object() {
-      @SuppressWarnings("unused") // just to shut up Eclipse's warnings
-      @Converter
-      public String stringifyArray(Object... o) {
-        return String.valueOf(o);
-      }
-    });
+    t.register(new VarargConverter());
     
     assertTrue(t.isRegistered(Object[].class, String.class));
   }
@@ -346,16 +369,7 @@ public class TransmuterTest {
     assertTrue(t.getConverterMap().isEmpty());
     
     try {
-      t.register(new Object() {
-        @SuppressWarnings("unused") // just to shut up Eclipse's warnings
-        @Converter
-        public <T> T nonNull(T o) {
-          if(o == null)
-            throw new IllegalArgumentException();
-          
-          return o;
-        }
-      });
+      t.register(new GenericConverter());
     } catch(ConverterRegistrationException e) {
       assertEquals(2, e.getCauses().size());
       
@@ -364,7 +378,6 @@ public class TransmuterTest {
       
       assertEquals(UnexpectedTypeException.class, e.getCauses().get(1).getClass());
       assertTrue(((UnexpectedTypeException) e.getCauses().get(1)).getType() instanceof TypeVariable);
-      // TODO go into details
     }
     
     assertTrue(t.getConverterMap().isEmpty());
@@ -372,13 +385,7 @@ public class TransmuterTest {
   
   @Test
   public void unregisterNullAndNonexistent() {
-    t.register(new Object() {
-      @SuppressWarnings("unused") // just to shut up Eclipse's warnings
-      @Converter
-      public String test(Object... d) {
-        return "double: " + d;
-      }
-    });
+    t.register(new VarargConverter());
     
     assertTrue(t.isRegistered(Object[].class, String.class));
     assertEquals(1, t.getConverterMap().size());
@@ -398,19 +405,7 @@ public class TransmuterTest {
   public void isRegistered() {
     assertTrue(t.getConverterMap().isEmpty());
     
-    t.register(new Object() {
-      @SuppressWarnings("unused") // just to shut up Eclipse's warnings
-      @Converter
-      public String converter(double d) {
-        return "double: " + d;
-      }
-      
-      @SuppressWarnings({ "unused", "serial" }) // just to shut up Eclipse's warnings
-      @Converter
-      public List<String> convert(final String s) {
-        return new ArrayList<String>() {{ add(s); }};
-      }
-    });
+    t.register(new MultipleConverter());
     
     assertTrue(t.isRegistered(new Pair(double.class, String.class)));
     assertTrue(t.isRegistered(TypeToken.STRING, new TypeToken<List<String>>() {}));
@@ -421,47 +416,21 @@ public class TransmuterTest {
   public void converterMap() throws SecurityException, NoSuchMethodException {
     assertTrue(map.isEmpty());
     
-    t.register(new Object() {
-      @SuppressWarnings("unused") // just to shut up Eclipse's warnings
-      @Converter
-      public String converter(double d) {
-        return "double: " + d;
-      }
-      
-      @SuppressWarnings({ "unused", "serial" }) // just to shut up Eclipse's warnings
-      @Converter
-      public List<String> convert(final String s) {
-        return new ArrayList<String>() {{ add(s); }};
-      }
-    });
+    t.register(new MultipleConverter());
     
     assertEquals(2, map.size());
     assertTrue(map.containsKey(new Pair(double.class, String.class)));
     assertTrue(map.containsKey(new Pair(TypeToken.STRING, new TypeToken<List<String>>() {})));
     assertFalse(map.containsKey(new Pair(String.class, List.class)));
     
-    Object double2string = new Object() {
-      @SuppressWarnings("unused") // just to shut up Eclipse's warnings
-      @Converter
-      public String test(double d) {
-        return "double: " + d;
-      }
-    };
-    
-    Object string2ListOfString = new Object() {
-      @SuppressWarnings({ "unused", "serial" }) // just to shut up Eclipse's warnings
-      @Converter
-      public List<String> convert(final String s) {
-        return new ArrayList<String>() {{ add(s); }};
-      }
-    };
+    Object multiple = new MultipleConverter();
     
     try {
       map.put(
           new Pair(double.class, String.class), 
           new Binding(
-              double2string, 
-              double2string.getClass().getMethod("test", double.class)));
+              multiple, 
+              multiple.getClass().getMethod("converter", double.class)));
       fail();
     } catch(ConverterCollisionException e) {
       assertEquals(new Pair(double.class, String.class), e.getPair());
@@ -471,13 +440,13 @@ public class TransmuterTest {
     temp.put(
         new Pair(double.class, String.class), 
         new Binding(
-            double2string, 
-            double2string.getClass().getMethod("test", double.class)));
+            multiple, 
+            multiple.getClass().getMethod("converter", double.class)));
     temp.put(
         new Pair(TypeToken.STRING, new TypeToken<List<String>>() {}), 
         new Binding(
-            string2ListOfString, 
-            string2ListOfString.getClass().getMethod("convert", String.class)));
+            multiple, 
+            multiple.getClass().getMethod("convert", String.class)));
     
     try {
       map.putAll(temp);
@@ -489,16 +458,10 @@ public class TransmuterTest {
   
   @Test
   public void converterMapWithNulls() throws SecurityException, NoSuchMethodException {
-    Object o = new Object() {
-      @SuppressWarnings("unused") // just to shut up Eclipse's warnings
-      @Converter
-      public String test(double d) {
-        return "double: " + d;
-      }
-    };
+    Object o = new MultipleConverter();
     
     try {
-      map.put(null, new Binding(o, o.getClass().getMethod("test", double.class)));
+      map.put(null, new Binding(o, o.getClass().getMethod("converter", double.class)));
       fail();
     } catch(IllegalArgumentException e) {
       // empty block
@@ -529,8 +492,8 @@ public class TransmuterTest {
     assertFalse(t.isRegistered(Object.class, String.class));
     assertTrue(map.isEmpty());
     
-    final A a = new A();
-    final Method stringify = A.class.getMethod("stringify", Object.class);
+    final StringConverter a = new StringConverter();
+    final Method stringify = StringConverter.class.getMethod("stringify", Object.class);
     map.put(new Pair(Object.class, String.class), new Binding(a, stringify));
     
     assertTrue(t.isRegistered(Object.class, String.class));
@@ -546,11 +509,20 @@ public class TransmuterTest {
   public void converterMapWithIncompatiblePairAndBinding() throws SecurityException, NoSuchMethodException {
     map.put(
         new Pair(String.class, double.class), 
-        new Binding(new A(), A.class.getMethod("stringify", Object.class)));
+        new Binding(new StringConverter(), StringConverter.class.getMethod("stringify", Object.class)));
   }
   
   @Test
   public void converterMapContainsNullKeyP() {
     assertFalse(map.containsKey(null));
+  }
+  
+  @Test
+  public void convert() {
+    t.register(new StringConverter());
+    
+    assertEquals("sbrubbles", t.convert("sbrubbles", Object.class, String.class));
+    assertEquals("1", t.convert(1, Object.class, String.class));
+    assertEquals("null", t.convert(null, Object.class, String.class));
   }
 }
