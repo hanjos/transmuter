@@ -543,15 +543,16 @@ public abstract class TypeToken<T> {
    * @return {@code true} if this type is assignable from {@code from}.
    */
   public boolean isAssignableFrom(Type from) {
-    if (from == null) {
+    if (from == null)
       return false;
-    }
 
-    if (type.equals(from)) {
+    if (type.equals(from))
       return true;
-    }
 
     if (type instanceof Class<?>) {
+      if(ValueType.isPrimitive(type) || ValueType.isWrapper(type))
+        return ValueType.valueOf(type).matches(from);
+      
       return rawType.isAssignableFrom(getRawType(from));
     } else if (type instanceof ParameterizedType) {
       return isAssignableFrom(from, (ParameterizedType) type,
