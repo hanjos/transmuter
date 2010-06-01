@@ -13,10 +13,12 @@ import java.lang.reflect.Type;
 import org.junit.Before;
 import org.junit.Test;
 
+import transmuter.Converter;
 import transmuter.type.TypeToken;
 import transmuter.util.exception.BindingInstantiationException;
 import transmuter.util.exception.BindingInvocationException;
 import transmuter.util.exception.InaccessibleMethodException;
+import transmuter.util.exception.InaccessibleObjectTypeException;
 import transmuter.util.exception.MethodInstanceIncompatibilityException;
 import transmuter.util.exception.NullInstanceWithNonStaticMethodException;
 
@@ -112,6 +114,29 @@ public class BindingTest {
   }
   
   @Test
+  public void constructWithNonVisibleClass() throws SecurityException, NoSuchMethodException {
+    Object inner = new Object() {
+      @SuppressWarnings("unused") // just to shut up Eclipse's warnings
+      @Converter
+      public String stringify(Object o) {
+        return String.valueOf(o);
+      }
+    };
+    
+    try {
+      new Binding(inner, extractMethod(inner.getClass(), "stringify", Object.class));
+      fail();
+    } catch(BindingInstantiationException e) {
+      assertEquals(1, e.getCauses().size());
+      assertEquals(InaccessibleObjectTypeException.class, e.getCauses().get(0).getClass());
+      
+      InaccessibleObjectTypeException ex = (InaccessibleObjectTypeException) e.getCauses().get(0);
+      assertEquals(inner, ex.getObject());
+    }
+  }
+  
+  
+  @Test
   public void equals() throws SecurityException, NoSuchMethodException {
     assertEquals(substring, substring);
     assertEquals(substring, new Binding(string, substringMethod));
@@ -166,7 +191,7 @@ public class BindingTest {
     assertNotNull(object);
     assertEquals(cls, object.getClass());
   }
-
+  
   private static Method extractMethod(Class<?> cls, String name,
       Class<?>... parameterTypes) throws NoSuchMethodException,
       SecurityException {

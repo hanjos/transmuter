@@ -9,12 +9,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import transmuter.exception.ConverterCollisionException;
 import transmuter.exception.ConverterRegistrationException;
 import transmuter.exception.MultipleCausesException;
+import transmuter.exception.NoCompatibleConvertersFoundException;
+import transmuter.exception.NoConvertersFoundException;
 import transmuter.exception.PairIncompatibleWithBindingException;
 import transmuter.exception.SameClassConverterCollisionException;
+import transmuter.exception.TooManyConvertersFoundException;
 import transmuter.type.TypeToken;
 import transmuter.util.Binding;
 import transmuter.util.Pair;
@@ -94,6 +98,22 @@ public class Transmuter {
   }
   
   // operations
+  public <From, To, SubFrom extends From> To convert(SubFrom from, Class<From> fromType, Class<To> toType) {
+    return convert(from, TypeToken.get(fromType), TypeToken.get(toType));
+  }
+  
+  // TODO type compatibility
+  public <From, To, SubFrom extends From> To convert(SubFrom from, TypeToken<From> fromType, TypeToken<To> toType) {
+    nonNull(fromType); nonNull(toType);
+    
+    Pair pair = new Pair(fromType, toType);
+    Binding binding = getConverterFor(pair);
+    if(binding == null)
+      throw new NoConvertersFoundException(pair);
+    
+    return (To) binding.invoke(from);
+  }
+
   public void register(Object object) {
     if(object == null)
       return;
@@ -144,6 +164,38 @@ public class Transmuter {
   public Binding unregister(Pair pair) {
     return getConverterMap().remove(pair);
   }
+  
+  // helper methods
+  protected Binding getConverterFor(Pair pair) {
+    nonNull(pair);
+    
+    Binding converter = getConverterMap().get(pair);
+    if(converter != null)
+      return converter;
+    
+    List<Binding> compatibleBindings = getCompatibleConvertersFor(pair);
+    
+    if(compatibleBindings.isEmpty())
+      throw new NoCompatibleConvertersFoundException(pair);
+    
+    if(compatibleBindings.size() > 1)
+      throw new TooManyConvertersFoundException(pair, compatibleBindings);
+    
+    return compatibleBindings.get(0);
+  }
+
+  protected List<Binding> getCompatibleConvertersFor(Pair pair) {
+    List<Binding> compatibleBindings = new ArrayList<Binding>();
+    if(pair == null)
+      return compatibleBindings;
+    
+    for(Entry<Pair, Binding> entry : getConverterMap().entrySet()) {
+      if(pair.isAssignableFrom(entry.getKey()))
+        compatibleBindings.add(entry.getValue());
+    }
+    
+    return compatibleBindings;
+  } 
   
   // properties
   protected Map<Pair, Binding> getConverterMap() {
