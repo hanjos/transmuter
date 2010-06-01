@@ -10,7 +10,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import transmuter.exception.InvalidReturnTypeException;
@@ -149,7 +148,7 @@ public class PairTest {
   }
   
   // TODO primitive/wrapper problem
-  @Ignore
+  @Test
   public void isAssignableFromWithPrimitives() {
     final Pair Integer2Boolean = new Pair(Integer.class, Boolean.class);
     assertTrue(int2boolean.isAssignableFrom(Integer2Boolean));
