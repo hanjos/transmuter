@@ -152,14 +152,27 @@ public class PairTest {
     final Pair Integer2Boolean = new Pair(Integer.class, Boolean.class);
     assertTrue(int2boolean.isAssignableFrom(Integer2Boolean));
     assertTrue(Integer2Boolean.isAssignableFrom(int2boolean));
+    assertTrue(Integer2Boolean.equals(int2boolean));
+    assertTrue(int2boolean.equals(Integer2Boolean));
     
     final Pair int2Boolean = new Pair(int.class, Boolean.class);
     assertTrue(int2boolean.isAssignableFrom(int2Boolean));
     assertTrue(int2Boolean.isAssignableFrom(int2boolean));
+    assertTrue(int2Boolean.equals(int2boolean));
+    assertTrue(int2boolean.equals(int2Boolean));
     
     final Pair Integer2boolean = new Pair(Integer.class, boolean.class);
     assertTrue(int2boolean.isAssignableFrom(Integer2boolean));
     assertTrue(Integer2boolean.isAssignableFrom(int2boolean));
+    assertTrue(Integer2boolean.equals(int2boolean));
+    assertTrue(int2boolean.equals(Integer2boolean));
+    
+    final Pair Double2String = new Pair(Double.class, String.class);
+    final Pair d2s = new Pair(double.class, String.class);
+    assertTrue(Double2String.isAssignableFrom(d2s));
+    assertTrue(d2s.isAssignableFrom(Double2String));
+    assertTrue(d2s.equals(Double2String));
+    assertTrue(Double2String.equals(d2s));
   }
 }
 

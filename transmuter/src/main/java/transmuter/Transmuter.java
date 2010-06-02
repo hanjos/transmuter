@@ -105,12 +105,7 @@ public class Transmuter {
   public <From, To, SubFrom extends From> To convert(SubFrom from, TypeToken<From> fromType, TypeToken<To> toType) {
     nonNull(fromType); nonNull(toType);
     
-    Pair pair = new Pair(fromType, toType);
-    Binding binding = getConverterFor(pair);
-    if(binding == null)
-      throw new NoCompatibleConvertersFoundException(pair);
-    
-    return (To) binding.invoke(from);
+    return (To) getConverterFor(new Pair(fromType, toType)).invoke(from);
   }
 
   public void register(Object object) {
@@ -166,9 +161,10 @@ public class Transmuter {
   
   // helper methods
   protected Binding getConverterFor(Pair pair) {
-    nonNull(pair);
+    if(pair == null)
+      return null;
     
-    Binding converter = getConverterMap().get(pair);
+    Binding converter = getMostCompatibleConverterFor(pair);
     if(converter != null)
       return converter;
     
@@ -183,13 +179,24 @@ public class Transmuter {
     return compatibleBindings.get(0);
   }
 
+  protected Binding getMostCompatibleConverterFor(Pair pair) {
+    if(pair == null)
+      return null;
+    
+    Binding binding = getConverterMap().get(pair);
+    if(binding != null)
+      return binding;
+    
+    return null;
+  }
+  
   protected List<Binding> getCompatibleConvertersFor(Pair pair) {
     List<Binding> compatibleBindings = new ArrayList<Binding>();
     if(pair == null)
       return compatibleBindings;
     
     for(Entry<Pair, Binding> entry : getConverterMap().entrySet()) {
-      if(pair.isAssignableFrom(entry.getKey()))
+      if(entry.getKey().isAssignableFrom(pair))
         compatibleBindings.add(entry.getValue());
     }
     
