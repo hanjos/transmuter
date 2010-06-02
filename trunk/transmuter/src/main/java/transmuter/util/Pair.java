@@ -13,6 +13,7 @@ import transmuter.exception.InvalidReturnTypeException;
 import transmuter.exception.PairInstantiationException;
 import transmuter.exception.WrongParameterCountException;
 import transmuter.type.TypeToken;
+import transmuter.type.TypeToken.ValueType;
 
 public class Pair {
   private final TypeToken<?> fromType;
@@ -84,7 +85,20 @@ public class Pair {
   @Override
   public int hashCode() {
     final int prime = 31;
-    return prime * (prime + hashCodeOf(fromType)) + hashCodeOf(toType);
+    
+    // XXX we must use the ValueType's hashCode for this calculation,
+    // since we are 'equaling' Pairs with matching primitive/wrapper types. 
+    // HashMap's searching algorithm fails otherwise
+    
+    // null if fromType is not a value type
+    final ValueType fromTypeVT = ValueType.valueOf(fromType);
+    
+    // null if toType is not a value type
+    final ValueType toTypeVT = ValueType.valueOf(toType); 
+    
+    final int fromHC = hashCodeOf(fromTypeVT != null ? fromTypeVT : fromType);
+    final int toHC = hashCodeOf(toTypeVT != null ? toTypeVT : toType);
+    return prime * (prime + fromHC) + toHC;
   }
 
   @Override
@@ -100,8 +114,15 @@ public class Pair {
     
     Pair other = (Pair) obj;
     
-    return areEqual(fromType, other.fromType)
-        && areEqual(toType, other.toType);
+    return areEquivalent(fromType, other.fromType)
+        && areEquivalent(toType, other.toType);
+  }
+
+  // TODO put this somewhere else?
+  private static boolean areEquivalent(TypeToken<?> from, TypeToken<?> otherFrom) {
+    return areEqual(from, otherFrom)
+        || (   (ValueType.valueOf(from) != null) 
+            && (ValueType.valueOf(from) == ValueType.valueOf(otherFrom)));
   }
 
   // properties

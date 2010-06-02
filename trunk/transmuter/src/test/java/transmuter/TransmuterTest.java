@@ -1,5 +1,6 @@
 package transmuter;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -21,6 +22,7 @@ import org.junit.Test;
 import transmuter.exception.ConverterCollisionException;
 import transmuter.exception.ConverterRegistrationException;
 import transmuter.exception.InvalidReturnTypeException;
+import transmuter.exception.NoCompatibleConvertersFoundException;
 import transmuter.exception.PairIncompatibleWithBindingException;
 import transmuter.exception.SameClassConverterCollisionException;
 import transmuter.exception.WrongParameterCountException;
@@ -30,6 +32,7 @@ import transmuter.util.Binding;
 import transmuter.util.Pair;
 
 public class TransmuterTest {
+  private static final TypeToken<List<String>> LIST_OF_STRING = new TypeToken<List<String>>() {};
   private Transmuter t;
   private Map<Pair, Binding> map;
 
@@ -127,19 +130,19 @@ public class TransmuterTest {
   public void registerAndIsRegisteredAndUnregister() {
     assertTrue(t.getConverterMap().isEmpty());
     assertFalse(t.isRegistered(double.class, String.class));
-    assertFalse(t.isRegistered(TypeToken.STRING, new TypeToken<List<String>>() {}));
+    assertFalse(t.isRegistered(TypeToken.STRING, LIST_OF_STRING));
     
     t.register(new MultipleConverter());
     
     assertEquals(2, t.getConverterMap().size());
     assertTrue(t.isRegistered(double.class, String.class));
-    assertTrue(t.isRegistered(TypeToken.STRING, new TypeToken<List<String>>() {}));
+    assertTrue(t.isRegistered(TypeToken.STRING, LIST_OF_STRING));
     
     t.unregister(DOUBLE.primitive, TypeToken.STRING);
     
     assertEquals(1, t.getConverterMap().size());
     assertFalse(t.isRegistered(double.class, String.class));
-    assertTrue(t.isRegistered(TypeToken.STRING, new TypeToken<List<String>>() {}));
+    assertTrue(t.isRegistered(TypeToken.STRING, LIST_OF_STRING));
   }
   
   @Test
@@ -148,14 +151,14 @@ public class TransmuterTest {
     
     assertTrue(t.getConverterMap().isEmpty());
     assertFalse(t.isRegistered(double.class, String.class));
-    assertFalse(t.isRegistered(TypeToken.STRING, new TypeToken<List<String>>() {}));
+    assertFalse(t.isRegistered(TypeToken.STRING, LIST_OF_STRING));
     
     final Object working = new MultipleConverter();
     t.register(working);
     
     assertEquals(2, t.getConverterMap().size());
     assertTrue(t.isRegistered(double.class, String.class));
-    assertTrue(t.isRegistered(TypeToken.STRING, new TypeToken<List<String>>() {}));
+    assertTrue(t.isRegistered(TypeToken.STRING, LIST_OF_STRING));
     
     try {
       t.register(flawed);
@@ -201,7 +204,7 @@ public class TransmuterTest {
     
     assertEquals(2, t.getConverterMap().size());
     assertTrue(t.isRegistered(double.class, String.class));
-    assertTrue(t.isRegistered(TypeToken.STRING, new TypeToken<List<String>>() {}));
+    assertTrue(t.isRegistered(TypeToken.STRING, LIST_OF_STRING));
   }
   
   private Method extractMethod(Class<?> cls, String name, Class<?>... parameterTypes) 
@@ -408,7 +411,7 @@ public class TransmuterTest {
     t.register(new MultipleConverter());
     
     assertTrue(t.isRegistered(new Pair(double.class, String.class)));
-    assertTrue(t.isRegistered(TypeToken.STRING, new TypeToken<List<String>>() {}));
+    assertTrue(t.isRegistered(TypeToken.STRING, LIST_OF_STRING));
     assertFalse(t.isRegistered(String.class, List.class));
   }
   
@@ -420,7 +423,7 @@ public class TransmuterTest {
     
     assertEquals(2, map.size());
     assertTrue(map.containsKey(new Pair(double.class, String.class)));
-    assertTrue(map.containsKey(new Pair(TypeToken.STRING, new TypeToken<List<String>>() {})));
+    assertTrue(map.containsKey(new Pair(TypeToken.STRING, LIST_OF_STRING)));
     assertFalse(map.containsKey(new Pair(String.class, List.class)));
     
     Object multiple = new MultipleConverter();
@@ -443,7 +446,7 @@ public class TransmuterTest {
             multiple, 
             multiple.getClass().getMethod("converter", double.class)));
     temp.put(
-        new Pair(TypeToken.STRING, new TypeToken<List<String>>() {}), 
+        new Pair(TypeToken.STRING, LIST_OF_STRING), 
         new Binding(
             multiple, 
             multiple.getClass().getMethod("convert", String.class)));
@@ -518,11 +521,38 @@ public class TransmuterTest {
   }
   
   @Test
+  public void converterMapContainsKeyWithPrimitives() {
+    t.register(new MultipleConverter());
+    
+    assertTrue(map.containsKey(new Pair(double.class, String.class)));
+    assertTrue(map.containsKey(new Pair(Double.class, String.class)));
+  }
+  
+  @Test
   public void convert() {
     t.register(new StringConverter());
     
     assertEquals("sbrubbles", t.convert("sbrubbles", Object.class, String.class));
+    assertEquals("sbrubbles", t.convert("sbrubbles", String.class, String.class));
     assertEquals("1", t.convert(1, Object.class, String.class));
     assertEquals("null", t.convert(null, Object.class, String.class));
+    
+    t.register(new MultipleConverter());
+    
+    assertEquals("double: 2.0", t.convert(2.0, Double.class, String.class));
+    assertArrayEquals(new Object[] { "sbrubbles" }, t.convert("sbrubbles", TypeToken.STRING, LIST_OF_STRING).toArray());
+    assertEquals("2.0", t.convert(2.0, Object.class, String.class));
+  }
+  
+  @Test
+  public void convertUnknown() {
+    try {
+      t.convert("sbrubbles", Object.class, String.class);
+      fail();
+    } catch(NoCompatibleConvertersFoundException e) {
+      assertEquals(new Pair(Object.class, String.class), e.getPair());
+    } catch(Exception ex) {
+      fail();
+    }
   }
 }
