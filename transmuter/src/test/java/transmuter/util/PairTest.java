@@ -28,6 +28,60 @@ public class PairTest {
   }
   
   @Test
+  public void testFromMethod() throws PairInstantiationException, SecurityException, NoSuchMethodException {
+    assertEquals(new Pair(int.class, String.class), Pair.fromMethod(String.class.getMethod("substring", int.class)));
+    
+    try {
+      Pair.fromMethod(null);
+      fail();
+    } catch(PairInstantiationException e) {
+      assertEquals(1, e.getCauses().size());
+      assertEquals(IllegalArgumentException.class, e.getCauses().get(0).getClass());
+    }
+    
+    Method substring_2 = String.class.getMethod("substring", int.class, int.class);
+    try {
+      Pair.fromMethod(substring_2);
+      fail();
+    } catch(PairInstantiationException e) {
+      assertEquals(1, e.getCauses().size());
+      assertEquals(WrongParameterCountException.class, e.getCauses().get(0).getClass());
+      
+      WrongParameterCountException ex = (WrongParameterCountException) e.getCauses().get(0);
+      assertEquals(1, ex.getExpected());
+      assertEquals(2, ex.getActual());
+      assertEquals(substring_2, ex.getMethod());
+    }
+    
+    Method toString = String.class.getMethod("toString");
+    try {
+      Pair.fromMethod(toString);
+      fail();
+    } catch(PairInstantiationException e) {
+      assertEquals(1, e.getCauses().size());
+      assertEquals(WrongParameterCountException.class, e.getCauses().get(0).getClass());
+      
+      WrongParameterCountException ex = (WrongParameterCountException) e.getCauses().get(0);
+      assertEquals(1, ex.getExpected());
+      assertEquals(0, ex.getActual());
+      assertEquals(toString, ex.getMethod());
+    }
+    
+    Method wait_timeout = Object.class.getMethod("wait", long.class);
+    try {
+      Pair.fromMethod(wait_timeout);
+      fail();
+    } catch(PairInstantiationException e) {
+      assertEquals(1, e.getCauses().size());
+      assertEquals(InvalidReturnTypeException.class, e.getCauses().get(0).getClass());
+      
+      InvalidReturnTypeException ex = (InvalidReturnTypeException) e.getCauses().get(0);
+      assertEquals(TypeToken.ValueType.VOID.primitive, ex.getReturnType());
+      assertEquals(wait_timeout, ex.getMethod());
+    }
+  }
+  
+  @Test
   public void constructorWithNulls() {
     try {
       new Pair(null, Class.class);
@@ -93,61 +147,6 @@ public class PairTest {
     assertFalse(object2string.isAssignableFrom(null));
   }
 
-  @Test
-  public void testFromMethod() throws PairInstantiationException, SecurityException, NoSuchMethodException {
-    assertEquals(new Pair(int.class, String.class), Pair.fromMethod(String.class.getMethod("substring", int.class)));
-    
-    try {
-      Pair.fromMethod(null);
-      fail();
-    } catch(PairInstantiationException e) {
-      assertEquals(1, e.getCauses().size());
-      assertEquals(IllegalArgumentException.class, e.getCauses().get(0).getClass());
-    }
-    
-    Method substring_2 = String.class.getMethod("substring", int.class, int.class);
-    try {
-      Pair.fromMethod(substring_2);
-      fail();
-    } catch(PairInstantiationException e) {
-      assertEquals(1, e.getCauses().size());
-      assertEquals(WrongParameterCountException.class, e.getCauses().get(0).getClass());
-      
-      WrongParameterCountException ex = (WrongParameterCountException) e.getCauses().get(0);
-      assertEquals(1, ex.getExpected());
-      assertEquals(2, ex.getActual());
-      assertEquals(substring_2, ex.getMethod());
-    }
-    
-    Method toString = String.class.getMethod("toString");
-    try {
-      Pair.fromMethod(toString);
-      fail();
-    } catch(PairInstantiationException e) {
-      assertEquals(1, e.getCauses().size());
-      assertEquals(WrongParameterCountException.class, e.getCauses().get(0).getClass());
-      
-      WrongParameterCountException ex = (WrongParameterCountException) e.getCauses().get(0);
-      assertEquals(1, ex.getExpected());
-      assertEquals(0, ex.getActual());
-      assertEquals(toString, ex.getMethod());
-    }
-    
-    Method wait_timeout = Object.class.getMethod("wait", long.class);
-    try {
-      Pair.fromMethod(wait_timeout);
-      fail();
-    } catch(PairInstantiationException e) {
-      assertEquals(1, e.getCauses().size());
-      assertEquals(InvalidReturnTypeException.class, e.getCauses().get(0).getClass());
-      
-      InvalidReturnTypeException ex = (InvalidReturnTypeException) e.getCauses().get(0);
-      assertEquals(TypeToken.ValueType.VOID.primitive, ex.getReturnType());
-      assertEquals(wait_timeout, ex.getMethod());
-    }
-  }
-  
-  // TODO primitive/wrapper problem
   @Test
   public void isAssignableFromWithPrimitives() {
     final Pair Integer2Boolean = new Pair(Integer.class, Boolean.class);
