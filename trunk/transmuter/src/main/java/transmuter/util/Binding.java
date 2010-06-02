@@ -2,12 +2,13 @@ package transmuter.util;
 
 import static transmuter.util.ObjectUtils.areEqual;
 import static transmuter.util.ObjectUtils.hashCodeOf;
+import static transmuter.util.ReflectionUtils.getTypeName;
+import static transmuter.util.ReflectionUtils.getTypeNames;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import transmuter.util.exception.BindingInstantiationException;
@@ -72,14 +73,11 @@ public class Binding {
   }
   
   private String methodToString() {
-    String[] params = ReflectionUtils.getTypeNames(method.getGenericParameterTypes());
-    String paramsAsString = Arrays.toString(params);
-    if(paramsAsString.startsWith("[") && paramsAsString.endsWith("]"))
-      paramsAsString = paramsAsString.substring(1, paramsAsString.length() - 1);
+    String params = StringUtils.concatenate(", ", 
+        getTypeNames(method.getGenericParameterTypes()));
     
-    String returnTypeAsString = ReflectionUtils.getTypeName(method.getGenericReturnType());
-    
-    return method.getName() + "(" + paramsAsString + "): " + returnTypeAsString;
+    return method.getName() + "(" + params + "): " 
+         + getTypeName(method.getGenericReturnType());
   }
   
   @Override
@@ -100,7 +98,7 @@ public class Binding {
     return areEqual(instance, other.instance)
         && areEqual(method, other.method);
   }
-
+  
   // properties
   public Object getInstance() {
     return instance;

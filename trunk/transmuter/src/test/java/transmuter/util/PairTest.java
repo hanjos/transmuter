@@ -13,7 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import transmuter.exception.InvalidReturnTypeException;
-import transmuter.exception.PairCreationException;
+import transmuter.exception.PairInstantiationException;
 import transmuter.exception.WrongParameterCountException;
 import transmuter.type.TypeToken;
 
@@ -94,13 +94,13 @@ public class PairTest {
   }
 
   @Test
-  public void testFromMethod() throws PairCreationException, SecurityException, NoSuchMethodException {
+  public void testFromMethod() throws PairInstantiationException, SecurityException, NoSuchMethodException {
     assertEquals(new Pair(int.class, String.class), Pair.fromMethod(String.class.getMethod("substring", int.class)));
     
     try {
       Pair.fromMethod(null);
       fail();
-    } catch(PairCreationException e) {
+    } catch(PairInstantiationException e) {
       assertEquals(1, e.getCauses().size());
       assertEquals(IllegalArgumentException.class, e.getCauses().get(0).getClass());
     }
@@ -109,7 +109,7 @@ public class PairTest {
     try {
       Pair.fromMethod(substring_2);
       fail();
-    } catch(PairCreationException e) {
+    } catch(PairInstantiationException e) {
       assertEquals(1, e.getCauses().size());
       assertEquals(WrongParameterCountException.class, e.getCauses().get(0).getClass());
       
@@ -123,7 +123,7 @@ public class PairTest {
     try {
       Pair.fromMethod(toString);
       fail();
-    } catch(PairCreationException e) {
+    } catch(PairInstantiationException e) {
       assertEquals(1, e.getCauses().size());
       assertEquals(WrongParameterCountException.class, e.getCauses().get(0).getClass());
       
@@ -137,7 +137,7 @@ public class PairTest {
     try {
       Pair.fromMethod(wait_timeout);
       fail();
-    } catch(PairCreationException e) {
+    } catch(PairInstantiationException e) {
       assertEquals(1, e.getCauses().size());
       assertEquals(InvalidReturnTypeException.class, e.getCauses().get(0).getClass());
       
