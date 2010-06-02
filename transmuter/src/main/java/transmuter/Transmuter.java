@@ -15,7 +15,6 @@ import transmuter.exception.ConverterCollisionException;
 import transmuter.exception.ConverterRegistrationException;
 import transmuter.exception.MultipleCausesException;
 import transmuter.exception.NoCompatibleConvertersFoundException;
-import transmuter.exception.NoConvertersFoundException;
 import transmuter.exception.PairIncompatibleWithBindingException;
 import transmuter.exception.SameClassConverterCollisionException;
 import transmuter.exception.TooManyConvertersFoundException;
@@ -109,7 +108,7 @@ public class Transmuter {
     Pair pair = new Pair(fromType, toType);
     Binding binding = getConverterFor(pair);
     if(binding == null)
-      throw new NoConvertersFoundException(pair);
+      throw new NoCompatibleConvertersFoundException(pair);
     
     return (To) binding.invoke(from);
   }

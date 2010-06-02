@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import transmuter.exception.InvalidReturnTypeException;
-import transmuter.exception.PairCreationException;
+import transmuter.exception.PairInstantiationException;
 import transmuter.exception.WrongParameterCountException;
 import transmuter.type.TypeToken;
 
@@ -28,9 +28,9 @@ public class Pair {
   }
 
   // factory methods
-  public static Pair fromMethod(Method method) throws PairCreationException {
+  public static Pair fromMethod(Method method) throws PairInstantiationException {
     if(method == null)
-      throw new PairCreationException(new IllegalArgumentException("method"));
+      throw new PairInstantiationException(new IllegalArgumentException("method"));
         
     List<Exception> exceptions = new ArrayList<Exception>();
     
@@ -61,7 +61,7 @@ public class Pair {
     }
     
     if(exceptions.size() > 0)
-      throw new PairCreationException(exceptions);
+      throw new PairInstantiationException(exceptions);
     
     return new Pair(parameterToken, returnToken);
   }

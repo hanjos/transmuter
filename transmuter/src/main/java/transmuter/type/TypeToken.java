@@ -172,7 +172,7 @@ public abstract class TypeToken<T> {
           if(value == null
           || BOOLEAN.matches(value.getClass()) 
           || VOID.matches(value.getClass()))
-            throw new ClassCastException(value + " is not an int!");
+            throw new ClassCastException(value + " is not a long!");
           
           if(CHARACTER.matches(value.getClass()))
             return (long) ((Character) value).charValue();
@@ -186,7 +186,7 @@ public abstract class TypeToken<T> {
           if(value == null
           || BOOLEAN.matches(value.getClass()) 
           || VOID.matches(value.getClass()))
-            throw new ClassCastException(value + " is not an int!");
+            throw new ClassCastException(value + " is not a short!");
           
           if(CHARACTER.matches(value.getClass()))
             return (short) ((Character) value).charValue();
@@ -243,7 +243,7 @@ public abstract class TypeToken<T> {
           value == null ? void.class : value.getClass());
       
       if(valueType == null)
-        throw new ClassCastException("not a primitive nor a wrapper instance");
+        throw new ClassCastException(value + " not a primitive nor a wrapper instance");
       
       if(this.equals(valueType))
         return (T) value;
