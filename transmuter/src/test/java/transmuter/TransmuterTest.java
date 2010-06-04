@@ -216,6 +216,8 @@ public class TransmuterTest {
           1);
       
       //e.printStackTrace();
+    } catch(Throwable t) {
+      fail();
     }
     
     assertEquals(2, t.getConverterMap().size());
@@ -397,6 +399,8 @@ public class TransmuterTest {
       
       assertEquals(InvalidReturnTypeException.class, e.getCauses().get(1).getClass());
       assertTrue(((InvalidReturnTypeException) e.getCauses().get(1)).getType() instanceof TypeVariable);
+    } catch(Throwable t) {
+      fail();
     }
     
     assertTrue(t.getConverterMap().isEmpty());
@@ -453,6 +457,8 @@ public class TransmuterTest {
       fail();
     } catch(ConverterCollisionException e) {
       assertEquals(new Pair(double.class, String.class), e.getPair());
+    } catch(Throwable t) {
+      fail();
     }
     
     Map<Pair, Binding> temp = new HashMap<Pair, Binding>();
@@ -472,6 +478,8 @@ public class TransmuterTest {
       fail();
     } catch(ConverterCollisionException e) { //  only the first exception
       // TODO no way of knowing which error comes first, what to do?
+    } catch(Throwable t) {
+      fail();
     }
   }
   
@@ -493,6 +501,8 @@ public class TransmuterTest {
       fail();
     } catch(IllegalArgumentException e) {
       // empty block
+    } catch(Throwable t) {
+      fail();
     }
     
     assertTrue(map.isEmpty());
@@ -573,35 +583,130 @@ public class TransmuterTest {
   }
   
   @Test
-  public void multipleValidConverters() {
-    t.register(new MultipleValidConverter());
+  public void multipleValidConverters() throws SecurityException, NoSuchMethodException {
+    final MultipleValidConverter converter = new MultipleValidConverter();
+    t.register(converter);
     try {
       t.convert(new ArrayList<String>(), ARRAYLIST_OF_STRING, TypeToken.STRING);
       fail();
     } catch(TooManyConvertersFoundException e) {
       assertEquals(new Pair(ARRAYLIST_OF_STRING, TypeToken.STRING), e.getPair());
       assertEquals(2, e.getBindings().size());
+    
+      assertTrue(e.getBindings().contains(
+          new Binding(
+              converter, 
+              extractMethod(converter.getClass(), "toString", List.class))));
+      assertTrue(e.getBindings().contains(
+          new Binding(
+              converter, 
+              extractMethod(converter.getClass(), "toString", Serializable.class))));
+    } catch(Throwable t) {
+      fail();
     }
   }
   
   @Test
-  public void getCompatibleConvertersFor() {
+  public void getCompatibleConvertersFor() throws SecurityException, NoSuchMethodException {
+    final MultipleValidConverter converter = new MultipleValidConverter();
+    t.register(converter);
+    
+    final List<Binding> compatible = t.getCompatibleConvertersFor(new Pair(ARRAYLIST_OF_STRING, TypeToken.STRING));
+    assertEquals(2, compatible.size());
+    assertTrue(compatible.contains(
+        new Binding(
+            converter, 
+            extractMethod(converter.getClass(), "toString", List.class))));
+    assertTrue(compatible.contains(
+        new Binding(
+            converter, 
+            extractMethod(converter.getClass(), "toString", Serializable.class))));
+    
+    final List<Binding> serial = t.getCompatibleConvertersFor(new Pair(Serializable.class, String.class));
+    assertEquals(1, serial.size());
+    assertEquals(
+        t.getMostCompatibleConverterFor(new Pair(Serializable.class, String.class)),
+        serial.get(0));
+    
     assertTrue(t.getCompatibleConvertersFor(null).isEmpty());
+    assertTrue(t.getCompatibleConvertersFor(new Pair(Object.class, Integer.class)).isEmpty());
     
     // TODO flesh this out
   }
   
   @Test
-  public void getMostCompatibleConverterFor() {
+  public void getMostCompatibleConverterFor() throws SecurityException, NoSuchMethodException {
+    final MultipleValidConverter converter = new MultipleValidConverter();
+    t.register(converter);
+    
+    assertEquals(
+        new Binding(
+          converter, 
+          extractMethod(converter.getClass(), "toString", Serializable.class)),
+        t.getMostCompatibleConverterFor(new Pair(Serializable.class, String.class)));
+    assertEquals(
+        new Binding(
+          converter, 
+          extractMethod(converter.getClass(), "toString", List.class)),
+        t.getMostCompatibleConverterFor(new Pair(LIST_OF_STRING, TypeToken.STRING)));
+    assertNull(t.getMostCompatibleConverterFor(new Pair(ARRAYLIST_OF_STRING, TypeToken.STRING)));
     assertNull(t.getMostCompatibleConverterFor(null));
-    
+    assertNull(t.getMostCompatibleConverterFor(new Pair(Object.class, Integer.class)));
+     
     // TODO flesh this out
   }
   
   @Test
-  public void getConverterFor() {
-    assertNull(t.getConverterFor(null));
+  public void getConverterFor() throws SecurityException, NoSuchMethodException {
+    final MultipleValidConverter converter = new MultipleValidConverter();
+    t.register(converter);
     
-    // TODO flesh this out
+    assertEquals(
+        new Binding(
+          converter, 
+          extractMethod(converter.getClass(), "toString", Serializable.class)),
+        t.getConverterFor(new Pair(Serializable.class, String.class)));
+    assertEquals(
+        new Binding(
+          converter, 
+          extractMethod(converter.getClass(), "toString", List.class)),
+        t.getConverterFor(new Pair(LIST_OF_STRING, TypeToken.STRING)));
+    
+    try {
+      t.getConverterFor(null);
+      fail();
+    } catch(NoCompatibleConvertersFoundException e) {
+      assertNull(e.getPair());
+    } catch(Throwable t) {
+      fail();
+    }
+    
+    try {
+      assertNull(t.getConverterFor(new Pair(Object.class, Integer.class)));
+      fail();
+    } catch(NoCompatibleConvertersFoundException e) {
+      assertEquals(new Pair(Object.class, Integer.class), e.getPair());
+    } catch(Throwable t) {
+      fail();
+    }
+    
+    try {
+      t.getConverterFor(new Pair(ARRAYLIST_OF_STRING, TypeToken.STRING));
+      fail();
+    } catch(TooManyConvertersFoundException e) {
+      assertEquals(new Pair(ARRAYLIST_OF_STRING, TypeToken.STRING), e.getPair());
+      assertEquals(2, e.getBindings().size());
+    
+      assertTrue(e.getBindings().contains(
+          new Binding(
+              converter, 
+              extractMethod(converter.getClass(), "toString", List.class))));
+      assertTrue(e.getBindings().contains(
+          new Binding(
+              converter, 
+              extractMethod(converter.getClass(), "toString", Serializable.class))));
+    } catch(Throwable t) {
+      fail();
+    }
   }
 }

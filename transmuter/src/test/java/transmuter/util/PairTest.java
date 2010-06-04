@@ -37,6 +37,8 @@ public class PairTest {
     } catch(PairInstantiationException e) {
       assertEquals(1, e.getCauses().size());
       assertEquals(IllegalArgumentException.class, e.getCauses().get(0).getClass());
+    } catch(Throwable t) {
+      fail();
     }
     
     Method substring_2 = String.class.getMethod("substring", int.class, int.class);
@@ -51,6 +53,8 @@ public class PairTest {
       assertEquals(1, ex.getExpected());
       assertEquals(2, ex.getActual());
       assertEquals(substring_2, ex.getMethod());
+    } catch(Throwable t) {
+      fail();
     }
     
     Method toString = String.class.getMethod("toString");
@@ -65,6 +69,8 @@ public class PairTest {
       assertEquals(1, ex.getExpected());
       assertEquals(0, ex.getActual());
       assertEquals(toString, ex.getMethod());
+    } catch(Throwable t) {
+      fail();
     }
     
     Method wait_timeout = Object.class.getMethod("wait", long.class);
@@ -78,6 +84,8 @@ public class PairTest {
       InvalidReturnTypeException ex = (InvalidReturnTypeException) e.getCauses().get(0);
       assertEquals(void.class, ex.getType());
       assertEquals(wait_timeout, ex.getMethod());
+    } catch(Throwable t) {
+      fail();
     }
   }
   
@@ -88,6 +96,8 @@ public class PairTest {
       fail();
     } catch(IllegalArgumentException e) {
       // empty block
+    } catch(Throwable t) {
+      fail();
     }
     
     try {
@@ -95,6 +105,8 @@ public class PairTest {
       fail();
     } catch(IllegalArgumentException e) {
       // empty block
+    } catch(Throwable t) {
+      fail();
     }
     
     try {
@@ -102,6 +114,8 @@ public class PairTest {
       fail();
     } catch(IllegalArgumentException e) {
       // empty block
+    } catch(Throwable t) {
+      fail();
     }
     
     try {
@@ -109,6 +123,8 @@ public class PairTest {
       fail();
     } catch(IllegalArgumentException e) {
       // empty block
+    } catch(Throwable t) {
+      fail();
     }
   }
   

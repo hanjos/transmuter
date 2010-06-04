@@ -162,7 +162,7 @@ public class Transmuter {
   // helper methods
   protected Binding getConverterFor(Pair pair) {
     if(pair == null)
-      return null;
+      throw new NoCompatibleConvertersFoundException(pair);
     
     Binding converter = getMostCompatibleConverterFor(pair);
     if(converter != null)
@@ -187,7 +187,7 @@ public class Transmuter {
     if(binding != null)
       return binding;
     
-    // TODO determine search algorithm for a "most compatible" pair
+    // TODO determine a search algorithm for a "most compatible" pair
     // TODO parameterize it?
     
     return null;

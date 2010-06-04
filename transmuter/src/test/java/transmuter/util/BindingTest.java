@@ -58,6 +58,8 @@ public class BindingTest {
     } catch(BindingInstantiationException e) {
       assertEquals(1, e.getCauses().size());
       assertEquals(IllegalArgumentException.class, e.getCauses().get(0).getClass());
+    } catch(Throwable t) {
+      fail();
     }
   }
 
@@ -82,6 +84,8 @@ public class BindingTest {
       MethodInstanceIncompatibilityException ex = (MethodInstanceIncompatibilityException) e.getCauses().get(0);
       assertEquals("0123456789", ex.getInstance());
       assertEquals(extractMethod(Pair.class, "getFromType"), ex.getMethod());
+    } catch(Throwable t) {
+      fail();
     }
   }
   
@@ -96,6 +100,8 @@ public class BindingTest {
       
       NullInstanceWithNonStaticMethodException ex = (NullInstanceWithNonStaticMethodException) e.getCauses().get(0);
       assertEquals(extractMethod(Pair.class, "getFromType"), ex.getMethod());
+    } catch(Throwable t) {
+      fail();
     }
   }
   
@@ -110,6 +116,8 @@ public class BindingTest {
       
       InaccessibleMethodException ex = (InaccessibleMethodException) e.getCauses().get(0);
       assertEquals(extractMethod(TypeToken.class, "getRawType", Type.class), ex.getMethod());
+    } catch(Throwable t) {
+      fail();
     }
   }
   
@@ -132,6 +140,8 @@ public class BindingTest {
       
       InaccessibleObjectTypeException ex = (InaccessibleObjectTypeException) e.getCauses().get(0);
       assertEquals(inner, ex.getObject());
+    } catch(Throwable t) {
+      fail();
     }
   }
   
@@ -171,6 +181,8 @@ public class BindingTest {
       assertType(BindingInvocationException.class, e);
       assertEquals(substring, ((BindingInvocationException) e).getBinding());
       assertType(IllegalArgumentException.class, e.getCause());
+    } catch(Throwable t) {
+      fail();
     }
   }
   
@@ -184,6 +196,8 @@ public class BindingTest {
       assertEquals(substring, ((BindingInvocationException) e).getBinding());
       assertType(InvocationTargetException.class, e.getCause());
       assertType(StringIndexOutOfBoundsException.class, e.getCause().getCause());
+    } catch(Throwable t) {
+      fail();
     }
   }
   
