@@ -187,6 +187,9 @@ public class Transmuter {
     if(binding != null)
       return binding;
     
+    // TODO determine search algorithm for a "most compatible" pair
+    // TODO parameterize it?
+    
     return null;
   }
   

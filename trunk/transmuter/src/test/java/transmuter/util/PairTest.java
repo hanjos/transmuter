@@ -76,7 +76,7 @@ public class PairTest {
       assertEquals(InvalidReturnTypeException.class, e.getCauses().get(0).getClass());
       
       InvalidReturnTypeException ex = (InvalidReturnTypeException) e.getCauses().get(0);
-      assertEquals(TypeToken.ValueType.VOID.primitive, ex.getReturnType());
+      assertEquals(void.class, ex.getType());
       assertEquals(wait_timeout, ex.getMethod());
     }
   }

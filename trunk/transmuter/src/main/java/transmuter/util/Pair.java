@@ -9,6 +9,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.googlecode.gentyref.GenericTypeReflector;
+
+import transmuter.exception.InvalidParameterTypeException;
 import transmuter.exception.InvalidReturnTypeException;
 import transmuter.exception.PairInstantiationException;
 import transmuter.exception.WrongParameterCountException;
@@ -35,30 +38,39 @@ public class Pair {
         
     List<Exception> exceptions = new ArrayList<Exception>();
     
-    final Type[] parameterTypes = method.getGenericParameterTypes();
-    final int parameterCount = parameterTypes.length;
-    if(parameterCount == 0 || parameterCount > 1)
-      exceptions.add(new WrongParameterCountException(method, 1));
-    
-    final Type returnType = method.getGenericReturnType();
-    if(TypeToken.ValueType.VOID.matches(returnType))
-      exceptions.add(new InvalidReturnTypeException(method));
-    
     TypeToken<?> parameterToken = null;
     TypeToken<?> returnToken = null;
     
-    if(parameterCount == 1) {
-      try {
-        parameterToken = TypeToken.get(parameterTypes[0]);
-      } catch(Exception e) { // type token building may throw exceptions
-        exceptions.add(e);
-      } 
+    // getting the parameter type
+    final Type[] parameterTypes = GenericTypeReflector.getExactParameterTypes(method, method.getDeclaringClass());
+    final int parameterCount = parameterTypes.length;
+    if(parameterCount == 0 || parameterCount > 1) {
+      exceptions.add(new WrongParameterCountException(method, 1));
+    } else {
+      // FIXME: Gentyref couldn't deal with it, so it's a generic method
+      if(parameterTypes[0] == null) { 
+        exceptions.add(new InvalidParameterTypeException(method));
+      } else {
+        try {
+          parameterToken = TypeToken.get(parameterTypes[0]);
+        } catch(Exception e) { // type token building may throw exceptions
+          exceptions.add(e);
+        }
+      }
     }
     
-    try {
-      returnToken = TypeToken.get(returnType);
-    } catch(Exception e) { // type token building may throw exceptions
-      exceptions.add(e);
+    // getting the return type
+    
+    // FIXME: Gentyref couldn't deal with it, so it's a generic method
+    final Type returnType = GenericTypeReflector.getExactReturnType(method, method.getDeclaringClass());
+    if(returnType == null || TypeToken.ValueType.VOID.matches(returnType)) {
+      exceptions.add(new InvalidReturnTypeException(method));
+    } else {
+      try {
+        returnToken = TypeToken.get(returnType);
+      } catch(Exception e) { // type token building may throw exceptions
+        exceptions.add(e);
+      }
     }
     
     if(exceptions.size() > 0)

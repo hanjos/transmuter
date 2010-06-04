@@ -22,6 +22,10 @@ public class ReflectionUtils {
     if (typeparms.length > 0)
       sb.append("<").append(StringUtils.concatenate(", ", getTypeNames(typeparms))).append("> ");
     
+    /*
+     * FIXME: Gentyref doesn't work well with methods with their own generic types; 
+     * so I'm using the good ol' method.getGeneric*() methods for now
+     */
     sb.append(getTypeName(method.getGenericReturnType())).append(" ");
     sb.append(method.getName()).append("(");
     
@@ -46,8 +50,11 @@ public class ReflectionUtils {
    */
   @SuppressWarnings("unchecked")
   public static String getTypeName(Type type) {
-    if (!(type instanceof Class))
-      return String.valueOf(type);
+    if (type == null)
+      return "null";
+    
+    if (! (type instanceof Class))
+      return type.toString();
   
     Class<?> cls = (Class<?>) type;
     if (cls.isArray()) {
