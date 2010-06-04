@@ -3,12 +3,15 @@ package transmuter;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static transmuter.type.TypeToken.ValueType.DOUBLE;
 import static transmuter.util.ObjectUtils.areEqual;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,17 +24,19 @@ import org.junit.Test;
 
 import transmuter.exception.ConverterCollisionException;
 import transmuter.exception.ConverterRegistrationException;
+import transmuter.exception.InvalidParameterTypeException;
 import transmuter.exception.InvalidReturnTypeException;
 import transmuter.exception.NoCompatibleConvertersFoundException;
 import transmuter.exception.PairIncompatibleWithBindingException;
 import transmuter.exception.SameClassConverterCollisionException;
+import transmuter.exception.TooManyConvertersFoundException;
 import transmuter.exception.WrongParameterCountException;
 import transmuter.type.TypeToken;
-import transmuter.type.exception.UnexpectedTypeException;
 import transmuter.util.Binding;
 import transmuter.util.Pair;
 
 public class TransmuterTest {
+  private static final TypeToken<ArrayList<String>> ARRAYLIST_OF_STRING = new TypeToken<ArrayList<String>>() {};
   private static final TypeToken<List<String>> LIST_OF_STRING = new TypeToken<List<String>>() {};
   private Transmuter t;
   private Map<Pair, Binding> map;
@@ -120,6 +125,18 @@ public class TransmuterTest {
     }
   }
   
+  public static class MultipleValidConverter {
+    @Converter
+    public String toString(List<String> l) {
+      return String.valueOf(l);
+    }
+    
+    @Converter
+    public String toString(Serializable s) {
+      return String.valueOf(s);
+    }
+  }
+  
   @Before
   public void setUp() {
     t = new Transmuter();
@@ -166,7 +183,6 @@ public class TransmuterTest {
     } catch(ConverterRegistrationException e) {
       final List<? extends Exception> causes = e.getCauses();
       final Class<?> flawedClass = flawed.getClass();
-      final TypeToken<Void> voidClass = TypeToken.get(void.class);
       
       assertEquals(7, causes.size());
       
@@ -181,10 +197,10 @@ public class TransmuterTest {
           1, 1);
       assertInvalidReturnType(causes, 
           extractMethod(flawedClass, "voidAsReturnType", Object.class), 
-          voidClass, 1);
+          void.class, 1);
       assertInvalidReturnType(causes, 
           extractMethod(flawedClass, "voidAndTooManyParameters", int.class, int.class, int.class, int.class), 
-          voidClass, 1);
+          void.class, 1);
       assertSameClassConverterCollision(causes, 
           TypeToken.get(flawedClass), 
           new Pair(int.class, boolean.class), 
@@ -230,7 +246,7 @@ public class TransmuterTest {
   }
   
   private void assertInvalidReturnType(final List<? extends Exception> causes, 
-      Method method, TypeToken<?> returnType, int expectedCount) {
+      Method method, Type returnType, int expectedCount) {
     int count = 0;
     for(Exception cause : causes) {
       if(cause.getClass() != InvalidReturnTypeException.class)
@@ -238,7 +254,7 @@ public class TransmuterTest {
       
       InvalidReturnTypeException cause2 = (InvalidReturnTypeException) cause;
       if(areEqual(cause2.getMethod(), method)
-      && areEqual(cause2.getReturnType(), returnType))
+      && areEqual(cause2.getType(), returnType))
         count++;
     }
     
@@ -376,11 +392,11 @@ public class TransmuterTest {
     } catch(ConverterRegistrationException e) {
       assertEquals(2, e.getCauses().size());
       
-      assertEquals(UnexpectedTypeException.class, e.getCauses().get(0).getClass());
-      assertTrue(((UnexpectedTypeException) e.getCauses().get(0)).getType() instanceof TypeVariable);
+      assertEquals(InvalidParameterTypeException.class, e.getCauses().get(0).getClass());
+      assertTrue(((InvalidParameterTypeException) e.getCauses().get(0)).getType() instanceof TypeVariable);
       
-      assertEquals(UnexpectedTypeException.class, e.getCauses().get(1).getClass());
-      assertTrue(((UnexpectedTypeException) e.getCauses().get(1)).getType() instanceof TypeVariable);
+      assertEquals(InvalidReturnTypeException.class, e.getCauses().get(1).getClass());
+      assertTrue(((InvalidReturnTypeException) e.getCauses().get(1)).getType() instanceof TypeVariable);
     }
     
     assertTrue(t.getConverterMap().isEmpty());
@@ -554,5 +570,38 @@ public class TransmuterTest {
     } catch(Exception ex) {
       fail();
     }
+  }
+  
+  @Test
+  public void multipleValidConverters() {
+    t.register(new MultipleValidConverter());
+    try {
+      t.convert(new ArrayList<String>(), ARRAYLIST_OF_STRING, TypeToken.STRING);
+      fail();
+    } catch(TooManyConvertersFoundException e) {
+      assertEquals(new Pair(ARRAYLIST_OF_STRING, TypeToken.STRING), e.getPair());
+      assertEquals(2, e.getBindings().size());
+    }
+  }
+  
+  @Test
+  public void getCompatibleConvertersFor() {
+    assertTrue(t.getCompatibleConvertersFor(null).isEmpty());
+    
+    // TODO flesh this out
+  }
+  
+  @Test
+  public void getMostCompatibleConverterFor() {
+    assertNull(t.getMostCompatibleConverterFor(null));
+    
+    // TODO flesh this out
+  }
+  
+  @Test
+  public void getConverterFor() {
+    assertNull(t.getConverterFor(null));
+    
+    // TODO flesh this out
   }
 }

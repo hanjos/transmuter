@@ -27,12 +27,37 @@
     <url>https://transmuter.googlecode.com/svn/trunk</url>
   </scm>
 
+  <!-- Repositories -->
+  <repositories>
+    <repository>
+      <id>java.net</id>
+      <url>http://download.java.net/maven/1</url>
+      <layout>legacy</layout>
+    </repository>
+    
+    <repository>
+      <id>maven-repository.dev.java.net</id>
+      <url>http://download.java.net/maven/2</url>
+    </repository>
+    
+    <repository>
+      <id>gentyref</id>
+      <url>http://gentyref.googlecode.com/svn/mavenrepo</url>
+    </repository>
+  </repositories>
+  
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.8.1</version>
       <scope>test</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>com.googlecode.gentyref</groupId>
+      <artifactId>gentyref</artifactId>
+      <version>1.1.0</version>
     </dependency>
   </dependencies>
 

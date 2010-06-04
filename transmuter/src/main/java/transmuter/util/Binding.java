@@ -1,5 +1,7 @@
 package transmuter.util;
 
+import static com.googlecode.gentyref.GenericTypeReflector.getExactParameterTypes;
+import static com.googlecode.gentyref.GenericTypeReflector.getExactReturnType;
 import static transmuter.util.ObjectUtils.areEqual;
 import static transmuter.util.ObjectUtils.hashCodeOf;
 import static transmuter.util.ReflectionUtils.getTypeName;
@@ -73,11 +75,14 @@ public class Binding {
   }
   
   private String methodToString() {
+    final Class<?> instanceType = 
+      instance != null ? instance.getClass() : method.getDeclaringClass();
+      
     String params = StringUtils.concatenate(", ", 
-        getTypeNames(method.getGenericParameterTypes()));
+        getTypeNames(getExactParameterTypes(method, instanceType)));
     
     return method.getName() + "(" + params + "): " 
-         + getTypeName(method.getGenericReturnType());
+         + getTypeName(getExactReturnType(method, instanceType));
   }
   
   @Override

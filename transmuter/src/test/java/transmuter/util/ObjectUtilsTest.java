@@ -8,7 +8,6 @@ import static transmuter.util.ObjectUtils.areEqual;
 import static transmuter.util.ObjectUtils.hashCodeOf;
 import static transmuter.util.ObjectUtils.nonNull;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class ObjectUtilsTest {
@@ -54,11 +53,12 @@ public class ObjectUtilsTest {
     assertFalse(areEqual(null, object));
   }
   
-  // TODO primitive/wrapper problem
-  @Ignore
+  @Test
   public void testAreEqualForPrimitives() {
     assertTrue(areEqual(42, new Integer(42)));
-    assertTrue(areEqual(0.0, 0.0f));
-    assertTrue(areEqual(42L, new Integer(42)));
+    
+    // Java doesn't do automatic casting for wrappers
+    assertFalse(areEqual(0.0, 0.0f));
+    assertFalse(areEqual(42L, new Integer(42)));
   }
 }

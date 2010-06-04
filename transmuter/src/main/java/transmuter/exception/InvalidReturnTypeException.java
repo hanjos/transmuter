@@ -1,35 +1,35 @@
 package transmuter.exception;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 
-import transmuter.type.TypeToken;
 import transmuter.util.ReflectionUtils;
 
 public class InvalidReturnTypeException extends RuntimeException {
   private static final long serialVersionUID = 1L;
 
-  private static TypeToken<?> getReturnTypeOf(Method method) {
+  private static Type getReturnTypeOf(Method method) {
     if(method == null)
       return null;
     
-    return TypeToken.get(method.getGenericReturnType());
+    return method.getGenericReturnType();
   }
   
   private Method method;
-  private TypeToken<?> returnType;
+  private Type type;
 
   public InvalidReturnTypeException(Method method) {
-    super(getReturnTypeOf(method) + " is not a valid return type for " + ReflectionUtils.simpleMethodToString(method));
+    super(getReturnTypeOf(method) + " is an invalid return type in " + ReflectionUtils.simpleMethodToString(method));
     
     this.method = method;
-    this.returnType = getReturnTypeOf(method);
+    this.type = getReturnTypeOf(method);
   }
 
   public Method getMethod() {
     return method;
   }
 
-  public TypeToken<?> getReturnType() {
-    return returnType;
+  public Type getType() {
+    return type;
   }
 }
