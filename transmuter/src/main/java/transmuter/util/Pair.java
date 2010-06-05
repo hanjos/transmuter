@@ -103,10 +103,10 @@ public class Pair {
     // HashMap's searching algorithm fails otherwise
     
     // null if fromType is not a value type
-    final ValueType fromTypeVT = ValueType.valueOf(fromType);
+    final ValueType<?> fromTypeVT = ValueType.valueOf(fromType);
     
     // null if toType is not a value type
-    final ValueType toTypeVT = ValueType.valueOf(toType); 
+    final ValueType<?> toTypeVT = ValueType.valueOf(toType); 
     
     final int fromHC = hashCodeOf(fromTypeVT != null ? fromTypeVT : fromType);
     final int toHC = hashCodeOf(toTypeVT != null ? toTypeVT : toType);
