@@ -12,6 +12,7 @@ public class TooManyConvertersFoundException extends RuntimeException {
   private Pair pair;
   private List<Binding> bindings;
   
+  @SuppressWarnings("unchecked")
   public TooManyConvertersFoundException(Pair pair, List<Binding> bindings) {
     super("too many converters found for " + pair + ": " + bindings);
     

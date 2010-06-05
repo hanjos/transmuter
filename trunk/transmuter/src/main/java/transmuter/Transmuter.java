@@ -102,6 +102,7 @@ public class Transmuter {
   }
   
   // TODO type compatibility
+  @SuppressWarnings("unchecked")
   public <From, To, SubFrom extends From> To convert(SubFrom from, TypeToken<From> fromType, TypeToken<To> toType) {
     nonNull(fromType); nonNull(toType);
     
