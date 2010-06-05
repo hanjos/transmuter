@@ -22,4 +22,8 @@ public class ObjectUtils {
   public static boolean areEqual(Object a, Object b) {
     return (a == b) || (a == null ? b.equals(a) : a.equals(b));
   }
+  
+  public static Class<?> classOf(Object a) {
+    return (a != null) ? a.getClass() : null;
+  }
 }

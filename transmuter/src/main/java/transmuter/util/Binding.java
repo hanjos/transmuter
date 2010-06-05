@@ -74,17 +74,6 @@ public class Binding {
     return "Binding[" + instance + "." + methodToString() + "]";
   }
   
-  private String methodToString() {
-    final Class<?> instanceType = 
-      instance != null ? instance.getClass() : method.getDeclaringClass();
-      
-    String params = StringUtils.concatenate(", ", 
-        getTypeNames(getExactParameterTypes(method, instanceType)));
-    
-    return method.getName() + "(" + params + "): " 
-         + getTypeName(getExactReturnType(method, instanceType));
-  }
-  
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -104,7 +93,25 @@ public class Binding {
         && areEqual(method, other.method);
   }
   
+  // helper methods
+  private String methodToString() {
+    Class<?> instanceType = getDeclaringType();
+    String params = StringUtils.concatenate(", ", 
+        getTypeNames(getExactParameterTypes(method, instanceType)));
+    
+    return method.getName() + "(" + params + "): " 
+         + getTypeName(getExactReturnType(method, instanceType));
+  }
+  
   // properties
+  public Pair getPair() {
+    return Pair.fromMethod(method, getDeclaringType());
+  }
+
+  public Class<?> getDeclaringType() {
+    return instance != null ? instance.getClass() : method.getDeclaringClass();
+  }
+  
   public Object getInstance() {
     return instance;
   }

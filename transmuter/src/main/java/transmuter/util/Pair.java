@@ -35,6 +35,16 @@ public class Pair {
   public static Pair fromMethod(Method method) throws PairInstantiationException {
     if(method == null)
       throw new PairInstantiationException(new IllegalArgumentException("method"));
+    
+    return fromMethod(method, method.getDeclaringClass());
+  }
+  
+  public static Pair fromMethod(Method method, Type ownerType) throws PairInstantiationException {
+    if(method == null)
+      throw new PairInstantiationException(new IllegalArgumentException("method"));
+    
+    if(ownerType == null)
+      throw new PairInstantiationException(new IllegalArgumentException("ownerType"));
         
     List<Exception> exceptions = new ArrayList<Exception>();
     
@@ -42,7 +52,7 @@ public class Pair {
     TypeToken<?> returnToken = null;
     
     // getting the parameter type
-    final Type[] parameterTypes = GenericTypeReflector.getExactParameterTypes(method, method.getDeclaringClass());
+    final Type[] parameterTypes = GenericTypeReflector.getExactParameterTypes(method, ownerType);
     final int parameterCount = parameterTypes.length;
     if(parameterCount == 0 || parameterCount > 1) {
       exceptions.add(new WrongParameterCountException(method, 1));
@@ -62,7 +72,7 @@ public class Pair {
     // getting the return type
     
     // FIXME: Gentyref couldn't deal with it, so it's a generic method
-    final Type returnType = GenericTypeReflector.getExactReturnType(method, method.getDeclaringClass());
+    final Type returnType = GenericTypeReflector.getExactReturnType(method, ownerType);
     if(returnType == null || TypeToken.ValueType.VOID.matches(returnType)) {
       exceptions.add(new InvalidReturnTypeException(method));
     } else {

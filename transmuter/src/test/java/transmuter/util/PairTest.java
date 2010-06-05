@@ -32,7 +32,17 @@ public class PairTest {
     assertEquals(new Pair(int.class, String.class), Pair.fromMethod(String.class.getMethod("substring", int.class)));
     
     try {
-      Pair.fromMethod(null);
+      Pair.fromMethod(null, Object.class);
+      fail();
+    } catch(PairInstantiationException e) {
+      assertEquals(1, e.getCauses().size());
+      assertEquals(IllegalArgumentException.class, e.getCauses().get(0).getClass());
+    } catch(Throwable t) {
+      fail();
+    }
+    
+    try {
+      Pair.fromMethod(String.class.getMethod("substring", int.class), null);
       fail();
     } catch(PairInstantiationException e) {
       assertEquals(1, e.getCauses().size());

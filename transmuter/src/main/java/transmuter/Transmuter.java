@@ -35,7 +35,7 @@ public class Transmuter {
       
       // check if the binding matches the pair
       final Method bindingMethod = binding.getMethod();
-      if(! pair.isAssignableFrom(Pair.fromMethod(bindingMethod)))
+      if(! pair.isAssignableFrom(binding.getPair()))
         throw new PairIncompatibleWithBindingException(pair, binding);
       
       // check for collisions here
@@ -46,7 +46,7 @@ public class Transmuter {
         // converter collision, throw up
         throw new SameClassConverterCollisionException(
             Arrays.asList(bindingMethod, get(pair).getMethod()), 
-            TypeToken.get(bindingMethod.getDeclaringClass()), 
+            TypeToken.get(binding.getDeclaringType()), 
             pair);
       }
       
@@ -121,7 +121,7 @@ public class Transmuter {
         continue;
       
       try {
-        temp.put(Pair.fromMethod(method), new Binding(object, method));
+        temp.put(Pair.fromMethod(method, object.getClass()), new Binding(object, method));
       } catch(Exception e) {
         if(! (e instanceof MultipleCausesException))
           exceptions.add(e);
