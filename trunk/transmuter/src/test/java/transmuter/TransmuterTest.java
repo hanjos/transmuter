@@ -41,7 +41,7 @@ public class TransmuterTest {
   private Transmuter t;
   private Map<Pair, Binding> map;
 
-  public static final class GenericConverter {
+  public static final class GenericMethodConverter {
     @Converter
     public <T> T nonNull(T o) {
       if(o == null)
@@ -49,6 +49,18 @@ public class TransmuterTest {
       
       return o;
     }
+  }
+  
+  public static class GenericConverter<From, To> {
+    @SuppressWarnings("unchecked")
+    @Converter
+    public To convert(From from) {
+      return (To) from;
+    }
+  }
+  
+  public static class StringArrayToListStringConverter extends GenericConverter<String[], List<String>> {
+    // empty block
   }
 
   public static final class VarargConverter {
@@ -390,7 +402,7 @@ public class TransmuterTest {
     assertTrue(t.getConverterMap().isEmpty());
     
     try {
-      t.register(new GenericConverter());
+      t.register(new GenericMethodConverter());
     } catch(ConverterRegistrationException e) {
       assertEquals(2, e.getCauses().size());
       
@@ -708,5 +720,16 @@ public class TransmuterTest {
     } catch(Throwable t) {
       fail();
     }
+  }
+  
+  @Test
+  public void inheritedGenericMethod() {
+    TypeToken<String[]> ARRAY_OF_STRING = TypeToken.get(String[].class);
+    
+    assertFalse(t.isRegistered(ARRAY_OF_STRING, LIST_OF_STRING));
+    
+    t.register(new StringArrayToListStringConverter());
+    
+    assertTrue(t.isRegistered(ARRAY_OF_STRING, LIST_OF_STRING));
   }
 }
