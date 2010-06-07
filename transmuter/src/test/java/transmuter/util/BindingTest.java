@@ -13,7 +13,7 @@ import java.lang.reflect.Type;
 import org.junit.Before;
 import org.junit.Test;
 
-import transmuter.Converter;
+import transmuter.Converts;
 import transmuter.type.TypeToken;
 import transmuter.util.exception.BindingInstantiationException;
 import transmuter.util.exception.BindingInvocationException;
@@ -125,7 +125,7 @@ public class BindingTest {
   public void constructWithNonVisibleClass() throws SecurityException, NoSuchMethodException {
     Object inner = new Object() {
       @SuppressWarnings("unused") // just to shut up Eclipse's warnings
-      @Converter
+      @Converts
       public String stringify(Object o) {
         return String.valueOf(o);
       }

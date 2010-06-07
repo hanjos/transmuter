@@ -39,19 +39,21 @@ public class Transmuter {
         throw new PairIncompatibleWithBindingException(pair, binding);
       
       // check for collisions here
-      if(containsKey(pair)) {
-        if(binding.equals(get(pair))) // redundant call, ignore it
-          return null;
-
-        // converter collision, throw up
-        throw new SameClassConverterCollisionException(
-            Arrays.asList(bindingMethod, get(pair).getMethod()), 
-            TypeToken.get(binding.getDeclaringType()), 
-            pair);
+      final Map<Pair, Binding> converterMap = Transmuter.this.getConverterMap();
+      if(converterMap != this) {
+        if(containsKey(pair)) {
+          if(binding.equals(get(pair))) // redundant call, ignore it
+            return null;
+  
+          // converter collision, throw up
+          throw new SameClassConverterCollisionException(
+              Arrays.asList(bindingMethod, get(pair).getMethod()), 
+              TypeToken.get(binding.getDeclaringType()), 
+              pair);
+        }
       }
       
-      // check for collisions in the transmuter
-      final Map<Pair, Binding> converterMap = Transmuter.this.getConverterMap();
+      // check for collisions in the transmuter map (this != trans)
       if(converterMap.containsKey(pair))  {
         if(binding.equals(converterMap.get(pair))) // redundant call, ignore it
           return null;
@@ -117,7 +119,7 @@ public class Transmuter {
     List<Exception> exceptions = new ArrayList<Exception>();
     
     for(Method method : object.getClass().getMethods()) {
-      if(! method.isAnnotationPresent(Converter.class))
+      if(! method.isAnnotationPresent(Converts.class))
         continue;
       
       try {
