@@ -9,6 +9,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.googlecode.gentyref.CaptureType;
 import com.googlecode.gentyref.GenericTypeReflector;
 
 import transmuter.exception.InvalidParameterTypeException;
@@ -45,7 +46,10 @@ public class Pair {
     
     if(ownerType == null)
       throw new PairInstantiationException(new IllegalArgumentException("ownerType"));
-        
+    
+    if(ownerType instanceof Class<?>)
+      ownerType = GenericTypeReflector.addWildcardParameters((Class<?>) ownerType);
+    
     List<Exception> exceptions = new ArrayList<Exception>();
     
     TypeToken<?> parameterToken = null;
@@ -57,8 +61,8 @@ public class Pair {
     if(parameterCount == 0 || parameterCount > 1) {
       exceptions.add(new WrongParameterCountException(method, 1));
     } else {
-      // FIXME: Gentyref couldn't deal with it, so it's a generic method
-      if(parameterTypes[0] == null) { 
+      if(parameterTypes[0] == null // XXX it's a generic method 
+      || parameterTypes[0] instanceof CaptureType) { 
         exceptions.add(new InvalidParameterTypeException(method));
       } else {
         try {
@@ -70,10 +74,10 @@ public class Pair {
     }
     
     // getting the return type
-    
-    // FIXME: Gentyref couldn't deal with it, so it's a generic method
     final Type returnType = GenericTypeReflector.getExactReturnType(method, ownerType);
-    if(returnType == null || TypeToken.ValueType.VOID.matches(returnType)) {
+    if(returnType == null // XXX it's a generic method 
+    || returnType instanceof CaptureType
+    || TypeToken.ValueType.VOID.matches(returnType)) {
       exceptions.add(new InvalidReturnTypeException(method));
     } else {
       try {

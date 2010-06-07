@@ -42,7 +42,7 @@ public class TransmuterTest {
   private Map<Pair, Binding> map;
 
   public static final class GenericMethodConverter {
-    @Converter
+    @Converts
     public <T> T nonNull(T o) {
       if(o == null)
         throw new IllegalArgumentException();
@@ -52,10 +52,17 @@ public class TransmuterTest {
   }
   
   public static class GenericConverter<From, To> {
-    @SuppressWarnings("unchecked")
-    @Converter
+    @Converts
     public To convert(From from) {
       return (To) from;
+    }
+  }
+  
+  public static class PartialGenericConverter<From> extends GenericConverter<From, String> {
+    @Override
+    @Converts
+    public String convert(From from) {
+      return String.valueOf(from);
     }
   }
   
@@ -64,64 +71,64 @@ public class TransmuterTest {
   }
 
   public static final class VarargConverter {
-    @Converter
+    @Converts
     public String stringifyArray(Object... o) {
       return String.valueOf(o);
     }
   }
 
   public static final class FlawedConverter {
-    @Converter
+    @Converts
     public boolean intraClassCollision1(int i) {
       return (i == 0) ? false : true;
     }
     
-    @Converter
+    @Converts
     public boolean intraClassCollision2(int i) {
       return i % 2 == 0;
     }
     
-    @Converter
+    @Converts
     public void voidAsReturnType(Object whatever) {
       // empty block
     }
     
-    @Converter
+    @Converts
     public Object tooManyParameters(Object a, Object b) {
       return null;
     }
     
-    @Converter
+    @Converts
     public Object tooFewParameters() {
       return null;
     }
     
-    @Converter
+    @Converts
     public String extraClassCollision(double d) {
       return String.valueOf(d);
     }
     
-    @Converter
+    @Converts
     public void voidAndTooManyParameters(int a, int b, int c, int d) {
       // empty block
     }
   }
 
   public static final class MultipleConverter {
-    @Converter
+    @Converts
     public String converter(double d) {
       return "double: " + d;
     }
     
     @SuppressWarnings("serial")
-    @Converter
+    @Converts
     public List<String> convert(final String s) {
       return new ArrayList<String>() {{ add(s); }};
     }
   }
 
   public static class StringConverter {
-    @Converter
+    @Converts
     public String stringify(Object object) {
       return String.valueOf(object);
     }
@@ -138,12 +145,12 @@ public class TransmuterTest {
   }
   
   public static class MultipleValidConverter {
-    @Converter
+    @Converts
     public String toString(List<String> l) {
       return String.valueOf(l);
     }
     
-    @Converter
+    @Converts
     public String toString(Serializable s) {
       return String.valueOf(s);
     }
@@ -348,7 +355,7 @@ public class TransmuterTest {
     
     t.register(new Object() {
       @SuppressWarnings("unused") // just to shut up Eclipse's warnings
-      @Converter
+      @Converts
       private String stringify(Object o) {
         return String.valueOf(o);
       }
@@ -363,7 +370,7 @@ public class TransmuterTest {
     
     t.register(new Object() {
       @SuppressWarnings("unused") // just to shut up Eclipse's warnings
-      @Converter
+      @Converts
       String stringify(Object o) {
         return String.valueOf(o);
       }
@@ -378,7 +385,7 @@ public class TransmuterTest {
     
     t.register(new Object() {
       @SuppressWarnings("unused") // just to shut up Eclipse's warnings
-      @Converter
+      @Converts
       protected String stringify(Object o) {
         return String.valueOf(o);
       }
@@ -396,9 +403,8 @@ public class TransmuterTest {
     assertTrue(t.isRegistered(Object[].class, String.class));
   }
   
-  @SuppressWarnings("unchecked") // just to shut up Eclipse's warnings
   @Test
-  public void registerGenericType() {
+  public void registerGenericMethod() {
     assertTrue(t.getConverterMap().isEmpty());
     
     try {
@@ -411,11 +417,92 @@ public class TransmuterTest {
       
       assertEquals(InvalidReturnTypeException.class, e.getCauses().get(1).getClass());
       assertTrue(((InvalidReturnTypeException) e.getCauses().get(1)).getType() instanceof TypeVariable);
-    } catch(Throwable t) {
-      fail();
     }
     
     assertTrue(t.getConverterMap().isEmpty());
+  }
+  
+  @Test
+  public void registerMethodFromPartialGenericClass() throws SecurityException, NoSuchMethodException {
+    assertFalse(t.isRegistered(LIST_OF_STRING, TypeToken.STRING));
+    
+    try {
+      t.register(new PartialGenericConverter<List<String>>()); // no way of getting this information with Java
+      fail();
+    } catch(ConverterRegistrationException e) {
+      assertEquals(1, e.getCauses().size());
+      assertEquals(InvalidParameterTypeException.class, e.getCauses().get(0).getClass());
+      
+      InvalidParameterTypeException ex = (InvalidParameterTypeException) e.getCauses().get(0);
+      assertEquals(extractMethod(PartialGenericConverter.class, "convert", Object.class), ex.getMethod());
+      assertTrue(ex.getType() instanceof TypeVariable);
+      assertEquals("From", ((TypeVariable) ex.getType()).getName());
+    }
+    
+    assertFalse(t.isRegistered(LIST_OF_STRING, TypeToken.STRING));
+    
+    try {
+      t.register(new PartialGenericConverter()); // raw
+      fail();
+    } catch(ConverterRegistrationException e) {
+      assertEquals(1, e.getCauses().size());
+      assertEquals(InvalidParameterTypeException.class, e.getCauses().get(0).getClass());
+      final Method convertMethod = extractMethod(PartialGenericConverter.class, "convert", Object.class);
+      
+      InvalidParameterTypeException ex = (InvalidParameterTypeException) e.getCauses().get(0);
+      assertEquals(convertMethod, ex.getMethod());
+      assertTrue(ex.getType() instanceof TypeVariable);
+      assertEquals("From", ((TypeVariable) ex.getType()).getName());
+    }
+    
+    assertFalse(t.isRegistered(LIST_OF_STRING, TypeToken.STRING));
+  }
+  
+  @Test
+  public void registerMethodFromGenericClass() throws SecurityException, NoSuchMethodException {
+    assertFalse(t.isRegistered(LIST_OF_STRING, TypeToken.STRING));
+    
+    try {
+      t.register(new GenericConverter<List<String>, String>()); // no way of getting this information with Java
+      fail();
+    } catch(ConverterRegistrationException e) {
+      assertEquals(2, e.getCauses().size());
+      assertEquals(InvalidParameterTypeException.class, e.getCauses().get(0).getClass());
+      assertEquals(InvalidReturnTypeException.class, e.getCauses().get(1).getClass());
+      
+      InvalidParameterTypeException ex = (InvalidParameterTypeException) e.getCauses().get(0);
+      assertEquals(extractMethod(GenericConverter.class, "convert", Object.class), ex.getMethod());
+      assertTrue(ex.getType() instanceof TypeVariable);
+      assertEquals("From", ((TypeVariable) ex.getType()).getName());
+      
+      InvalidReturnTypeException ex1 = (InvalidReturnTypeException) e.getCauses().get(1);
+      assertEquals(extractMethod(GenericConverter.class, "convert", Object.class), ex1.getMethod());
+      assertTrue(ex1.getType() instanceof TypeVariable);
+      assertEquals("To", ((TypeVariable) ex1.getType()).getName());
+    }
+    
+    assertFalse(t.isRegistered(LIST_OF_STRING, TypeToken.STRING));
+    
+    try {
+      t.register(new GenericConverter()); // raw
+      fail();
+    } catch(ConverterRegistrationException e) {
+      assertEquals(2, e.getCauses().size());
+      assertEquals(InvalidParameterTypeException.class, e.getCauses().get(0).getClass());
+      assertEquals(InvalidReturnTypeException.class, e.getCauses().get(1).getClass());
+      
+      InvalidParameterTypeException ex = (InvalidParameterTypeException) e.getCauses().get(0);
+      assertEquals(extractMethod(GenericConverter.class, "convert", Object.class), ex.getMethod());
+      assertTrue(ex.getType() instanceof TypeVariable);
+      assertEquals("From", ((TypeVariable) ex.getType()).getName());
+      
+      InvalidReturnTypeException ex1 = (InvalidReturnTypeException) e.getCauses().get(1);
+      assertEquals(extractMethod(GenericConverter.class, "convert", Object.class), ex1.getMethod());
+      assertTrue(ex1.getType() instanceof TypeVariable);
+      assertEquals("To", ((TypeVariable) ex1.getType()).getName());
+    }
+    
+    assertFalse(t.isRegistered(LIST_OF_STRING, TypeToken.STRING));
   }
   
   @Test
