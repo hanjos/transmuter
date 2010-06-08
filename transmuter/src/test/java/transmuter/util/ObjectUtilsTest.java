@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import static transmuter.util.ObjectUtils.areEqual;
 import static transmuter.util.ObjectUtils.classOf;
 import static transmuter.util.ObjectUtils.hashCodeOf;
+import static transmuter.util.ObjectUtils.isEmpty;
 import static transmuter.util.ObjectUtils.nonNull;
 
 import java.util.ArrayList;
@@ -73,5 +74,20 @@ public class ObjectUtilsTest {
     assertEquals(String.class, classOf("aoiashni"));
     assertEquals(Long.class, classOf(42L));
     assertEquals(ArrayList.class, classOf(new ArrayList<String>()));
+  }
+  
+  @Test
+  public void testIsEmpty() {
+    assertTrue(isEmpty());
+    assertTrue(isEmpty((Object[]) null));
+    assertTrue(isEmpty(new String[0]));
+    assertTrue(isEmpty(new String[] {}));
+    assertTrue(isEmpty(new String[][] {}));
+    
+    assertFalse(isEmpty((Object) null));
+    assertFalse(isEmpty(new String[][] { {} }));
+    assertFalse(isEmpty(""));
+    assertFalse(isEmpty(0));
+    assertFalse(isEmpty(false));
   }
 }
