@@ -1,6 +1,7 @@
 package transmuter;
 
 import static transmuter.util.ObjectUtils.nonNull;
+import static transmuter.util.ObjectUtils.areEqual;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -21,7 +22,7 @@ import transmuter.util.Binding;
 import transmuter.util.Pair;
 
 public class Transmuter {
-  private class PairBindingMap extends HashMap<Pair, Binding> {
+  protected static class PairBindingMap extends HashMap<Pair, Binding> {
     private static final long serialVersionUID = 1L;
 
     public PairBindingMap() { /* empty block */ }
@@ -36,27 +37,29 @@ public class Transmuter {
         throw new PairIncompatibleWithBindingException(pair, binding);
       
       // check for collisions here
-      final Map<Pair, Binding> converterMap = Transmuter.this.getConverterMap();
-      if(converterMap != this) {
-        if(containsKey(pair)) {
-          if(binding.equals(get(pair))) // redundant call, ignore it
-            return null;
-  
-          // converter collision, throw up
-          throw new ConverterCollisionException(pair, binding, get(pair));
-        }
-      }
-      
-      // check for collisions in the transmuter map (this != trans)
-      if(converterMap.containsKey(pair))  {
-        if(binding.equals(converterMap.get(pair))) // redundant call, ignore it
-          return null;
-
-        // converter collision, throw up
-        throw new ConverterCollisionException(pair, binding, converterMap.get(pair));
-      }
+      if(checkForCollision(pair, binding, this))
+        return null;
       
       return super.put(pair, binding);
+    }
+
+    protected boolean checkForCollision(Pair pair, Binding binding) 
+    throws ConverterCollisionException {
+      return checkForCollision(pair, binding, this);
+    }
+    
+    protected boolean checkForCollision(Pair pair, Binding binding, Map<? extends Pair, ? extends Binding> map) 
+    throws ConverterCollisionException {
+      nonNull(pair, "pair"); nonNull(binding, "binding"); nonNull(map, "map");
+      
+      if(! map.containsKey(pair))
+        return false;
+      
+      if(areEqual(binding, map.get(pair)))
+        return true;
+      
+      // converter collision, throw up
+      throw new ConverterCollisionException(pair, binding, map.get(pair));
     }
     
     @Override
@@ -83,6 +86,27 @@ public class Transmuter {
       return super.remove(key);
     }
   }
+    
+  protected static class TempPairBindingMap extends PairBindingMap {
+    private static final long serialVersionUID = 1L;
+
+    private Map<Pair, Binding> masterMap;
+
+    public TempPairBindingMap(Map<Pair, Binding> masterMap) {
+      this.masterMap = nonNull(masterMap);
+    }
+    
+    @Override
+    protected boolean checkForCollision(Pair pair, Binding binding, Map<? extends Pair, ? extends Binding> map) 
+    throws ConverterCollisionException {
+      return super.checkForCollision(pair, binding, map)
+          || super.checkForCollision(pair, binding, getMasterMap());
+    }
+    
+    public Map<Pair, Binding> getMasterMap() {
+      return masterMap;
+    }
+  }
   
   private Map<Pair, Binding> converterMap;
   
@@ -107,7 +131,7 @@ public class Transmuter {
     if(object == null)
       return;
     
-    Map<Pair, Binding> temp = new PairBindingMap();
+    Map<Pair, Binding> temp = new TempPairBindingMap(getConverterMap());
     List<Exception> exceptions = new ArrayList<Exception>();
     
     for(Method method : object.getClass().getMethods()) {

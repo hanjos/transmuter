@@ -16,7 +16,8 @@ public class ConverterCollisionException extends RuntimeException {
   private Pair pair;
   
   private static String buildMessage(Pair pair, Binding... bindings) {
-    return "more than one converter for " + pair + ": " + bindings;
+    return "more than one converter for " + pair + ": " 
+         + ((bindings != null) ? Arrays.toString(bindings) : "null");
   }
   
   @SuppressWarnings("unchecked")

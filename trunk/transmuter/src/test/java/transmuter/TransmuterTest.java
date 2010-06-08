@@ -15,7 +15,6 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,9 +26,17 @@ import transmuter.exception.ConverterRegistrationException;
 import transmuter.exception.InvalidParameterTypeException;
 import transmuter.exception.InvalidReturnTypeException;
 import transmuter.exception.NoCompatibleConvertersFoundException;
-import transmuter.exception.PairIncompatibleWithBindingException;
 import transmuter.exception.TooManyConvertersFoundException;
 import transmuter.exception.WrongParameterCountException;
+import transmuter.mock.FlawedConverter;
+import transmuter.mock.GenericConverter;
+import transmuter.mock.GenericMethodConverter;
+import transmuter.mock.MultipleConverter;
+import transmuter.mock.MultipleValidConverter;
+import transmuter.mock.PartialGenericConverter;
+import transmuter.mock.StringArrayToListStringConverter;
+import transmuter.mock.StringConverter;
+import transmuter.mock.VarargConverter;
 import transmuter.type.TypeToken;
 import transmuter.util.Binding;
 import transmuter.util.Pair;
@@ -40,121 +47,6 @@ public class TransmuterTest {
   private Transmuter t;
   private Map<Pair, Binding> map;
 
-  public static final class GenericMethodConverter {
-    @Converts
-    public <T> T nonNull(T o) {
-      if(o == null)
-        throw new IllegalArgumentException();
-      
-      return o;
-    }
-  }
-  
-  public static class GenericConverter<From, To> {
-    @Converts
-    public To convert(From from) {
-      return (To) from;
-    }
-  }
-  
-  public static class PartialGenericConverter<From> extends GenericConverter<From, String> {
-    @Override
-    @Converts
-    public String convert(From from) {
-      return String.valueOf(from);
-    }
-  }
-  
-  public static class StringArrayToListStringConverter extends GenericConverter<String[], List<String>> {
-    // empty block
-  }
-
-  public static final class VarargConverter {
-    @Converts
-    public String stringifyArray(Object... o) {
-      return String.valueOf(o);
-    }
-  }
-
-  public static final class FlawedConverter {
-    @Converts
-    public boolean intraClassCollision1(int i) {
-      return (i == 0) ? false : true;
-    }
-    
-    @Converts
-    public boolean intraClassCollision2(int i) {
-      return i % 2 == 0;
-    }
-    
-    @Converts
-    public void voidAsReturnType(Object whatever) {
-      // empty block
-    }
-    
-    @Converts
-    public Object tooManyParameters(Object a, Object b) {
-      return null;
-    }
-    
-    @Converts
-    public Object tooFewParameters() {
-      return null;
-    }
-    
-    @Converts
-    public String extraClassCollision(double d) {
-      return String.valueOf(d);
-    }
-    
-    @Converts
-    public void voidAndTooManyParameters(int a, int b, int c, int d) {
-      // empty block
-    }
-  }
-
-  public static final class MultipleConverter {
-    @Converts
-    public String converter(double d) {
-      return "double: " + d;
-    }
-    
-    @SuppressWarnings("serial")
-    @Converts
-    public List<String> convert(final String s) {
-      return new ArrayList<String>() {{ add(s); }};
-    }
-  }
-
-  public static class StringConverter {
-    @Converts
-    public String stringify(Object object) {
-      return String.valueOf(object);
-    }
-    
-    @Override
-    public boolean equals(Object o) {
-      return o instanceof StringConverter;
-    }
-    
-    @Override
-    public String toString() {
-     return "StringConverter!"; 
-    }
-  }
-  
-  public static class MultipleValidConverter {
-    @Converts
-    public String toString(List<String> l) {
-      return String.valueOf(l);
-    }
-    
-    @Converts
-    public String toString(Serializable s) {
-      return String.valueOf(s);
-    }
-  }
-  
   @Before
   public void setUp() {
     t = new Transmuter();
@@ -511,122 +403,7 @@ public class TransmuterTest {
     assertTrue(t.isRegistered(new Pair(double.class, String.class)));
     assertTrue(t.isRegistered(TypeToken.STRING, LIST_OF_STRING));
     assertFalse(t.isRegistered(String.class, List.class));
-  }
-  
-  @Test
-  public void converterMap() throws SecurityException, NoSuchMethodException {
-    assertTrue(map.isEmpty());
-    
-    t.register(new MultipleConverter());
-    
-    assertEquals(2, map.size());
-    assertTrue(map.containsKey(new Pair(double.class, String.class)));
-    assertTrue(map.containsKey(new Pair(TypeToken.STRING, LIST_OF_STRING)));
-    assertFalse(map.containsKey(new Pair(String.class, List.class)));
-    
-    Object multiple = new MultipleConverter();
-    
-    try {
-      map.put(
-          new Pair(double.class, String.class), 
-          new Binding(
-              multiple, 
-              multiple.getClass().getMethod("converter", double.class)));
-      fail();
-    } catch(ConverterCollisionException e) {
-      assertEquals(new Pair(double.class, String.class), e.getPair());
-    }
-    
-    Map<Pair, Binding> temp = new HashMap<Pair, Binding>();
-    temp.put(
-        new Pair(double.class, String.class), 
-        new Binding(
-            multiple, 
-            multiple.getClass().getMethod("converter", double.class)));
-    temp.put(
-        new Pair(TypeToken.STRING, LIST_OF_STRING), 
-        new Binding(
-            multiple, 
-            multiple.getClass().getMethod("convert", String.class)));
-    
-    try {
-      map.putAll(temp);
-      fail();
-    } catch(ConverterCollisionException e) { //  only the first exception
-      // TODO no way of knowing which error comes first, what to do?
-    }
-  }
-  
-  @Test
-  public void converterMapWithNulls() throws SecurityException, NoSuchMethodException {
-    Object o = new MultipleConverter();
-    
-    try {
-      map.put(null, new Binding(o, o.getClass().getMethod("converter", double.class)));
-      fail();
-    } catch(IllegalArgumentException e) {
-      // empty block
-    }
-    
-    assertTrue(map.isEmpty());
-    
-    try {
-      map.put(new Pair(double.class, String.class), null);
-      fail();
-    } catch(IllegalArgumentException e) {
-      // empty block
-    }
-    
-    assertTrue(map.isEmpty());
-    
-    map.putAll(null);
-    
-    assertTrue(map.isEmpty());
-    
-    map.putAll(new HashMap<Pair, Binding>());
-    
-    assertTrue(map.isEmpty());
-  }
-  
-  @Test
-  public void converterMapWithRedundantPut() throws SecurityException, NoSuchMethodException {
-    assertFalse(t.isRegistered(Object.class, String.class));
-    assertTrue(map.isEmpty());
-    
-    final StringConverter a = new StringConverter();
-    final Method stringify = StringConverter.class.getMethod("stringify", Object.class);
-    map.put(new Pair(Object.class, String.class), new Binding(a, stringify));
-    
-    assertTrue(t.isRegistered(Object.class, String.class));
-    assertEquals(1, map.size());
-    
-    map.put(new Pair(Object.class, String.class), new Binding(a, stringify));
-    
-    assertTrue(t.isRegistered(Object.class, String.class));
-    assertEquals(1, map.size());
-  }
-  
-  @Test(expected = PairIncompatibleWithBindingException.class)
-  public void converterMapWithIncompatiblePairAndBinding() throws SecurityException, NoSuchMethodException {
-    map.put(
-        new Pair(String.class, double.class), 
-        new Binding(new StringConverter(), StringConverter.class.getMethod("stringify", Object.class)));
-  }
-  
-  @Test
-  public void converterMapContainsNullKeyP() {
-    assertFalse(map.containsKey(null));
-  }
-  
-  @Test
-  public void converterMapContainsKeyWithPrimitives() {
-    t.register(new MultipleConverter());
-    
-    assertTrue(map.containsKey(new Pair(double.class, String.class)));
-    assertTrue(map.containsKey(new Pair(Double.class, String.class)));
-  }
-  
-  @Test
+  }@Test
   public void convert() {
     t.register(new StringConverter());
     
