@@ -233,8 +233,6 @@ public class TransmuterTest {
           1);
       
       //e.printStackTrace();
-    } catch(Throwable t) {
-      fail();
     }
     
     assertEquals(2, t.getConverterMap().size());
@@ -537,8 +535,6 @@ public class TransmuterTest {
       fail();
     } catch(ConverterCollisionException e) {
       assertEquals(new Pair(double.class, String.class), e.getPair());
-    } catch(Throwable t) {
-      fail();
     }
     
     Map<Pair, Binding> temp = new HashMap<Pair, Binding>();
@@ -558,8 +554,6 @@ public class TransmuterTest {
       fail();
     } catch(ConverterCollisionException e) { //  only the first exception
       // TODO no way of knowing which error comes first, what to do?
-    } catch(Throwable t) {
-      fail();
     }
   }
   
@@ -581,8 +575,6 @@ public class TransmuterTest {
       fail();
     } catch(IllegalArgumentException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
     
     assertTrue(map.isEmpty());
@@ -681,8 +673,6 @@ public class TransmuterTest {
           new Binding(
               converter, 
               extractMethod(converter.getClass(), "toString", Serializable.class))));
-    } catch(Throwable t) {
-      fail();
     }
   }
   
@@ -757,8 +747,6 @@ public class TransmuterTest {
       fail();
     } catch(NoCompatibleConvertersFoundException e) {
       assertNull(e.getPair());
-    } catch(Throwable t) {
-      fail();
     }
     
     try {
@@ -766,8 +754,6 @@ public class TransmuterTest {
       fail();
     } catch(NoCompatibleConvertersFoundException e) {
       assertEquals(new Pair(Object.class, Integer.class), e.getPair());
-    } catch(Throwable t) {
-      fail();
     }
     
     try {
@@ -785,8 +771,6 @@ public class TransmuterTest {
           new Binding(
               converter, 
               extractMethod(converter.getClass(), "toString", Serializable.class))));
-    } catch(Throwable t) {
-      fail();
     }
   }
   

@@ -264,8 +264,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
     
     try {
@@ -273,8 +271,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
     
     try {
@@ -282,8 +278,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
     
     try {
@@ -291,8 +285,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
     
     try {
@@ -300,8 +292,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
     
     try {
@@ -309,8 +299,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
     
     try {
@@ -318,8 +306,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
     
     try {
@@ -327,8 +313,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
     
     try {
@@ -336,8 +320,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
   }
   
@@ -352,8 +334,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
     
     try {
@@ -361,8 +341,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
     
     assertEquals(new Byte((byte) 'a'), ValueType.BYTE.cast('a'));
@@ -377,8 +355,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
   }
   
@@ -392,8 +368,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
     
     try {
@@ -401,8 +375,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
     
     assertEquals(new Character((char) ((byte) 1)), ValueType.CHARACTER.cast((byte) 1));
@@ -417,8 +389,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
   }
   
@@ -432,8 +402,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
     
     try {
@@ -441,8 +409,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
     
     assertEquals(new Double((byte) 1), ValueType.DOUBLE.cast((byte) 1));
@@ -457,8 +423,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
   }
   
@@ -472,8 +436,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
     
     try {
@@ -481,8 +443,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
     
     assertEquals(new Float((byte) 1), ValueType.FLOAT.cast((byte) 1));
@@ -497,8 +457,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
   }
   
@@ -512,8 +470,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
     
     try {
@@ -521,8 +477,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
     
     assertEquals(new Integer((byte) 1), ValueType.INTEGER.cast((byte) 1));
@@ -537,8 +491,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
   }
   
@@ -552,8 +504,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
     
     try {
@@ -561,8 +511,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
     
     assertEquals(new Long((byte) 1), ValueType.LONG.cast((byte) 1));
@@ -577,8 +525,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
   }
   
@@ -592,8 +538,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
     
     try {
@@ -601,8 +545,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
     
     assertEquals(new Short((byte) 1), ValueType.SHORT.cast((byte) 1));
@@ -617,8 +559,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
   }
   
@@ -632,8 +572,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
     
     try {
@@ -641,8 +579,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
     
     try {
@@ -650,8 +586,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
     
     try {
@@ -659,8 +593,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
     
     try {
@@ -668,8 +600,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
     
     try {
@@ -677,8 +607,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
     
     try {
@@ -686,8 +614,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
     
     try {
@@ -695,8 +621,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
     
     try {
@@ -704,8 +628,6 @@ public class TypeTokenValueTypeTest {
       fail();
     } catch(ClassCastException e) {
       // empty block
-    } catch(Throwable t) {
-      fail();
     }
   }
 }
