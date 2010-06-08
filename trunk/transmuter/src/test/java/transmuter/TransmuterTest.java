@@ -28,7 +28,6 @@ import transmuter.exception.InvalidParameterTypeException;
 import transmuter.exception.InvalidReturnTypeException;
 import transmuter.exception.NoCompatibleConvertersFoundException;
 import transmuter.exception.PairIncompatibleWithBindingException;
-import transmuter.exception.SameClassConverterCollisionException;
 import transmuter.exception.TooManyConvertersFoundException;
 import transmuter.exception.WrongParameterCountException;
 import transmuter.type.TypeToken;
@@ -220,18 +219,17 @@ public class TransmuterTest {
       assertInvalidReturnType(causes, 
           extractMethod(flawedClass, "voidAndTooManyParameters", int.class, int.class, int.class, int.class), 
           void.class, 1);
-      assertSameClassConverterCollision(causes, 
-          TypeToken.get(flawedClass), 
+      assertConverterCollision(causes, 
           new Pair(int.class, boolean.class), 
           Arrays.asList(
-              extractMethod(flawedClass, "intraClassCollision1", int.class),
-              extractMethod(flawedClass, "intraClassCollision2", int.class)),
+              new Binding(flawed, extractMethod(flawedClass, "intraClassCollision1", int.class)),
+              new Binding(flawed, extractMethod(flawedClass, "intraClassCollision2", int.class))),
           1);
       assertConverterCollision(causes, 
           new Pair(double.class, String.class), 
           Arrays.asList(
-              extractMethod(flawedClass, "extraClassCollision", double.class),
-              extractMethod(working.getClass(), "converter", double.class)),
+              new Binding(flawed, extractMethod(flawedClass, "extraClassCollision", double.class)),
+              new Binding(working, extractMethod(working.getClass(), "converter", double.class))),
           1);
       
       //e.printStackTrace();
@@ -282,25 +280,8 @@ public class TransmuterTest {
     assertEquals(expectedCount, count);
   }
   
-  private void assertSameClassConverterCollision(final List<? extends Exception> causes, 
-      TypeToken<?> declaringType, Pair pair, List<Method> methods, int expectedCount) {
-    int count = 0;
-    for(Exception cause : causes) {
-      if(cause.getClass() != SameClassConverterCollisionException.class)
-        continue;
-      
-      SameClassConverterCollisionException cause2 = (SameClassConverterCollisionException) cause;
-      if(areEqual(cause2.getPair(), pair)
-      && (cause2.getMethods().containsAll(methods) && methods.containsAll(cause2.getMethods()))
-      && areEqual(cause2.getDeclaringType(), declaringType))
-        count++;
-    }
-    
-    assertEquals(expectedCount, count);
-  }
-  
   private void assertConverterCollision(final List<? extends Exception> causes, 
-      Pair pair, List<Method> methods, int expectedCount) {
+      Pair pair, List<Binding> bindings, int expectedCount) {
     int count = 0;
     for(Exception cause : causes) {
       if(cause.getClass() != ConverterCollisionException.class)
@@ -308,7 +289,7 @@ public class TransmuterTest {
       
       ConverterCollisionException cause2 = (ConverterCollisionException) cause;
       if(areEqual(cause2.getPair(), pair)
-      && (cause2.getMethods().containsAll(methods) && methods.containsAll(cause2.getMethods())))
+      && (cause2.getBindings().containsAll(bindings) && bindings.containsAll(cause2.getBindings())))
         count++;
     }
     

@@ -26,4 +26,8 @@ public class ObjectUtils {
   public static Class<?> classOf(Object a) {
     return (a != null) ? a.getClass() : null;
   }
+  
+  public static <T> boolean isEmpty(T... objects) {
+    return objects == null || objects.length == 0;
+  }
 }

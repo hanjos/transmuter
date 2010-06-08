@@ -1,42 +1,30 @@
 package transmuter.exception;
 
-import java.lang.reflect.Method;
+import static transmuter.util.ObjectUtils.*;
+
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import transmuter.util.Binding;
 import transmuter.util.Pair;
-import transmuter.util.ReflectionUtils;
-import transmuter.util.StringUtils;
-import transmuter.util.StringUtils.Stringifier;
 
 public class ConverterCollisionException extends RuntimeException {
   private static final long serialVersionUID = 1L;
   
-  private List<Method> methods;
+  private List<Binding> bindings;
   private Pair pair;
   
-  private static String buildMessage(List<Method> methods, Pair pair) {
-    return "more than one converter for " + pair + ": [" 
-      + StringUtils.concatenate(
-        new Stringifier<Method>() {
-          @Override
-          public String stringify(Method o) {
-            return ReflectionUtils.simpleMethodToString(o);
-          }
-        }, ", ", methods) 
-      + "]";
+  private static String buildMessage(Pair pair, Binding... bindings) {
+    return "more than one converter for " + pair + ": " + bindings;
   }
   
-  public ConverterCollisionException(List<Method> methods, Pair pair) {
-    this(methods, pair, buildMessage(methods, pair));
-  }
-
   @SuppressWarnings("unchecked")
-  public ConverterCollisionException(List<Method> methods, Pair pair, String message) {
-    super(message);
+  public ConverterCollisionException(Pair pair, Binding... bindings) {
+    super(buildMessage(pair, bindings));
     
-    this.methods = Collections.unmodifiableList(
-        (methods != null) ? methods : Collections.EMPTY_LIST);
+    this.bindings = Collections.unmodifiableList(
+        (! isEmpty(bindings)) ? Arrays.asList(bindings) : Collections.EMPTY_LIST);
     this.pair = pair;
   }
 
@@ -44,7 +32,7 @@ public class ConverterCollisionException extends RuntimeException {
     return pair;
   }
 
-  public List<Method> getMethods() {
-    return methods;
+  public List<Binding> getBindings() {
+    return bindings;
   }
 }

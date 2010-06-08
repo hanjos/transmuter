@@ -5,7 +5,6 @@ import static transmuter.util.ObjectUtils.nonNull;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +15,6 @@ import transmuter.exception.ConverterRegistrationException;
 import transmuter.exception.MultipleCausesException;
 import transmuter.exception.NoCompatibleConvertersFoundException;
 import transmuter.exception.PairIncompatibleWithBindingException;
-import transmuter.exception.SameClassConverterCollisionException;
 import transmuter.exception.TooManyConvertersFoundException;
 import transmuter.type.TypeToken;
 import transmuter.util.Binding;
@@ -34,7 +32,6 @@ public class Transmuter {
       nonNull(pair, "pair"); nonNull(binding, "binding");
       
       // check if the binding matches the pair
-      final Method bindingMethod = binding.getMethod();
       if(! pair.isAssignableFrom(binding.getPair()))
         throw new PairIncompatibleWithBindingException(pair, binding);
       
@@ -46,10 +43,7 @@ public class Transmuter {
             return null;
   
           // converter collision, throw up
-          throw new SameClassConverterCollisionException(
-              Arrays.asList(bindingMethod, get(pair).getMethod()), 
-              TypeToken.get(binding.getDeclaringType()), 
-              pair);
+          throw new ConverterCollisionException(pair, binding, get(pair));
         }
       }
       
@@ -59,9 +53,7 @@ public class Transmuter {
           return null;
 
         // converter collision, throw up
-        throw new ConverterCollisionException(
-            Arrays.asList(bindingMethod, converterMap.get(pair).getMethod()), 
-            pair);
+        throw new ConverterCollisionException(pair, binding, converterMap.get(pair));
       }
       
       return super.put(pair, binding);
