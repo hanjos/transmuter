@@ -284,10 +284,10 @@ public class TransmuterTest {
       assertEquals(2, e.getCauses().size());
       
       assertEquals(InvalidParameterTypeException.class, e.getCauses().get(0).getClass());
-      assertTrue(((InvalidParameterTypeException) e.getCauses().get(0)).getType() instanceof TypeVariable);
+      assertTrue(((InvalidParameterTypeException) e.getCauses().get(0)).getType() instanceof TypeVariable<?>);
       
       assertEquals(InvalidReturnTypeException.class, e.getCauses().get(1).getClass());
-      assertTrue(((InvalidReturnTypeException) e.getCauses().get(1)).getType() instanceof TypeVariable);
+      assertTrue(((InvalidReturnTypeException) e.getCauses().get(1)).getType() instanceof TypeVariable<?>);
     }
     
     assertTrue(t.getConverterMap().isEmpty());
@@ -306,14 +306,14 @@ public class TransmuterTest {
       
       InvalidParameterTypeException ex = (InvalidParameterTypeException) e.getCauses().get(0);
       assertEquals(extractMethod(PartialGenericConverter.class, "convert", Object.class), ex.getMethod());
-      assertTrue(ex.getType() instanceof TypeVariable);
-      assertEquals("From", ((TypeVariable) ex.getType()).getName());
+      assertTrue(ex.getType() instanceof TypeVariable<?>);
+      assertEquals("From", ((TypeVariable<?>) ex.getType()).getName());
     }
     
     assertFalse(t.isRegistered(LIST_OF_STRING, TypeToken.STRING));
     
     try {
-      t.register(new PartialGenericConverter()); // raw
+      t.register(new PartialGenericConverter<Object>()); // raw
       fail();
     } catch(ConverterRegistrationException e) {
       assertEquals(1, e.getCauses().size());
@@ -322,8 +322,8 @@ public class TransmuterTest {
       
       InvalidParameterTypeException ex = (InvalidParameterTypeException) e.getCauses().get(0);
       assertEquals(convertMethod, ex.getMethod());
-      assertTrue(ex.getType() instanceof TypeVariable);
-      assertEquals("From", ((TypeVariable) ex.getType()).getName());
+      assertTrue(ex.getType() instanceof TypeVariable<?>);
+      assertEquals("From", ((TypeVariable<?>) ex.getType()).getName());
     }
     
     assertFalse(t.isRegistered(LIST_OF_STRING, TypeToken.STRING));
@@ -343,19 +343,19 @@ public class TransmuterTest {
       
       InvalidParameterTypeException ex = (InvalidParameterTypeException) e.getCauses().get(0);
       assertEquals(extractMethod(GenericConverter.class, "convert", Object.class), ex.getMethod());
-      assertTrue(ex.getType() instanceof TypeVariable);
-      assertEquals("From", ((TypeVariable) ex.getType()).getName());
+      assertTrue(ex.getType() instanceof TypeVariable<?>);
+      assertEquals("From", ((TypeVariable<?>) ex.getType()).getName());
       
       InvalidReturnTypeException ex1 = (InvalidReturnTypeException) e.getCauses().get(1);
       assertEquals(extractMethod(GenericConverter.class, "convert", Object.class), ex1.getMethod());
-      assertTrue(ex1.getType() instanceof TypeVariable);
-      assertEquals("To", ((TypeVariable) ex1.getType()).getName());
+      assertTrue(ex1.getType() instanceof TypeVariable<?>);
+      assertEquals("To", ((TypeVariable<?>) ex1.getType()).getName());
     }
     
     assertFalse(t.isRegistered(LIST_OF_STRING, TypeToken.STRING));
     
     try {
-      t.register(new GenericConverter()); // raw
+      t.register(new GenericConverter<Object, Object>()); // raw
       fail();
     } catch(ConverterRegistrationException e) {
       assertEquals(2, e.getCauses().size());
@@ -364,13 +364,13 @@ public class TransmuterTest {
       
       InvalidParameterTypeException ex = (InvalidParameterTypeException) e.getCauses().get(0);
       assertEquals(extractMethod(GenericConverter.class, "convert", Object.class), ex.getMethod());
-      assertTrue(ex.getType() instanceof TypeVariable);
-      assertEquals("From", ((TypeVariable) ex.getType()).getName());
+      assertTrue(ex.getType() instanceof TypeVariable<?>);
+      assertEquals("From", ((TypeVariable<?>) ex.getType()).getName());
       
       InvalidReturnTypeException ex1 = (InvalidReturnTypeException) e.getCauses().get(1);
       assertEquals(extractMethod(GenericConverter.class, "convert", Object.class), ex1.getMethod());
-      assertTrue(ex1.getType() instanceof TypeVariable);
-      assertEquals("To", ((TypeVariable) ex1.getType()).getName());
+      assertTrue(ex1.getType() instanceof TypeVariable<?>);
+      assertEquals("To", ((TypeVariable<?>) ex1.getType()).getName());
     }
     
     assertFalse(t.isRegistered(LIST_OF_STRING, TypeToken.STRING));
