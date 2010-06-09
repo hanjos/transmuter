@@ -27,30 +27,40 @@ public class Transmuter {
 
     public PairBindingMap() { /* empty block */ }
 
-    // TODO pile up the exceptions like in register?
     @Override
     public Binding put(Pair pair, Binding binding) {
-      nonNull(pair, "pair"); nonNull(binding, "binding");
-      
+      return validatePut(pair, binding) 
+           ? null
+           : super.put(pair, binding);
+    }
+
+    protected boolean validatePut(Pair pair, Binding binding) {
       // check if the binding matches the pair
-      if(! pair.isAssignableFrom(binding.getPair()))
-        throw new PairIncompatibleWithBindingException(pair, binding);
+      checkForCompatibility(pair, binding);
       
       // check for collisions here
-      if(checkForCollision(pair, binding, this))
-        return null;
+      return checkForCollision(pair, binding);
+    }
+
+    protected void checkForCompatibility(Pair pair, Binding binding) 
+    throws PairIncompatibleWithBindingException {
+      nonNull(pair, "pair"); 
+      nonNull(binding, "binding");
       
-      return super.put(pair, binding);
+      if(! pair.isAssignableFrom(binding.getPair()))
+        throw new PairIncompatibleWithBindingException(pair, binding);
     }
 
     protected boolean checkForCollision(Pair pair, Binding binding) 
     throws ConverterCollisionException {
-      return checkForCollision(pair, binding, this);
+      return checkMapForCollision(pair, binding, this);
     }
     
-    protected boolean checkForCollision(Pair pair, Binding binding, Map<? extends Pair, ? extends Binding> map) 
+    protected static boolean checkMapForCollision(Pair pair, Binding binding, Map<? extends Pair, ? extends Binding> map) 
     throws ConverterCollisionException {
-      nonNull(pair, "pair"); nonNull(binding, "binding"); nonNull(map, "map");
+      nonNull(pair, "pair"); 
+      nonNull(binding, "binding");
+      nonNull(map, "map");
       
       if(! map.containsKey(pair))
         return false;
@@ -97,10 +107,10 @@ public class Transmuter {
     }
     
     @Override
-    protected boolean checkForCollision(Pair pair, Binding binding, Map<? extends Pair, ? extends Binding> map) 
+    protected boolean checkForCollision(Pair pair, Binding binding) 
     throws ConverterCollisionException {
-      return super.checkForCollision(pair, binding, map)
-          || super.checkForCollision(pair, binding, getMasterMap());
+      return super.checkForCollision(pair, binding)
+          || super.checkMapForCollision(pair, binding, getMasterMap());
     }
     
     public Map<Pair, Binding> getMasterMap() {

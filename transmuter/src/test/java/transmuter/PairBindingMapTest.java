@@ -188,7 +188,7 @@ public class PairBindingMapTest {
     }
     
     try {
-      pbm.checkForCollision(pair, stringify, null);
+      PairBindingMap.checkMapForCollision(pair, stringify, null);
       fail();
     } catch(IllegalArgumentException e) {
       // empty block
@@ -202,13 +202,13 @@ public class PairBindingMapTest {
     Map<Pair, Binding> noChecking = new HashMap<Pair, Binding>();
     noChecking.put(pair, toString);
     
-    assertFalse(pbm.checkForCollision(pair, toString, pbm));
-    assertTrue(pbm.checkForCollision(pair, toString, noChecking));
+    assertFalse(PairBindingMap.checkMapForCollision(pair, toString, pbm));
+    assertTrue(PairBindingMap.checkMapForCollision(pair, toString, noChecking));
     
     assertFalse(pbm.checkForCollision(pair, stringify));
     
     try {
-      pbm.checkForCollision(pair, stringify, noChecking);
+      PairBindingMap.checkMapForCollision(pair, stringify, noChecking);
       fail();
     } catch(ConverterCollisionException e) {
       assertEquals(pair, e.getPair());
