@@ -18,7 +18,6 @@ import transmuter.type.TypeToken;
 import transmuter.util.exception.BindingInstantiationException;
 import transmuter.util.exception.BindingInvocationException;
 import transmuter.util.exception.InaccessibleMethodException;
-import transmuter.util.exception.InaccessibleObjectTypeException;
 import transmuter.util.exception.MethodInstanceIncompatibilityException;
 import transmuter.util.exception.NullInstanceWithNonStaticMethodException;
 
@@ -102,19 +101,19 @@ public class BindingTest {
   @Test
   public void constructorWithNonPublicMethod() throws SecurityException, NoSuchMethodException {
     try {
-      new Binding(null, extractMethod(TypeToken.class, "getRawType", Type.class));
+      new Binding(null, extractDeclaredMethod(TypeToken.class, "getRawType", Type.class));
       fail();
     } catch(BindingInstantiationException e) {
       assertEquals(1, e.getCauses().size());
       assertEquals(InaccessibleMethodException.class, e.getCauses().get(0).getClass());
       
       InaccessibleMethodException ex = (InaccessibleMethodException) e.getCauses().get(0);
-      assertEquals(extractMethod(TypeToken.class, "getRawType", Type.class), ex.getMethod());
+      assertEquals(extractDeclaredMethod(TypeToken.class, "getRawType", Type.class), ex.getMethod());
     }
   }
   
   @Test
-  public void constructWithNonVisibleClass() throws SecurityException, NoSuchMethodException {
+  public void constructWithAnonymousClass() throws SecurityException, NoSuchMethodException {
     Object inner = new Object() {
       @SuppressWarnings("unused") // just to shut up Eclipse's warnings
       @Converts
@@ -123,16 +122,11 @@ public class BindingTest {
       }
     };
     
-    try {
-      new Binding(inner, extractMethod(inner.getClass(), "stringify", Object.class));
-      fail();
-    } catch(BindingInstantiationException e) {
-      assertEquals(1, e.getCauses().size());
-      assertEquals(InaccessibleObjectTypeException.class, e.getCauses().get(0).getClass());
-      
-      InaccessibleObjectTypeException ex = (InaccessibleObjectTypeException) e.getCauses().get(0);
-      assertEquals(inner, ex.getObject());
-    }
+    Binding binding = new Binding(inner, extractMethod(inner.getClass(), "stringify", Object.class));
+    assertEquals("42", binding.invoke(42));
+    assertEquals("sbrubbles", binding.invoke("sbrubbles"));
+    assertEquals("true", binding.invoke(true));
+    assertEquals("java.lang.Object -> java.lang.Object", binding.invoke(new Pair(Object.class, Object.class)));
   }
   
   
@@ -193,6 +187,12 @@ public class BindingTest {
   }
   
   private static Method extractMethod(Class<?> cls, String name,
+      Class<?>... parameterTypes) throws NoSuchMethodException,
+      SecurityException {
+    return cls.getMethod(name, parameterTypes);
+  }
+  
+  private static Method extractDeclaredMethod(Class<?> cls, String name,
       Class<?>... parameterTypes) throws NoSuchMethodException,
       SecurityException {
     return cls.getDeclaredMethod(name, parameterTypes);
