@@ -9,6 +9,9 @@ import static org.junit.Assert.fail;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,31 +25,40 @@ import transmuter.util.exception.MethodInstanceIncompatibilityException;
 import transmuter.util.exception.NullInstanceWithNonStaticMethodException;
 
 public class BindingTest {
-  private Binding substring;
   private String string;
   private Method substringMethod;
-
+  private Method valueOfMethod;
+  private Binding substring;
+  private Binding valueOf;
+  
   @Before
   public void setUp() throws SecurityException, NoSuchMethodException {
     string = "0123456789";
     substringMethod = extractMethod(String.class, "substring", int.class, int.class);
+    valueOfMethod = extractMethod(String.class, "valueOf", Object.class);
+    
     substring = new Binding(string, substringMethod);
+    valueOf = new Binding(null, valueOfMethod);
   }
   
   @Test
   public void constructor() {
     assertEquals(string, substring.getInstance());
     assertEquals(substringMethod, substring.getMethod());
+    assertNull(valueOf.getInstance());
+    assertEquals(valueOfMethod, valueOf.getMethod());
   }
   
   @Test
-  public void constructorWithStaticMethod() throws SecurityException, NoSuchMethodException {
-    Binding b = new Binding(null, extractMethod(String.class, "valueOf", Object.class));
+  public void unaryConstructor() throws SecurityException, NoSuchMethodException {
+    Binding b = new Binding(valueOfMethod);
     
     assertNull(b.getInstance());
     assertNotNull(b.getMethod());
     assertEquals("null", b.invoke((Object) null));
     assertEquals("something", b.invoke("something"));
+    
+    assertEquals(valueOf, b);
   }
   
   @Test
@@ -139,7 +151,7 @@ public class BindingTest {
     assertFalse(substring.equals(null));
     assertFalse(substring.equals(new Binding(string, substringMethod) {}));
     assertFalse(substring.equals(new Binding("woeihoiwefn", substringMethod) {}));
-    assertFalse(substring.equals(new Binding(string, extractMethod(String.class, "valueOf", Object.class)) {}));
+    assertFalse(substring.equals(new Binding(string, valueOfMethod) {}));
   }
   
   @Test
@@ -150,7 +162,7 @@ public class BindingTest {
   }
   
   @Test
-  public void invokeWithPrimitives() {
+  public void invokeWithWrappers() {
     assertEquals("012", substring.invoke(new Integer(0), new Integer(3)));
     assertEquals("34", substring.invoke(new Integer(3), 5)); // mixing it up
     assertEquals(string, substring.invoke(new Integer(0), new Integer(string.length())));
@@ -179,6 +191,16 @@ public class BindingTest {
       assertType(InvocationTargetException.class, e.getCause());
       assertType(StringIndexOutOfBoundsException.class, e.getCause().getCause());
     }
+  }
+  
+  @Test
+  public void getDeclaringType() throws SecurityException, NoSuchMethodException {
+    assertEquals(String.class, substring.getDeclaringType());
+    assertEquals(String.class, valueOf.getDeclaringType());
+    
+    final Method listEquals = extractMethod(List.class, "equals", Object.class);
+    assertEquals(ArrayList.class, new Binding(new ArrayList<Object>(), listEquals).getDeclaringType());
+    assertEquals(LinkedList.class, new Binding(new LinkedList<Object>(), listEquals).getDeclaringType());
   }
   
   private void assertType(Class<?> cls, Object object) {
