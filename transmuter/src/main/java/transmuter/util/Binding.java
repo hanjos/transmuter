@@ -23,14 +23,18 @@ public class Binding {
   private final Object instance;
   private final Method method;
   
+  public Binding(Method method) {
+    this(null, method);
+  }
+
   public Binding(Object instance, Method method) {
     validate(instance, method);
     
     this.instance = instance;
     this.method = method;
   }
-
-  private void validate(Object instance, Method method) throws BindingInstantiationException {
+  
+  protected void validate(Object instance, Method method) throws BindingInstantiationException {
     if(method == null)
       throw new BindingInstantiationException(new IllegalArgumentException("method cannot be null!"));
     
@@ -38,8 +42,11 @@ public class Binding {
     if(! Modifier.isPublic(method.getModifiers()))
       exceptions.add(new InaccessibleMethodException(method));
     
+    // FIXME workaround necessary due to bug 4819108 in the JVM
+    // although if method comes from getDeclaredMethod it seems to be unnecessary,
+    // what to do here?
     if(Modifier.isPublic(method.getModifiers()))
-      method.setAccessible(true); // XXX necessary due to bug 4819108 in the JVM
+      method.setAccessible(true);
     
     if(instance == null && ! Modifier.isStatic(method.getModifiers()))
       exceptions.add(new NullInstanceWithNonStaticMethodException(method));
@@ -54,7 +61,7 @@ public class Binding {
   // operations
   public Object invoke(Object... args) {
     try {
-      return method.invoke(instance, args);
+      return getMethod().invoke(getInstance(), args);
     } catch(IllegalArgumentException e) {
       throw new BindingInvocationException(this, e);
     } catch(IllegalAccessException e) {
@@ -70,13 +77,13 @@ public class Binding {
     if(instance == null) // static method
       return "Binding[static " + methodToString() + "]";
     
-    return "Binding[" + instance + "." + methodToString() + "]";
+    return "Binding[" + getInstance() + "." + methodToString() + "]";
   }
   
   @Override
   public int hashCode() {
     final int prime = 31;
-    return prime * (prime + hashCodeOf(instance)) + hashCodeOf(method);
+    return prime * (prime + hashCodeOf(getInstance())) + hashCodeOf(getMethod());
   }
 
   @Override
@@ -88,27 +95,27 @@ public class Binding {
       return false;
     
     Binding other = (Binding) obj;
-    return areEqual(instance, other.instance)
-        && areEqual(method, other.method);
+    return areEqual(getInstance(), other.getInstance())
+        && areEqual(getMethod(), other.getMethod());
   }
   
   // helper methods
   private String methodToString() {
     Class<?> instanceType = getDeclaringType();
     String params = StringUtils.concatenate(", ", 
-        getTypeNames(getExactParameterTypes(method, instanceType)));
+        getTypeNames(getExactParameterTypes(getMethod(), instanceType)));
     
-    return method.getName() + "(" + params + "): " 
-         + getTypeName(getExactReturnType(method, instanceType));
+    return getMethod().getName() + "(" + params + "): " 
+         + getTypeName(getExactReturnType(getMethod(), instanceType));
   }
   
   // properties
   public Pair getPair() {
-    return Pair.fromMethod(method, getDeclaringType());
+    return Pair.fromMethod(getMethod(), getDeclaringType());
   }
 
   public Class<?> getDeclaringType() {
-    return instance != null ? instance.getClass() : method.getDeclaringClass();
+    return getInstance() != null ? getInstance().getClass() : getMethod().getDeclaringClass();
   }
   
   public Object getInstance() {
