@@ -16,7 +16,6 @@ import java.util.List;
 import transmuter.util.exception.BindingInstantiationException;
 import transmuter.util.exception.BindingInvocationException;
 import transmuter.util.exception.InaccessibleMethodException;
-import transmuter.util.exception.InaccessibleObjectTypeException;
 import transmuter.util.exception.MethodInstanceIncompatibilityException;
 import transmuter.util.exception.NullInstanceWithNonStaticMethodException;
 
@@ -39,11 +38,11 @@ public class Binding {
     if(! Modifier.isPublic(method.getModifiers()))
       exceptions.add(new InaccessibleMethodException(method));
     
+    if(Modifier.isPublic(method.getModifiers()))
+      method.setAccessible(true); // XXX necessary due to bug 4819108 in the JVM
+    
     if(instance == null && ! Modifier.isStatic(method.getModifiers()))
       exceptions.add(new NullInstanceWithNonStaticMethodException(method));
-    
-    if(instance != null && ! Modifier.isPublic(instance.getClass().getModifiers()))
-      exceptions.add(new InaccessibleObjectTypeException(instance));
     
     if(instance != null && ! method.getDeclaringClass().isAssignableFrom(instance.getClass()))
       exceptions.add(new MethodInstanceIncompatibilityException(instance, method));

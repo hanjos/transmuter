@@ -266,6 +266,26 @@ public class TransmuterTest {
   }
   
   @Test
+  public void registerInnerClass() throws SecurityException, NoSuchMethodException {
+    assertFalse(t.isRegistered(Object.class, String.class));
+    
+    t.register(new Object() {
+      @SuppressWarnings("unused") // just to shut up Eclipse's warnings
+      @Converts
+      public String stringify(Object o) {
+        return String.valueOf(o);
+      }
+    });
+    
+    assertTrue(t.isRegistered(Object.class, String.class));
+    
+    assertEquals("42", t.convert(42, Integer.class, String.class));
+    assertEquals("sbrubbles", t.convert("sbrubbles", String.class, String.class));
+    assertEquals("true", t.convert(true, Object.class, String.class));
+    assertEquals("java.lang.Object -> java.lang.Object", t.convert(new Pair(Object.class, Object.class), Object.class, String.class));
+  }
+  
+  @Test
   public void registerVararg() {
     assertFalse(t.isRegistered(Object[].class, String.class));
     
