@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 
-public class ReflectionUtils {
+public final class ReflectionUtils {
   private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
   // ensuring non-instantiability and non-inheritability

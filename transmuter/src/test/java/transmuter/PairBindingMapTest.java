@@ -75,7 +75,8 @@ public class PairBindingMapTest {
       map.putAll(temp);
       fail();
     } catch(ConverterCollisionException e) { //  only the first exception
-      // TODO no way of knowing which error comes first, what to do?
+      // TODO no way of knowing which error comes first
+      // think of a better way to handle this
     }
   }
   

@@ -202,7 +202,6 @@ public class TransmuterTest {
     assertTrue(t.getConverterMap().isEmpty());
   }
   
-  // XXX the class StringConverter must implement equals() for this to work properly
   @Test
   public void registerWithRedundantPut() throws SecurityException, NoSuchMethodException {
     assertFalse(t.isRegistered(Object.class, String.class));
@@ -222,7 +221,7 @@ public class TransmuterTest {
     assertEquals(1, map.size());
   }
   
-  // TODO is this what should happen, or should an exception be thrown?
+  // XXX is this what should happen, or should an exception be thrown?
   @Test
   public void registerPrivate() {
     assertFalse(t.isRegistered(Object.class, String.class));
