@@ -126,7 +126,7 @@ public class Transmuter {
   }
   
   // operations
-  // TODO what about erasure types?
+  // XXX what about erasure types?
   public <From, To> To convert(From from, Class<To> toType) {
     return convert(from, TypeToken.get(toType));
   }
@@ -230,14 +230,10 @@ public class Transmuter {
     if(pair == null)
       return null;
     
-    Binding binding = getConverterMap().get(pair);
-    if(binding != null)
-      return binding;
-    
     // TODO determine a search algorithm for a "most compatible" pair
-    // TODO parameterize it?
+    // XXX parameterize it?
     
-    return null;
+    return getConverterMap().get(pair);
   }
   
   protected List<Binding> getCompatibleConvertersFor(Pair pair) {

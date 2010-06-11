@@ -42,9 +42,8 @@ public class Binding {
     if(! Modifier.isPublic(method.getModifiers()))
       exceptions.add(new InaccessibleMethodException(method));
     
-    // FIXME workaround necessary due to bug 4819108 in the JVM
-    // although if method comes from getDeclaredMethod it seems to be unnecessary,
-    // what to do here?
+    // workaround necessary due to bug 4819108 in the JVM
+    // XXX but if method is from getDeclaredMethod everything seems to work...
     if(Modifier.isPublic(method.getModifiers()))
       method.setAccessible(true);
     

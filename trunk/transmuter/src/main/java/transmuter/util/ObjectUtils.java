@@ -1,16 +1,16 @@
 package transmuter.util;
 
-public class ObjectUtils {
+public final class ObjectUtils {
   // ensuring non-instantiability and non-inheritability
   private ObjectUtils() { /* empty block */ }
   
   public static <T> T nonNull(T object) {
-    return nonNull(object, "null value not allowed");
+    return nonNull(object, "value not allowed");
   }
 
   public static <T> T nonNull(T object, String message) {
     if (object == null)
-      throw new IllegalArgumentException(message);
+      throw new IllegalArgumentException(message + ": null");
 
     return object;
   }

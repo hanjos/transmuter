@@ -114,7 +114,7 @@ public class Pair {
   public int hashCode() {
     final int prime = 31;
     
-    // XXX we must use the ValueType's hashCode for this calculation,
+    // we must use the ValueType's hashCode for this calculation,
     // since we are 'equaling' Pairs with matching primitive/wrapper types. 
     // HashMap's search algorithm fails otherwise
     

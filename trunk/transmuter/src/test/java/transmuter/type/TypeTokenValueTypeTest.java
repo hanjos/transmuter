@@ -323,7 +323,6 @@ public class TypeTokenValueTypeTest {
     }
   }
   
-  // TODO should test the outer limits
   @Test
   public void testCastingToByte() {
     assertEquals(new Byte((byte) 1), ValueType.BYTE.cast((byte) 1));
@@ -358,7 +357,6 @@ public class TypeTokenValueTypeTest {
     }
   }
   
-  // TODO should test the outer limits
   @Test
   public void testCastingToCharacter() {
     assertEquals(new Character('a'), ValueType.CHARACTER.cast('a'));
@@ -392,7 +390,6 @@ public class TypeTokenValueTypeTest {
     }
   }
   
-  // TODO should test the outer limits
   @Test
   public void testCastingToDouble() {
     assertEquals(new Double(1.0), ValueType.DOUBLE.cast(1.0));
@@ -426,7 +423,6 @@ public class TypeTokenValueTypeTest {
     }
   }
   
-  // TODO should test the outer limits
   @Test
   public void testCastingToFloat() {
     assertEquals(new Float(1.0f), ValueType.FLOAT.cast(1.0f));
@@ -460,7 +456,6 @@ public class TypeTokenValueTypeTest {
     }
   }
   
-  // TODO should test the outer limits
   @Test
   public void testCastingToInt() {
     assertEquals(new Integer(1), ValueType.INTEGER.cast(1));
@@ -494,7 +489,6 @@ public class TypeTokenValueTypeTest {
     }
   }
   
-  // TODO should test the outer limits
   @Test
   public void testCastingToLong() {
     assertEquals(new Long(1L), ValueType.LONG.cast(1L));
@@ -528,7 +522,6 @@ public class TypeTokenValueTypeTest {
     }
   }
   
-  // TODO should test the outer limits
   @Test
   public void testCastingToShort() {
     assertEquals(new Short((short) 1), ValueType.SHORT.cast((short) 1));
@@ -562,7 +555,6 @@ public class TypeTokenValueTypeTest {
     }
   }
   
-  // TODO should test the outer limits
   @Test
   public void testCastingToVoid() {
     assertNull(ValueType.VOID.cast(null));
