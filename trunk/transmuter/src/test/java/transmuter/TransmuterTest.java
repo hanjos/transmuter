@@ -3,6 +3,7 @@ package transmuter;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -15,6 +16,8 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -423,20 +426,131 @@ public class TransmuterTest {
     assertTrue(t.isRegistered(new Pair(double.class, String.class)));
     assertTrue(t.isRegistered(TypeToken.STRING, LIST_OF_STRING));
     assertFalse(t.isRegistered(String.class, List.class));
-  }@Test
+  }
+  
+  @Test
   public void convert() {
     t.register(new StringConverter());
     
     assertEquals("sbrubbles", t.convert("sbrubbles", Object.class, String.class));
     assertEquals("sbrubbles", t.convert("sbrubbles", String.class, String.class));
+    assertEquals("sbrubbles", t.convert("sbrubbles", String.class));
     assertEquals("1", t.convert(1, Object.class, String.class));
-    assertEquals("null", t.convert(null, Object.class, String.class));
+    assertEquals("1", t.convert(1, Integer.class, String.class));
+    assertEquals("1", t.convert(1, String.class));
     
     t.register(new MultipleConverter());
     
-    assertEquals("double: 2.0", t.convert(2.0, Double.class, String.class));
     assertArrayEquals(new Object[] { "sbrubbles" }, t.convert("sbrubbles", TypeToken.STRING, LIST_OF_STRING).toArray());
+    assertArrayEquals(new Object[] { "sbrubbles" }, t.convert("sbrubbles", LIST_OF_STRING).toArray());
+    assertEquals("double: 2.0", t.convert(2.0, Double.class, String.class));
+    assertEquals("double: 2.0", t.convert(2.0, String.class));
     assertEquals("2.0", t.convert(2.0, Object.class, String.class));
+  }
+  
+  @Test
+  public void convertWithNullArguments() {
+    t.register(new StringConverter());
+    
+    assertEquals("null", t.convert(null, Object.class, String.class));
+    
+    try {
+      t.convert(null, String.class);
+      fail();
+    } catch(IllegalArgumentException e) {
+      // empty block
+    }
+    
+    try {
+      t.convert(null, TypeToken.STRING);
+      fail();
+    } catch(IllegalArgumentException e) {
+      // empty block
+    }
+    
+    try {
+      t.convert(new Object(), (Class<Object>) null);
+      fail();
+    } catch(IllegalArgumentException e) {
+      // empty block
+    }
+    
+    try {
+      t.convert(new Object(), (TypeToken<Object>) null);
+      fail();
+    } catch(IllegalArgumentException e) {
+      // empty block
+    }
+  }
+  
+  @Test
+  public void convertWithParameterizedType() throws SecurityException, NoSuchMethodException {
+    final Object parameterized = new Object() {
+      @SuppressWarnings("unused") // just to make Eclipse happy
+      @Converts
+      public int size(Map<String, String> map) {
+        return map.size();
+      }
+      
+      @SuppressWarnings("unused") // just to make Eclipse happy
+      @Converts
+      public int size2(Map<Pair, Binding> map) {
+        return map.size();
+      }
+    };
+    t.register(parameterized);
+    
+    final TypeToken<Map<String, String>> MAP_STRING_TO_STRING = new TypeToken<Map<String, String>>() {};
+    final TypeToken<Map<Pair, Binding>> MAP_PAIR_TO_BINDING = new TypeToken<Map<Pair, Binding>>() {};
+    final TypeToken<Integer> INT = TypeToken.get(int.class);
+    
+    assertTrue(0 == t.convert(new HashMap<String, String>(), MAP_STRING_TO_STRING, INT));
+    assertTrue(2 == t.convert(t.getConverterMap(), MAP_PAIR_TO_BINDING, INT));
+    
+    try {
+      t.convert(new HashMap<String, String>(), INT);
+      fail();
+    } catch(NoCompatibleConvertersFoundException e) {
+      assertEquals(new Pair(HashMap.class, int.class), e.getPair());
+    }
+    
+    try {
+      t.convert(new HashMap<Pair, Binding>(), INT);
+      fail();
+    } catch(NoCompatibleConvertersFoundException e) {
+      assertEquals(new Pair(HashMap.class, int.class), e.getPair());
+    }
+    
+    final Object raw = new Object() {
+      @SuppressWarnings("unused")
+      @Converts
+      public int size(Map map) {
+        return map.size();
+      }
+    };
+    t.register(raw);
+    
+    assertTrue(0 == t.convert(new HashMap<String, String>(), INT));
+    
+    try {
+      t.convert(t.getConverterMap(), INT);
+      fail();
+    } catch(TooManyConvertersFoundException e) {
+      assertEquals(new Pair(t.getConverterMap().getClass(), int.class), e.getPair());
+      assertMatchingCollections(
+          Arrays.asList(
+            new Binding(parameterized, parameterized.getClass().getDeclaredMethod("size2", Map.class)),
+            new Binding(raw, raw.getClass().getDeclaredMethod("size", Map.class))), 
+          e.getBindings());
+    }
+  }
+
+  private void assertMatchingCollections(final Collection<?> a, final Collection<?> b) {
+    assertNotNull(a);
+    assertNotNull(b);
+    
+    assertTrue(a.containsAll(b));
+    assertTrue(b.containsAll(a));
   }
   
   @Test
@@ -446,8 +560,6 @@ public class TransmuterTest {
       fail();
     } catch(NoCompatibleConvertersFoundException e) {
       assertEquals(new Pair(Object.class, String.class), e.getPair());
-    } catch(Exception ex) {
-      fail();
     }
   }
   

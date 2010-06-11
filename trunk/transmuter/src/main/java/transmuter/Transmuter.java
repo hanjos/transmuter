@@ -1,7 +1,8 @@
 package transmuter;
 
-import static transmuter.util.ObjectUtils.nonNull;
 import static transmuter.util.ObjectUtils.areEqual;
+import static transmuter.util.ObjectUtils.classOf;
+import static transmuter.util.ObjectUtils.nonNull;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -125,18 +126,30 @@ public class Transmuter {
   }
   
   // operations
+  // TODO what about erasure types?
+  public <From, To> To convert(From from, Class<To> toType) {
+    return convert(from, TypeToken.get(toType));
+  }
+  
+  public <From, To> To convert(From from, TypeToken<To> toType) {
+    return convert(from, TypeToken.get((Class<From>) classOf(from)), toType);
+  }
+
   public <From, To, SubFrom extends From> To convert(SubFrom from, Class<From> fromType, Class<To> toType) {
     return convert(from, TypeToken.get(fromType), TypeToken.get(toType));
   }
   
-  // TODO type compatibility
   @SuppressWarnings("unchecked")
   public <From, To, SubFrom extends From> To convert(SubFrom from, TypeToken<From> fromType, TypeToken<To> toType) {
-    nonNull(fromType); nonNull(toType);
-    
-    return (To) getConverterFor(new Pair(fromType, toType)).invoke(from);
+    return (To) convertRaw(from, fromType, toType);
   }
 
+  protected Object convertRaw(Object from, TypeToken<?> fromType, TypeToken<?> toType) {
+    nonNull(fromType, "fromType"); nonNull(toType, "toType");
+    
+    return getConverterFor(new Pair(fromType, toType)).invoke(from);
+  }
+  
   public void register(Object object) {
     if(object == null)
       return;
