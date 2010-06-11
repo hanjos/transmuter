@@ -131,6 +131,7 @@ public class Transmuter {
     return convert(from, TypeToken.get(toType));
   }
   
+  @SuppressWarnings("unchecked")
   public <From, To> To convert(From from, TypeToken<To> toType) {
     return convert(from, TypeToken.get((Class<From>) classOf(from)), toType);
   }
@@ -144,6 +145,10 @@ public class Transmuter {
     return (To) convertRaw(from, fromType, toType);
   }
 
+  protected Object convertRaw(Object from, TypeToken<?> toType) {
+    return convertRaw(from, TypeToken.get(classOf(from)), toType);
+  }
+  
   protected Object convertRaw(Object from, TypeToken<?> fromType, TypeToken<?> toType) {
     nonNull(fromType, "fromType"); nonNull(toType, "toType");
     
