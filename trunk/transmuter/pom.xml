@@ -22,9 +22,9 @@
   </issueManagement>
 
   <scm>
-    <connection>https://transmuter.googlecode.com/svn/trunk</connection>
+    <connection>scm:svn:http://transmuter.googlecode.com/svn/trunk</connection>
     <developerConnection>https://transmuter.googlecode.com/svn/trunk</developerConnection>
-    <url>https://transmuter.googlecode.com/svn/trunk</url>
+    <url>http://code.google.com/p/transmuter/source</url>
   </scm>
 
   <!-- Repositories -->
