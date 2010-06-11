@@ -20,8 +20,8 @@ import transmuter.type.TypeToken;
 import transmuter.type.TypeToken.ValueType;
 
 public class Pair {
-  private final TypeToken<?> fromType;
-  private final TypeToken<?> toType;
+  private TypeToken<?> fromType;
+  private TypeToken<?> toType;
 
   public Pair(Type fromType, Type toType) {
     this(TypeToken.get(fromType), TypeToken.get(toType));
@@ -61,13 +61,15 @@ public class Pair {
     if(parameterCount == 0 || parameterCount > 1) {
       exceptions.add(new WrongParameterCountException(method, 1));
     } else {
-      if(parameterTypes[0] == null // XXX it's a generic method 
-      || parameterTypes[0] instanceof CaptureType) { 
+      Type parameterType = parameterTypes[0];
+      
+      if(parameterType == null // XXX means it's a generic method (for now) 
+      || parameterType instanceof CaptureType) { 
         exceptions.add(new InvalidParameterTypeException(method));
       } else {
         try {
-          parameterToken = TypeToken.get(parameterTypes[0]);
-        } catch(Exception e) { // type token building may throw exceptions
+          parameterToken = TypeToken.get(parameterType);
+        } catch(Exception e) {
           exceptions.add(e);
         }
       }
@@ -75,14 +77,14 @@ public class Pair {
     
     // getting the return type
     final Type returnType = GenericTypeReflector.getExactReturnType(method, ownerType);
-    if(returnType == null // XXX it's a generic method 
+    if(returnType == null // XXX means it's a generic method (for now) 
     || returnType instanceof CaptureType
     || TypeToken.ValueType.VOID.matches(returnType)) {
       exceptions.add(new InvalidReturnTypeException(method));
     } else {
       try {
         returnToken = TypeToken.get(returnType);
-      } catch(Exception e) { // type token building may throw exceptions
+      } catch(Exception e) {
         exceptions.add(e);
       }
     }
@@ -98,14 +100,14 @@ public class Pair {
     if(pair == null)
       return false;
     
-    return fromType.isAssignableFrom(pair.fromType)
-        && toType.isAssignableFrom(pair.toType);
+    return getFromType().isAssignableFrom(pair.getFromType())
+        && getToType().isAssignableFrom(pair.getToType());
   }
   
   // utility methods
   @Override
   public String toString() {
-    return fromType + " -> " + toType;
+    return getFromType() + " -> " + getToType();
   }
     
   @Override
@@ -114,16 +116,16 @@ public class Pair {
     
     // XXX we must use the ValueType's hashCode for this calculation,
     // since we are 'equaling' Pairs with matching primitive/wrapper types. 
-    // HashMap's searching algorithm fails otherwise
+    // HashMap's search algorithm fails otherwise
     
     // null if fromType is not a value type
-    final ValueType<?> fromTypeVT = ValueType.valueOf(fromType);
+    final ValueType<?> fromTypeVT = ValueType.valueOf(getFromType());
     
     // null if toType is not a value type
-    final ValueType<?> toTypeVT = ValueType.valueOf(toType); 
+    final ValueType<?> toTypeVT = ValueType.valueOf(getToType()); 
     
-    final int fromHC = hashCodeOf(fromTypeVT != null ? fromTypeVT : fromType);
-    final int toHC = hashCodeOf(toTypeVT != null ? toTypeVT : toType);
+    final int fromHC = hashCodeOf(fromTypeVT != null ? fromTypeVT : getFromType());
+    final int toHC = hashCodeOf(toTypeVT != null ? toTypeVT : getToType());
     return prime * (prime + fromHC) + toHC;
   }
 
@@ -140,11 +142,10 @@ public class Pair {
     
     Pair other = (Pair) obj;
     
-    return areEquivalent(fromType, other.fromType)
-        && areEquivalent(toType, other.toType);
+    return areEquivalent(getFromType(), other.getFromType())
+        && areEquivalent(getToType(), other.getToType());
   }
 
-  // TODO put this somewhere else?
   protected static boolean areEquivalent(TypeToken<?> from, TypeToken<?> otherFrom) {
     return areEqual(from, otherFrom)
         || (   (ValueType.valueOf(from) != null) 
