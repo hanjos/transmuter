@@ -145,7 +145,7 @@ public class Pair {
   }
 
   // TODO put this somewhere else?
-  private static boolean areEquivalent(TypeToken<?> from, TypeToken<?> otherFrom) {
+  protected static boolean areEquivalent(TypeToken<?> from, TypeToken<?> otherFrom) {
     return areEqual(from, otherFrom)
         || (   (ValueType.valueOf(from) != null) 
             && (ValueType.valueOf(from) == ValueType.valueOf(otherFrom)));

@@ -202,7 +202,7 @@ public class TransmuterTest {
     assertTrue(t.getConverterMap().isEmpty());
   }
   
-  // The class A must implement equals() for this to work properly
+  // XXX the class StringConverter must implement equals() for this to work properly
   @Test
   public void registerWithRedundantPut() throws SecurityException, NoSuchMethodException {
     assertFalse(t.isRegistered(Object.class, String.class));
@@ -538,10 +538,10 @@ public class TransmuterTest {
     } catch(TooManyConvertersFoundException e) {
       assertEquals(new Pair(t.getConverterMap().getClass(), int.class), e.getPair());
       assertMatchingCollections(
+          e.getBindings(),
           Arrays.asList(
-            new Binding(parameterized, parameterized.getClass().getDeclaredMethod("size2", Map.class)),
-            new Binding(raw, raw.getClass().getDeclaredMethod("size", Map.class))), 
-          e.getBindings());
+              new Binding(parameterized, parameterized.getClass().getDeclaredMethod("size2", Map.class)),
+              new Binding(raw, raw.getClass().getDeclaredMethod("size", Map.class))));
     }
   }
 
@@ -590,27 +590,23 @@ public class TransmuterTest {
     final MultipleValidConverter converter = new MultipleValidConverter();
     t.register(converter);
     
-    final List<Binding> compatible = t.getCompatibleConvertersFor(new Pair(ARRAYLIST_OF_STRING, TypeToken.STRING));
-    assertEquals(2, compatible.size());
-    assertTrue(compatible.contains(
-        new Binding(
-            converter, 
-            extractMethod(converter.getClass(), "toString", List.class))));
-    assertTrue(compatible.contains(
-        new Binding(
-            converter, 
-            extractMethod(converter.getClass(), "toString", Serializable.class))));
+    assertMatchingCollections(
+        t.getCompatibleConvertersFor(new Pair(ARRAYLIST_OF_STRING, TypeToken.STRING)),
+        Arrays.asList(
+            new Binding(
+                converter, 
+                extractMethod(converter.getClass(), "toString", List.class)),
+            new Binding(
+                converter, 
+                extractMethod(converter.getClass(), "toString", Serializable.class))));
     
-    final List<Binding> serial = t.getCompatibleConvertersFor(new Pair(Serializable.class, String.class));
-    assertEquals(1, serial.size());
-    assertEquals(
-        t.getMostCompatibleConverterFor(new Pair(Serializable.class, String.class)),
-        serial.get(0));
+    assertMatchingCollections(
+        t.getCompatibleConvertersFor(new Pair(Serializable.class, String.class)),
+        Arrays.asList(
+            t.getMostCompatibleConverterFor(new Pair(Serializable.class, String.class))));
     
     assertTrue(t.getCompatibleConvertersFor(null).isEmpty());
     assertTrue(t.getCompatibleConvertersFor(new Pair(Object.class, Integer.class)).isEmpty());
-    
-    // TODO flesh this out
   }
   
   @Test
@@ -619,20 +615,19 @@ public class TransmuterTest {
     t.register(converter);
     
     assertEquals(
+        t.getMostCompatibleConverterFor(new Pair(Serializable.class, String.class)),
         new Binding(
-          converter, 
-          extractMethod(converter.getClass(), "toString", Serializable.class)),
-        t.getMostCompatibleConverterFor(new Pair(Serializable.class, String.class)));
+            converter, 
+            extractMethod(converter.getClass(), "toString", Serializable.class)));
     assertEquals(
+        t.getMostCompatibleConverterFor(new Pair(LIST_OF_STRING, TypeToken.STRING)),
         new Binding(
-          converter, 
-          extractMethod(converter.getClass(), "toString", List.class)),
-        t.getMostCompatibleConverterFor(new Pair(LIST_OF_STRING, TypeToken.STRING)));
+            converter, 
+            extractMethod(converter.getClass(), "toString", List.class)));
+    
     assertNull(t.getMostCompatibleConverterFor(new Pair(ARRAYLIST_OF_STRING, TypeToken.STRING)));
     assertNull(t.getMostCompatibleConverterFor(null));
     assertNull(t.getMostCompatibleConverterFor(new Pair(Object.class, Integer.class)));
-     
-    // TODO flesh this out
   }
   
   @Test
@@ -641,15 +636,15 @@ public class TransmuterTest {
     t.register(converter);
     
     assertEquals(
+        t.getConverterFor(new Pair(Serializable.class, String.class)),
         new Binding(
           converter, 
-          extractMethod(converter.getClass(), "toString", Serializable.class)),
-        t.getConverterFor(new Pair(Serializable.class, String.class)));
+          extractMethod(converter.getClass(), "toString", Serializable.class)));
     assertEquals(
+        t.getConverterFor(new Pair(LIST_OF_STRING, TypeToken.STRING)),
         new Binding(
           converter, 
-          extractMethod(converter.getClass(), "toString", List.class)),
-        t.getConverterFor(new Pair(LIST_OF_STRING, TypeToken.STRING)));
+          extractMethod(converter.getClass(), "toString", List.class)));
     
     try {
       t.getConverterFor(null);
@@ -672,14 +667,15 @@ public class TransmuterTest {
       assertEquals(new Pair(ARRAYLIST_OF_STRING, TypeToken.STRING), e.getPair());
       assertEquals(2, e.getBindings().size());
     
-      assertTrue(e.getBindings().contains(
-          new Binding(
-              converter, 
-              extractMethod(converter.getClass(), "toString", List.class))));
-      assertTrue(e.getBindings().contains(
-          new Binding(
-              converter, 
-              extractMethod(converter.getClass(), "toString", Serializable.class))));
+      assertMatchingCollections(
+          e.getBindings(),
+          Arrays.asList(
+            new Binding(
+                converter, 
+                extractMethod(converter.getClass(), "toString", List.class)),
+            new Binding(
+                converter, 
+                extractMethod(converter.getClass(), "toString", Serializable.class))));
     }
   }
   
