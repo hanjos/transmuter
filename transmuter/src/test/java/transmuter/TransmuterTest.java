@@ -203,7 +203,7 @@ public class TransmuterTest {
   }
   
   @Test
-  public void registerWithRedundantPut() throws SecurityException, NoSuchMethodException {
+  public void registerWithRedundantPut() {
     assertFalse(t.isRegistered(Object.class, String.class));
     assertFalse(t.isRegistered(TypeToken.OBJECT, TypeToken.STRING));
     assertTrue(map.isEmpty());
@@ -268,7 +268,7 @@ public class TransmuterTest {
   }
   
   @Test
-  public void registerInnerClass() throws SecurityException, NoSuchMethodException {
+  public void registerInnerClass() {
     assertFalse(t.isRegistered(Object.class, String.class));
     
     t.register(new Object() {
@@ -444,6 +444,7 @@ public class TransmuterTest {
     assertArrayEquals(new Object[] { "sbrubbles" }, t.convert("sbrubbles", LIST_OF_STRING).toArray());
     assertEquals("double: 2.0", t.convert(2.0, Double.class, String.class));
     assertEquals("double: 2.0", t.convert(2.0, String.class));
+    assertEquals("double: 2.0", t.convert(2.0, TypeToken.STRING));
     assertEquals("2.0", t.convert(2.0, Object.class, String.class));
   }
   
@@ -544,14 +545,6 @@ public class TransmuterTest {
     }
   }
 
-  private void assertMatchingCollections(final Collection<?> a, final Collection<?> b) {
-    assertNotNull(a);
-    assertNotNull(b);
-    
-    assertTrue(a.containsAll(b));
-    assertTrue(b.containsAll(a));
-  }
-  
   @Test
   public void convertUnknown() {
     try {
@@ -687,5 +680,13 @@ public class TransmuterTest {
     t.register(new StringArrayToListStringConverter());
     
     assertTrue(t.isRegistered(ARRAY_OF_STRING, LIST_OF_STRING));
+  }
+  
+  private void assertMatchingCollections(final Collection<?> a, final Collection<?> b) {
+    assertNotNull(a);
+    assertNotNull(b);
+    
+    assertTrue(a.containsAll(b));
+    assertTrue(b.containsAll(a));
   }
 }
