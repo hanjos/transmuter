@@ -44,6 +44,9 @@ public class ObjectUtilsTest {
       public boolean equals(Object o) {
         return o == this || o == null;
       }
+      
+      @Override
+      public int hashCode() { return 1; }
     };
     
     assertTrue(areEqual(object, object));

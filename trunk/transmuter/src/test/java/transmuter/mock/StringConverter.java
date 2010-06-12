@@ -17,4 +17,9 @@ public class StringConverter {
   public String toString() {
    return "StringConverter!"; 
   }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
 }

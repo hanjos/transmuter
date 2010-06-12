@@ -48,7 +48,7 @@ public class Transmuter {
       nonNull(pair, "pair"); 
       nonNull(binding, "binding");
       
-      if(! pair.isAssignableFrom(binding.getPair()))
+      if(! pair.isAssignableFrom(Pair.fromBinding(binding)))
         throw new PairIncompatibleWithBindingException(pair, binding);
     }
 

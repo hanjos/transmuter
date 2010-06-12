@@ -50,7 +50,7 @@ public class BindingTest {
   }
   
   @Test
-  public void unaryConstructor() throws SecurityException, NoSuchMethodException {
+  public void unaryConstructor() {
     Binding b = new Binding(valueOfMethod);
     
     assertNull(b.getInstance());
@@ -143,15 +143,15 @@ public class BindingTest {
   
   
   @Test
-  public void equals() throws SecurityException, NoSuchMethodException {
+  public void equals() {
     assertEquals(substring, substring);
     assertEquals(substring, new Binding(string, substringMethod));
     assertEquals(substring, new Binding(new String(string), substringMethod));
     
     assertFalse(substring.equals(null));
-    assertFalse(substring.equals(new Binding(string, substringMethod) {}));
-    assertFalse(substring.equals(new Binding("woeihoiwefn", substringMethod) {}));
-    assertFalse(substring.equals(new Binding(string, valueOfMethod) {}));
+    assertFalse(substring.equals(new Binding(string, substringMethod) { /* empty block */ }));
+    assertFalse(substring.equals(new Binding("woeihoiwefn", substringMethod) { /* empty block */ }));
+    assertFalse(substring.equals(new Binding(string, valueOfMethod) { /* empty block */ }));
   }
   
   @Test
@@ -195,12 +195,12 @@ public class BindingTest {
   
   @Test
   public void getDeclaringType() throws SecurityException, NoSuchMethodException {
-    assertEquals(String.class, substring.getDeclaringType());
-    assertEquals(String.class, valueOf.getDeclaringType());
+    assertEquals(String.class, substring.getInstanceClass());
+    assertEquals(String.class, valueOf.getInstanceClass());
     
     final Method listEquals = extractMethod(List.class, "equals", Object.class);
-    assertEquals(ArrayList.class, new Binding(new ArrayList<Object>(), listEquals).getDeclaringType());
-    assertEquals(LinkedList.class, new Binding(new LinkedList<Object>(), listEquals).getDeclaringType());
+    assertEquals(ArrayList.class, new Binding(new ArrayList<Object>(), listEquals).getInstanceClass());
+    assertEquals(LinkedList.class, new Binding(new LinkedList<Object>(), listEquals).getInstanceClass());
   }
   
   private void assertType(Class<?> cls, Object object) {

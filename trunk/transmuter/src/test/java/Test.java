@@ -47,7 +47,7 @@ public class Test {
     // empty block
   }
   
-  public static void main(String[] args) throws SecurityException, NoSuchMethodException {
+  public static void main(String[] args) {
     testConverter(SomethingToString.class);
     testConverter(GenericToString.class);
     testConverter(new TypeToken<GenericToString<String[]>>() {}.getType());

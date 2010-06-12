@@ -1,5 +1,8 @@
 package transmuter.util;
 
+import static com.googlecode.gentyref.GenericTypeReflector.addWildcardParameters;
+import static com.googlecode.gentyref.GenericTypeReflector.getExactParameterTypes;
+import static com.googlecode.gentyref.GenericTypeReflector.getExactReturnType;
 import static transmuter.util.ObjectUtils.areEqual;
 import static transmuter.util.ObjectUtils.hashCodeOf;
 import static transmuter.util.ObjectUtils.nonNull;
@@ -9,15 +12,14 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.googlecode.gentyref.CaptureType;
-import com.googlecode.gentyref.GenericTypeReflector;
-
 import transmuter.exception.InvalidParameterTypeException;
 import transmuter.exception.InvalidReturnTypeException;
 import transmuter.exception.PairInstantiationException;
 import transmuter.exception.WrongParameterCountException;
 import transmuter.type.TypeToken;
 import transmuter.type.TypeToken.ValueType;
+
+import com.googlecode.gentyref.CaptureType;
 
 public class Pair {
   private TypeToken<?> fromType;
@@ -48,7 +50,7 @@ public class Pair {
       throw new PairInstantiationException(new IllegalArgumentException("ownerType"));
     
     if(ownerType instanceof Class<?>)
-      ownerType = GenericTypeReflector.addWildcardParameters((Class<?>) ownerType);
+      ownerType = addWildcardParameters((Class<?>) ownerType);
     
     List<Exception> exceptions = new ArrayList<Exception>();
     
@@ -56,14 +58,14 @@ public class Pair {
     TypeToken<?> returnToken = null;
     
     // getting the parameter type
-    final Type[] parameterTypes = GenericTypeReflector.getExactParameterTypes(method, ownerType);
+    final Type[] parameterTypes = getExactParameterTypes(method, ownerType);
     final int parameterCount = parameterTypes.length;
     if(parameterCount == 0 || parameterCount > 1) {
       exceptions.add(new WrongParameterCountException(method, 1));
     } else {
       Type parameterType = parameterTypes[0];
       
-      if(parameterType == null // XXX means it's a generic method (for now) 
+      if(parameterType == null // means it's a generic method 
       || parameterType instanceof CaptureType) { 
         exceptions.add(new InvalidParameterTypeException(method));
       } else {
@@ -76,8 +78,8 @@ public class Pair {
     }
     
     // getting the return type
-    final Type returnType = GenericTypeReflector.getExactReturnType(method, ownerType);
-    if(returnType == null // XXX means it's a generic method (for now) 
+    final Type returnType = getExactReturnType(method, ownerType);
+    if(returnType == null // means it's a generic method 
     || returnType instanceof CaptureType
     || TypeToken.ValueType.VOID.matches(returnType)) {
       exceptions.add(new InvalidReturnTypeException(method));
@@ -93,6 +95,13 @@ public class Pair {
       throw new PairInstantiationException(exceptions);
     
     return new Pair(parameterToken, returnToken);
+  }
+  
+  public static Pair fromBinding(Binding binding) {
+    if(binding == null)
+      throw new PairInstantiationException(new IllegalArgumentException("binding"));
+    
+    return Pair.fromMethod(binding.getMethod(), binding.getInstanceClass());
   }
   
   // operations

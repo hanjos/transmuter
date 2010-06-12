@@ -13,11 +13,18 @@ public final class FlawedConverter {
     return i % 2 == 0;
   }
   
+  /**
+   * @param whatever 
+   */
   @Converts
   public void voidAsReturnType(Object whatever) {
     // empty block
   }
   
+  /**
+   * @param a  
+   * @param b 
+   */
   @Converts
   public Object tooManyParameters(Object a, Object b) {
     return null;
@@ -33,6 +40,12 @@ public final class FlawedConverter {
     return String.valueOf(d);
   }
   
+  /**
+   * @param a  
+   * @param b 
+   * @param c 
+   * @param d 
+   */
   @Converts
   public void voidAndTooManyParameters(int a, int b, int c, int d) {
     // empty block

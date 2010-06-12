@@ -7,6 +7,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Marker annotation for registerable converter methods.
+ * 
+ * @author Humberto S. N. dos Anjos
+ */
 @Documented
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
