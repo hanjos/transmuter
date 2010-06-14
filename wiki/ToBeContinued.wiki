@@ -22,4 +22,6 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
   
   * Implement some search algorithm for a most compatible converter if a perfect match isn't found. Parameterizing it seems good...
 
+  * Transitive conversion (work on the name needed), e.g. if I have a String -> Unit converter and a Unit -> int converter, I can translate a String to an int. This will affect the most compatible converter algorithm mencioned above (or will it _be_ an alternative algorithm?)...
+
   * If lots of optional parameters show up (got two already!), a DSL would be cool.
