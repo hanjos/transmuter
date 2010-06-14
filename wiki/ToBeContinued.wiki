@@ -9,11 +9,11 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
 = Stuff =
 == TODOs ==
 
-  * Rethink the validation process (especially for Pair and Binding) to ease overwrite-ability (it's a word -- or could be :)). Maybe the ability to register validators with some pre-implemented ones (could be a separate mini-project).
+  * Rethink the validation process (especially for Pair and Binding) to ease inheritability (it's a word -- or could be :)). Maybe the ability to register validators with some pre-implemented ones (could end up being a separate mini-project).
 
-  * Investigate a better workaround for bug 4819108 in the JVM.
+  * Investigate a better workaround (is there any?) for [http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4819108 bug 4819108] in the JVM.
 
-  * Figure out what should happen when a private method is marked with @Converts. Should be ignored (silent bugs suck) or should an exception be thrown (extra effort needed to check them just to signal errors). Methinks a new parameter has just shown itself :)
+  * Figure out what should happen when a non-public method is marked with @Converts. Should it be ignored (silent bugs suck) or should an exception be thrown (extra effort needed to check them just to signal errors). Methinks a new parameter has just shown itself :)
 
 
 == New Stuff! ==
@@ -22,4 +22,4 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
   
   * Implement some search algorithm for a most compatible converter if a perfect match isn't found. Parameterizing it seems good...
 
-  * If lots of optional parameters show up, a DSL would be cool.
+  * If lots of optional parameters show up (got two already!), a DSL would be cool.
