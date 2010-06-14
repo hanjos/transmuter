@@ -1,0 +1,50 @@
+#summary Some of the terms used in this project.
+#labels Featured
+
+= Binding =
+
+An object which represents a certain method of a particular instance of an object. This binding may then be stored and invoked when necessary.
+
+= Conversion =
+
+The act of taking an object of a specific type and returning an equivalent object of a different type.
+
+= Converter =
+
+A [#Binding binding] which holds a [#Converter_method converter method]. Converters are stored by a [#Transmuter transmuter], which, on performing a [#Conversion conversion], will attempt to find the converter of the most appropriate [#Converter_type type] to do it.
+
+= Converter method =
+
+A method which can be used by the [#Transmuter transmuter] to perform a [#Conversion conversion]. 
+
+= Converter type =
+
+A pair of [#Type_token type tokens] representing the input type and the output type accepted by the [#Converter converter].
+
+= Type token =
+
+An object used to represent Java types which is also usable with generics. Java's native reflection mechanisms are clumsy when representing generic types such as `List<? extends String>[]` and `Map<Long, Object>`, and don't take advantage of the compiler's generic inference. In principle type tokens are needed to obtain the complex types above, e.g.
+
+{{{
+// note the anonymous subclass creation: it's necessary!
+Type arrayOflistOfSomethingThatExtendsString = new TypeToken<List<? extends String>[]>() {}.getType();
+}}}
+
+But then one could not use the type created as such for a generic method such as
+
+{{{
+// can't make a class of List<? extends String>[]...
+public <T> T method(Class<T> cls) { 
+  //...
+}
+}}}
+
+But one could use the type token directly:
+
+{{{
+// ...but we can make a type token of List<? extends String>[]!
+public <T> T method(TypeToken<T> cls) { 
+  //...
+}
+
+}}}
