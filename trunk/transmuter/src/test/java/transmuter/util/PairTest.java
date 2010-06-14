@@ -33,6 +33,13 @@ public class PairTest {
     assertEquals(new Pair(int.class, String.class), Pair.fromMethod(String.class.getMethod("substring", int.class)));
     
     try {
+      Pair.fromMethod(null);
+    } catch(PairInstantiationException e) {
+      assertEquals(1, e.getCauses().size());
+      assertEquals(IllegalArgumentException.class, e.getCauses().get(0).getClass());
+    }
+    
+    try {
       Pair.fromMethod(null, Object.class);
       fail();
     } catch(PairInstantiationException e) {
@@ -88,6 +95,21 @@ public class PairTest {
       assertEquals(void.class, ex.getType());
       assertEquals(wait_timeout, ex.getMethod());
     }
+  }
+  
+  @Test
+  public void testFromBinding() throws PairInstantiationException, SecurityException, NoSuchMethodException {
+    try {
+      Pair.fromBinding(null);
+      fail();
+    } catch(PairInstantiationException e) {
+      assertEquals(1, e.getCauses().size());
+      assertEquals(IllegalArgumentException.class, e.getCauses().get(0).getClass());
+    }
+    
+    Method substring = String.class.getMethod("substring", int.class);
+    
+    assertEquals(Pair.fromMethod(substring), Pair.fromBinding(new Binding("0123", substring)));
   }
   
   @Test
