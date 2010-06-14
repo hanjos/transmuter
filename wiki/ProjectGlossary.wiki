@@ -43,7 +43,7 @@ public <T> T method(Class<T> cls) {
 }
 }}}
 
-But one could use the type token directly:
+Instead, one could use the type token directly:
 
 {{{
 // ...but we can make a type token of List<? extends String>[]!
