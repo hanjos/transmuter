@@ -24,6 +24,7 @@ public final class FlawedConverter {
   /**
    * @param a  
    * @param b 
+   * @return something
    */
   @Converts
   public Object tooManyParameters(Object a, Object b) {
