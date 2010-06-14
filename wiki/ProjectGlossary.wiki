@@ -7,7 +7,7 @@ An object which represents a certain method of a particular instance of an objec
 
 = Conversion =
 
-The act of taking an object of a specific type and returning an equivalent object of a different type.
+The act of taking an object of a specific type and using the information within to obtain a new object of a different type.
 
 = Converter =
 
