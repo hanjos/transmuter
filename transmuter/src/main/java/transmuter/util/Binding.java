@@ -21,7 +21,7 @@ import transmuter.util.exception.NullInstanceWithNonStaticMethodException;
 
 /**
  * Represents an immutable invokable object, made binding a method 
- * to an instance (which may be {@code null} if the method is static).
+ * to an object (which may be {@code null} if the method is static).
  * <p> 
  * Not all objects, methods or combinations thereof may be bound. 
  * Validation is performed in the constructor 
@@ -38,8 +38,8 @@ public class Binding {
   private Method method;
   
   /**
-   * Constructs a new {@code Binding} object which represents a static method
-   * bound to {@code null}.
+   * Constructs a new {@code Binding} object which represents a method 
+   * (which should be static) bound to {@code null}.
    * 
    * @param method a static method object.
    * @throws BindingInstantiationException if {@code method} is not deemed 
@@ -65,27 +65,30 @@ public class Binding {
   }
   
   /**
-   * Checks if {@code instance} and {@code method} can be bound.
+   * Checks if {@code instance} and {@code method} can be bound. 
+   * It returns if no problem was found. 
    * <p>
    * Several checks are made, with each one of them having a corresponding 
-   * exception, which is collected and bundled into a 
-   * {@link BindingInstantiationException}. The restrictions implemented 
-   * here are:
+   * exception on error. The exceptions, if any, are collected and bundled 
+   * into a {@link BindingInstantiationException}, which is then thrown. 
+   * The checks implemented here are:
    * 
    * <ul>
    * <li>{@code method} may not be {@code null}. This violation throws a 
-   * BindingInstantiationException with a single {@link IllegalArgumentException}.</li>
-   * <li>{@code method} must have public visibility (signals an {@link InaccessibleMethodException}).</li>
-   * <li>{@code method} must be static if {@code instance} is {@code null} (signals a 
-   * {@link NullInstanceWithNonStaticMethodException}).</li>
-   * <li>{@code method} must be callable from {@code instance} (signals a
-   * {@link MethodInstanceIncompatibilityException}).</li>
+   * {@code BindingInstantiationException} with a single 
+   * {@link IllegalArgumentException}.</li>
+   * <li>{@code method} must have public visibility (signals an 
+   * {@link InaccessibleMethodException}).</li>
+   * <li>{@code method} must be static if {@code instance} is {@code null} 
+   * (signals a {@link NullInstanceWithNonStaticMethodException}).</li>
+   * <li>{@code method} must be invokable on {@code instance} 
+   * (signals a {@link MethodInstanceIncompatibilityException}).</li>
    * </ul>
    * 
-   * @param instance an object
+   * @param instance an object.
    * @param method a method object. 
-   * @throws BindingInstantiationException if {@code instance} and/or {@code method} do not
-   * constitute a valid binding.
+   * @throws BindingInstantiationException if {@code instance} and/or 
+   * {@code method} do not constitute a valid binding.
    */
   protected void validate(Object instance, Method method) throws BindingInstantiationException {
     if(method == null)
