@@ -1,0 +1,25 @@
+#summary Future features planned for, well, whenever.
+#labels Featured
+
+= Introduction =
+
+This page is a brain dump for future features, refactorings, TODOs and stuff which may be implemented sometime. Dunno which version, when, or if they'll ever make it in...
+
+
+= Stuff =
+== TODOs ==
+
+  * Rethink the validation process (especially for Pair and Binding) to ease overwrite-ability (it's a word -- or could be :)). Maybe the ability to register validators with some pre-implemented ones (could be a separate mini-project).
+
+  * Investigate a better workaround for bug 4819108 in the JVM.
+
+  * Figure out what should happen when a private method is marked with @Converts. Should be ignored (silent bugs suck) or should an exception be thrown (extra effort needed to check them just to signal errors). Methinks a new parameter has just shown itself :)
+
+
+== New Stuff! ==
+
+  * A Converter interface. (A lot) Less checking needed, but not sure how a Converter implementation with @Converts methods will work. Does just marking the Converter method with @Converts do the trick (I think so)?
+  
+  * Implement some search algorithm for a most compatible converter if a perfect match isn't found. Parameterizing it seems good...
+
+  * If lots of optional parameters show up, a DSL would be cool.
