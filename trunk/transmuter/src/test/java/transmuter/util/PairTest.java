@@ -16,6 +16,7 @@ import transmuter.exception.InvalidReturnTypeException;
 import transmuter.exception.PairInstantiationException;
 import transmuter.exception.WrongParameterCountException;
 import transmuter.type.TypeToken;
+import transmuter.util.exception.MethodOwnerTypeIncompatibilityException;
 
 public class PairTest {
   private Pair object2string;
@@ -28,7 +29,7 @@ public class PairTest {
   }
   
   @Test
-  public void testFromMethod() throws PairInstantiationException, SecurityException, NoSuchMethodException {
+  public void testFromMethod() throws SecurityException, NoSuchMethodException {
     assertEquals(new Pair(int.class, String.class), Pair.fromMethod(String.class.getMethod("substring", int.class)));
     
     try {
@@ -121,6 +122,51 @@ public class PairTest {
   }
   
   @Test
+  public void constructorWithVoid() {
+    try {
+      new Pair(void.class, Integer.class);
+      fail();
+    } catch(IllegalArgumentException e) {
+      // empty block
+    }
+    
+    try {
+      new Pair(Object.class, void.class);
+      fail();
+    } catch(IllegalArgumentException e) {
+      // empty block
+    }
+    
+    try {
+      new Pair(Void.class, Integer.class);
+      fail();
+    } catch(IllegalArgumentException e) {
+      // empty block
+    }
+    
+    try {
+      new Pair(Object.class, Void.class);
+      fail();
+    } catch(IllegalArgumentException e) {
+      // empty block
+    }
+  }
+  
+  @Test
+  public void testFromMethodWithIncompatibleOwnerType() throws SecurityException, NoSuchMethodException {
+    final Method valueOfBoolean = String.class.getMethod("valueOf", boolean.class);
+    try {
+      Pair.fromMethod(valueOfBoolean, Object.class);
+    } catch(PairInstantiationException e) {
+      assertEquals(1, e.getCauses().size());
+      
+      MethodOwnerTypeIncompatibilityException ex0 = (MethodOwnerTypeIncompatibilityException) e.getCauses().get(0);
+      assertEquals(valueOfBoolean, ex0.getMethod());
+      assertEquals(Object.class, ex0.getOwnerType());
+    }
+  }
+  
+  @Test
   public void fromTypeAndToType() {
     assertEquals(TypeToken.OBJECT, object2string.getFromType());
     assertEquals(TypeToken.STRING, object2string.getToType());
@@ -135,6 +181,9 @@ public class PairTest {
     assertEquals(int2boolean, int2boolean);
     assertEquals(new Pair(Object.class, String.class), object2string);
     assertEquals(new Pair(TypeToken.ValueType.INTEGER.primitive, TypeToken.ValueType.BOOLEAN.primitive), int2boolean);
+    assertEquals(new Pair(String.class, boolean.class), new Pair(String.class, Boolean.class));
+    assertEquals(new Pair(byte.class, Object.class), new Pair(Byte.class, Object.class));
+    assertEquals(new Pair(int.class, Character.class), new Pair(Integer.class, char.class));
     
     assertFalse(object2string.equals(int2boolean));
     assertFalse(int2boolean.equals(object2string));
