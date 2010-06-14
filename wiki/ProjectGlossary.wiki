@@ -11,7 +11,7 @@ The act of taking an object of a specific type and using the information within 
 
 = Converter =
 
-A [#Binding binding] which holds a [#Converter_method converter method]. Converters are stored by a [#Transmuter transmuter], which, on performing a [#Conversion conversion], will attempt to find the converter of the most appropriate [#Converter_type type] to do it.
+A [#Binding binding] which holds a [#Converter_method converter method]. [#Converter Converters] are registered in a [#Transmuter transmuter], which, on performing a [#Conversion conversion], will attempt to find the converter of the most appropriate [#Converter_type type] to do it.
 
 = Converter method =
 
@@ -23,7 +23,7 @@ A pair of [#Type_token type tokens] representing the input type and the output t
 
 = Transmuter =
 
-The main object in the library. Registers converters and offers a `convert` operation, which attempts to perform the conversion of a given object to a given type using the registered converters.
+The main object in the library. Registers [#Converter converters] (using their [#Converter_type type] as a key) and offers a `convert` operation, which attempts to perform the conversion of a given object to a given type using the registered converters.
 
 = Type token =
 
