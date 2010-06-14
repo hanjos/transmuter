@@ -15,7 +15,7 @@ A [#Binding binding] which holds a [#Converter_method converter method]. Convert
 
 = Converter method =
 
-A method which can be used by the [#Transmuter transmuter] to perform a [#Conversion conversion]. 
+A method which can be used by the [#Transmuter transmuter] to perform a [#Conversion conversion]. This method must be invokable using reflection.
 
 = Converter type =
 
