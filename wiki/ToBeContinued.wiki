@@ -9,7 +9,11 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
 = Stuff =
 == TODOs ==
 
-  * Rethink the validation process (especially for Pair and Binding) to ease inheritability (it's a word -- or could be :)). Maybe the ability to register validators with some pre-implemented ones (could end up being a separate mini-project).
+  * Put Pair and Binding in a different package; they're not just util classes.
+
+  * Finish the docs.
+
+  * Rethink the validation process (especially for Pair and Binding) to ease inheritability. Maybe the ability to register validators with some pre-implemented ones (could end up being a separate mini-project).
 
   * Investigate a better workaround (is there any?) for [http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4819108 bug 4819108] in the JVM.
 
