@@ -6,6 +6,7 @@ import static com.googlecode.gentyref.GenericTypeReflector.getExactParameterType
 import static com.googlecode.gentyref.GenericTypeReflector.getExactReturnType;
 import static com.googlecode.gentyref.GenericTypeReflector.getExactSuperType;
 import static transmuter.util.ObjectUtils.hashCodeOf;
+import static transmuter.util.ObjectUtils.nonNull;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -23,8 +24,8 @@ import transmuter.util.exception.MethodOwnerTypeIncompatibilityException;
 import com.googlecode.gentyref.CaptureType;
 
 /**
- * Represents a converter's "type": the input type paired with its output type.
- * Pairs are immutable.
+ * Represents a converter's "type": the input type (called {@code fromType}) paired with its output type 
+ * (called {@code toType}). Pairs are immutable.
  * 
  * @author Humberto S. N. dos Anjos
  */
@@ -77,10 +78,15 @@ public class Pair {
    * @see #fromMethod(Method, Type)
    */
   public static Pair fromMethod(Method method) throws PairInstantiationException {
-    if(method == null)
-      throw new PairInstantiationException(new IllegalArgumentException("method"));
-    
-    return fromMethod(method, method.getDeclaringClass());
+    try {
+      nonNull(method, "method");
+      
+      return fromMethod(method, method.getDeclaringClass());
+    } catch (PairInstantiationException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new PairInstantiationException(e);
+    }
   }
   
   /**
@@ -120,27 +126,30 @@ public class Pair {
    * the information.
    */
   public static Pair fromMethod(Method method, Type ownerType) throws PairInstantiationException {
-    if(method == null)
-      throw new PairInstantiationException(new IllegalArgumentException("method"));
-    
-    if(ownerType == null)
-      throw new PairInstantiationException(new IllegalArgumentException("ownerType"));
-    
-    if(ownerType instanceof Class<?>)
-      ownerType = addWildcardParameters((Class<?>) ownerType);
-    
-    if(! isCompatible(method, ownerType))
-      throw new PairInstantiationException(new MethodOwnerTypeIncompatibilityException(method, ownerType));
-    
-    List<Exception> exceptions = new ArrayList<Exception>();
-    
-    TypeToken<?> parameterToken = extractParameterToken(method, ownerType, exceptions);
-    TypeToken<?> returnToken = extractReturnToken(method, ownerType, exceptions);
-    
-    if(exceptions.size() > 0)
-      throw new PairInstantiationException(exceptions);
-    
-    return new Pair(parameterToken, returnToken);
+    try {
+      nonNull(method, "method");
+      nonNull(ownerType, "ownerType");
+      
+      if(ownerType instanceof Class<?>)
+        ownerType = addWildcardParameters((Class<?>) ownerType);
+      
+      if(! isCompatible(method, ownerType))
+        throw new MethodOwnerTypeIncompatibilityException(method, ownerType);
+      
+      List<Exception> exceptions = new ArrayList<Exception>();
+      
+      TypeToken<?> parameterToken = extractParameterToken(method, ownerType, exceptions);
+      TypeToken<?> returnToken = extractReturnToken(method, ownerType, exceptions);
+      
+      if(exceptions.size() > 0)
+        throw new PairInstantiationException(exceptions);
+      
+      return new Pair(parameterToken, returnToken);
+    } catch (PairInstantiationException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new PairInstantiationException(e);
+    }
   }
 
   /**
@@ -151,30 +160,18 @@ public class Pair {
   }
 
   private static TypeToken<?> extractParameterToken(Method method, Type ownerType, List<Exception> exceptions) {
-    Type[] parameterTypes = null; 
-    
     try {
-      parameterTypes = getExactParameterTypes(method, ownerType);
-    } catch(Exception e) {
-      exceptions.add(e);
-      return null;
-    }
-    
-    if(parameterTypes.length == 0 || parameterTypes.length > 1) {
-      exceptions.add(new WrongParameterCountException(method, 1));
-      return null;
-    }
-    
-    Type parameterType = parameterTypes[0];
-    if(parameterType == null // means it's a generic method 
-    || parameterType instanceof CaptureType) { 
-      exceptions.add(new InvalidParameterTypeException(method));
-      return null;
-    }
-    
-    try {
+      Type[] parameterTypes = getExactParameterTypes(method, ownerType);
+      if(parameterTypes.length == 0 || parameterTypes.length > 1)
+        throw new WrongParameterCountException(method, 1);
+      
+      Type parameterType = parameterTypes[0];
+      if(parameterType == null // means it's a generic method 
+      || parameterType instanceof CaptureType)
+        throw new InvalidParameterTypeException(method);
+      
       return TypeToken.get(parameterType);
-    } catch(Exception e) {
+    } catch (Exception e) {
       exceptions.add(e);
     }
   
@@ -182,24 +179,16 @@ public class Pair {
   }
   
   private static TypeToken<?> extractReturnToken(Method method, Type ownerType, List<Exception> exceptions) {
-    Type returnType = null; 
     try {
-      returnType = getExactReturnType(method, ownerType);
-    } catch(Exception e) {
-      exceptions.add(e);
-      return null;
-    }
-    
-    if(returnType == null // means it's a generic method 
-    || returnType instanceof CaptureType
-    || TypeToken.ValueType.VOID.matches(returnType)) {
-      exceptions.add(new InvalidReturnTypeException(method));
-      return null;
-    }
-    
-    try {
+      Type returnType = getExactReturnType(method, ownerType);
+      
+      if(returnType == null // means it's a generic method 
+      || returnType instanceof CaptureType
+      || TypeToken.ValueType.VOID.matches(returnType))
+        throw new InvalidReturnTypeException(method);
+      
       return TypeToken.get(returnType);
-    } catch(Exception e) {
+    } catch (Exception e) {
       exceptions.add(e);
     }
     
@@ -216,10 +205,15 @@ public class Pair {
    * @throws PairInstantiationException if binding is null or cannot be used to create a pair.
    */
   public static Pair fromBinding(Binding binding) throws PairInstantiationException {
-    if(binding == null)
-      throw new PairInstantiationException(new IllegalArgumentException("binding"));
-    
-    return Pair.fromMethod(binding.getMethod(), binding.getInstanceClass());
+    try {
+      nonNull(binding, "binding");
+      
+      return Pair.fromMethod(binding.getMethod(), binding.getInstanceClass());
+    } catch (PairInstantiationException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new PairInstantiationException(e);
+    }
   }
   
   // operations
