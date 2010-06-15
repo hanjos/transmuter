@@ -1,4 +1,4 @@
-package transmuter.util;
+package transmuter;
 
 import static com.googlecode.gentyref.GenericTypeReflector.addWildcardParameters;
 import static com.googlecode.gentyref.GenericTypeReflector.capture;

@@ -1,4 +1,4 @@
-package transmuter.util;
+package transmuter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -16,7 +16,9 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import transmuter.Binding;
 import transmuter.Converts;
+import transmuter.Pair;
 import transmuter.type.TypeToken;
 import transmuter.util.exception.BindingInstantiationException;
 import transmuter.util.exception.BindingInvocationException;

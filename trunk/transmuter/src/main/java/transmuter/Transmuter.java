@@ -19,8 +19,6 @@ import transmuter.exception.NoCompatibleConvertersFoundException;
 import transmuter.exception.PairIncompatibleWithBindingException;
 import transmuter.exception.TooManyConvertersFoundException;
 import transmuter.type.TypeToken;
-import transmuter.util.Binding;
-import transmuter.util.Pair;
 
 public class Transmuter {
   protected static class PairBindingMap extends HashMap<Pair, Binding> {
