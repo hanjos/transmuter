@@ -4,6 +4,7 @@ import static com.googlecode.gentyref.GenericTypeReflector.getExactParameterType
 import static com.googlecode.gentyref.GenericTypeReflector.getExactReturnType;
 import static transmuter.util.ObjectUtils.areEqual;
 import static transmuter.util.ObjectUtils.hashCodeOf;
+import static transmuter.util.ObjectUtils.nonNull;
 import static transmuter.util.ReflectionUtils.getTypeName;
 import static transmuter.util.ReflectionUtils.getTypeNames;
 
@@ -61,6 +62,11 @@ public class Binding {
   public Binding(Object instance, Method method) throws BindingInstantiationException {
     validate(instance, method);
     
+    // workaround necessary due to bug 4819108 in the JVM
+    // XXX but if one gets method from getDeclaredMethod it seems to work...
+    if(Modifier.isPublic(method.getModifiers()))
+      method.setAccessible(true);
+    
     this.instance = instance;
     this.method = method;
   }
@@ -92,26 +98,26 @@ public class Binding {
    * {@code method} do not constitute a valid binding.
    */
   protected void validate(Object instance, Method method) throws BindingInstantiationException {
-    if(method == null)
-      throw new BindingInstantiationException(new IllegalArgumentException("method cannot be null!"));
-    
-    List<Exception> exceptions = new ArrayList<Exception>();
-    if(! Modifier.isPublic(method.getModifiers()))
-      exceptions.add(new InaccessibleMethodException(method));
-    
-    // workaround necessary due to bug 4819108 in the JVM
-    // XXX but if one gets method from getDeclaredMethod it seems to work...
-    if(Modifier.isPublic(method.getModifiers()))
-      method.setAccessible(true);
-    
-    if(instance == null && ! Modifier.isStatic(method.getModifiers()))
-      exceptions.add(new NullInstanceWithNonStaticMethodException(method));
-    
-    if(instance != null && ! method.getDeclaringClass().isAssignableFrom(instance.getClass()))
-      exceptions.add(new MethodInstanceIncompatibilityException(instance, method));
-    
-    if(exceptions.size() > 0)
-      throw new BindingInstantiationException(exceptions);
+    try {
+      nonNull(method, "method");
+      
+      List<Exception> exceptions = new ArrayList<Exception>();
+      if(! Modifier.isPublic(method.getModifiers()))
+        exceptions.add(new InaccessibleMethodException(method));
+      
+      if(instance == null && ! Modifier.isStatic(method.getModifiers()))
+        exceptions.add(new NullInstanceWithNonStaticMethodException(method));
+      
+      if(instance != null && ! method.getDeclaringClass().isAssignableFrom(instance.getClass()))
+        exceptions.add(new MethodInstanceIncompatibilityException(instance, method));
+      
+      if(exceptions.size() > 0)
+        throw new BindingInstantiationException(exceptions);
+    } catch (BindingInstantiationException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new BindingInstantiationException(e);
+    }
   }
 
   // operations

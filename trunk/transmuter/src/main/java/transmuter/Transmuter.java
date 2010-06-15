@@ -166,11 +166,10 @@ public class Transmuter {
       
       try {
         temp.put(Pair.fromMethod(method, object.getClass()), new Binding(object, method));
+      } catch (MultipleCausesException e) {
+        exceptions.addAll(e.getCauses());
       } catch(Exception e) {
-        if(! (e instanceof MultipleCausesException))
-          exceptions.add(e);
-        else
-          exceptions.addAll(((MultipleCausesException) e).getCauses());
+        exceptions.add(e);
       }
     }
     
