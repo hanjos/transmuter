@@ -18,7 +18,7 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
 
 == To think about ==
 
-  * Rethink the validation process (especially for Pair and Binding) to ease inheritability. Maybe the ability to register validators with some pre-implemented ones (could end up being a separate mini-project).
+  * Rethink the validation process (especially for Pair and Binding) to ease inheritance. Maybe the ability to register validators with some pre-implemented ones (could end up being a separate mini-project).
 
   * Investigate a better workaround (is there any?) for [http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4819108 bug 4819108] in the JVM.
 
