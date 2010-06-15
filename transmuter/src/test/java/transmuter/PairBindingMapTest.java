@@ -20,8 +20,6 @@ import transmuter.exception.PairIncompatibleWithBindingException;
 import transmuter.mock.MultipleConverter;
 import transmuter.mock.StringConverter;
 import transmuter.type.TypeToken;
-import transmuter.util.Binding;
-import transmuter.util.Pair;
 
 public class PairBindingMapTest {
   private static final TypeToken<List<String>> LIST_OF_STRING = new TypeToken<List<String>>() {};

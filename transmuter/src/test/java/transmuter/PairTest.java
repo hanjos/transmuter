@@ -1,4 +1,4 @@
-package transmuter.util;
+package transmuter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -12,6 +12,8 @@ import java.lang.reflect.Type;
 import org.junit.Before;
 import org.junit.Test;
 
+import transmuter.Binding;
+import transmuter.Pair;
 import transmuter.exception.InvalidReturnTypeException;
 import transmuter.exception.PairInstantiationException;
 import transmuter.exception.WrongParameterCountException;

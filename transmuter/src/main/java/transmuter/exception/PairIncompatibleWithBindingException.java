@@ -1,7 +1,7 @@
 package transmuter.exception;
 
-import transmuter.util.Binding;
-import transmuter.util.Pair;
+import transmuter.Binding;
+import transmuter.Pair;
 
 public class PairIncompatibleWithBindingException extends RuntimeException {
   private static final long serialVersionUID = 1L;

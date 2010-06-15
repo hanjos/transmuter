@@ -1,6 +1,6 @@
 package transmuter.exception;
 
-import transmuter.util.Pair;
+import transmuter.Pair;
 
 public class NoCompatibleConvertersFoundException extends RuntimeException {
   private static final long serialVersionUID = 1L;

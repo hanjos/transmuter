@@ -1,6 +1,6 @@
 package transmuter.util.exception;
 
-import transmuter.util.Binding;
+import transmuter.Binding;
 
 public class BindingInvocationException extends RuntimeException {
   private static final long serialVersionUID = 1L;

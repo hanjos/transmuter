@@ -41,8 +41,6 @@ import transmuter.mock.StringArrayToListStringConverter;
 import transmuter.mock.StringConverter;
 import transmuter.mock.VarargConverter;
 import transmuter.type.TypeToken;
-import transmuter.util.Binding;
-import transmuter.util.Pair;
 
 public class TransmuterTest {
   private static final TypeToken<ArrayList<String>> ARRAYLIST_OF_STRING = new TypeToken<ArrayList<String>>() {};

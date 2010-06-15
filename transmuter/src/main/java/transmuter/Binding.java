@@ -1,4 +1,4 @@
-package transmuter.util;
+package transmuter;
 
 import static com.googlecode.gentyref.GenericTypeReflector.getExactParameterTypes;
 import static com.googlecode.gentyref.GenericTypeReflector.getExactReturnType;
@@ -13,6 +13,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import transmuter.util.StringUtils;
 import transmuter.util.exception.BindingInstantiationException;
 import transmuter.util.exception.BindingInvocationException;
 import transmuter.util.exception.InaccessibleMethodException;

@@ -4,9 +4,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 import transmuter.type.TypeTokenValueTypeTest;
-import transmuter.util.BindingTest;
 import transmuter.util.ObjectUtilsTest;
-import transmuter.util.PairTest;
 import transmuter.util.ReflectionUtilsTest;
 import transmuter.util.StringUtilsTest;
 
