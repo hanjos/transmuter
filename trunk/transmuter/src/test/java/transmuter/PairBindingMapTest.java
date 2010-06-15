@@ -2,6 +2,7 @@ package transmuter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -17,6 +18,7 @@ import org.junit.Test;
 import transmuter.Transmuter.PairBindingMap;
 import transmuter.exception.ConverterCollisionException;
 import transmuter.exception.PairIncompatibleWithBindingException;
+import transmuter.exception.PairInstantiationException;
 import transmuter.mock.MultipleConverter;
 import transmuter.mock.StringConverter;
 import transmuter.type.TypeToken;
@@ -116,12 +118,12 @@ public class PairBindingMapTest {
     
     final StringConverter a = new StringConverter();
     final Method stringify = StringConverter.class.getMethod("stringify", Object.class);
-    map.put(new Pair(Object.class, String.class), new Binding(a, stringify));
+    assertNull(map.put(new Pair(Object.class, String.class), new Binding(a, stringify)));
     
     assertTrue(t.isRegistered(Object.class, String.class));
     assertEquals(1, map.size());
     
-    map.put(new Pair(Object.class, String.class), new Binding(a, stringify));
+    assertEquals(new Binding(a, stringify), map.put(new Pair(Object.class, String.class), new Binding(a, stringify)));
     
     assertTrue(t.isRegistered(Object.class, String.class));
     assertEquals(1, map.size());
@@ -132,6 +134,13 @@ public class PairBindingMapTest {
     map.put(
         new Pair(String.class, double.class), 
         new Binding(new StringConverter(), StringConverter.class.getMethod("stringify", Object.class)));
+  }
+  
+  @Test(expected = PairInstantiationException.class)
+  public void bindingWithNoPair() throws SecurityException, NoSuchMethodException {
+    map.put(
+        new Pair(String.class, double.class), 
+        new Binding("alksjdklajs", String.class.getMethod("codePointCount", int.class, int.class)));
   }
   
   @Test

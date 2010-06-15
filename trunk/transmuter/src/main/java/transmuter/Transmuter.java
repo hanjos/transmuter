@@ -17,22 +17,69 @@ import transmuter.exception.ConverterRegistrationException;
 import transmuter.exception.MultipleCausesException;
 import transmuter.exception.NoCompatibleConvertersFoundException;
 import transmuter.exception.PairIncompatibleWithBindingException;
+import transmuter.exception.PairInstantiationException;
 import transmuter.exception.TooManyConvertersFoundException;
 import transmuter.type.TypeToken;
 
+/**
+ * A central provider of conversion operations and converter registry.
+ * <p>
+ * Although converter methods can still be individually called, a transmuter 
+ * acts as a single point of access for conversion.
+ * 
+ * @author Humberto S. N. dos Anjos
+ */
 public class Transmuter {
+  /**
+   * A map used for converter registration, validating the prospective mapping before the actual insertion.
+   * 
+   *  @author Humberto S. N. dos Anjos
+   */
   protected static class PairBindingMap extends HashMap<Pair, Binding> {
     private static final long serialVersionUID = 1L;
 
     public PairBindingMap() { /* empty block */ }
 
+    /**
+     * Validates the pair and the binding (using {@link #validatePut(Pair, Binding) validatePut}) before insertion, 
+     * throwing an exception if a problem is found.
+     * <p>
+     * In particular, bindings cannot be overwritten; they must be specifically removed from this map before a new put
+     * operation with {@code pair} can be done.
+     * 
+     * @return {@code null} if there was no previous binding for {@code pair}, or {@code binding} if it was already 
+     * associated with {@code pair}.
+     * @throws - all exceptions thrown by {@link #validatePut(Pair, Binding)}. 
+     */
     @Override
     public Binding put(Pair pair, Binding binding) {
       return validatePut(pair, binding) 
-           ? null
+           ? binding
            : super.put(pair, binding);
     }
 
+    /**
+     * Checks if the pair and the binding can be stored in this map.
+     * <p>
+     * The restrictions are:
+     * <ul>
+     * <li>neither {@code pair} nor {@code binding} can be {@code null}.</li>
+     * <li>a pair must be buildable using {@code binding}.</li>
+     * <li>{@code pair} must be assignable from {@code binding}'s pair.</li>
+     * <li>this map must not have {@code pair} associated to a binding different than {@code binding}.</li>
+     * </ul>
+     * 
+     * @param pair a pair.
+     * @param binding a binding.
+     * @return {@code true} if {@code pair} is already associated with {@code binding}, or {@code false} 
+     * if there's no binding.
+     * @throws IllegalArgumentException if either {@code pair} or {@code binding} are {@code null}.
+     * @throws PairIncompatibleWithBindingException if {@code pair} and {@code binding} are not compatible.
+     * @throws PairInstantiationException if {@code binding} cannot be used to extract a pair.
+     * @throws ConverterCollisionException if this map already has a different binding associated to {@code pair}.
+     * @see {@link #checkForCompatibility(Pair, Binding)}
+     * @see {@link #checkForCollision(Pair, Binding)}
+     */
     protected boolean validatePut(Pair pair, Binding binding) {
       // check if the binding matches the pair
       checkForCompatibility(pair, binding);
@@ -41,6 +88,22 @@ public class Transmuter {
       return checkForCollision(pair, binding);
     }
 
+    /**
+     * Checks if the pair and the binding are mutually compatible.
+     * <p>
+     * The restrictions are:
+     * <ul>
+     * <li>neither {@code pair} nor {@code binding} can be {@code null}.</li>
+     * <li>a pair must be buildable using {@code binding}.</li>
+     * <li>{@code pair} must be assignable from {@code binding}'s pair.</li>
+     * </ul>
+     * 
+     * @param pair a pair.
+     * @param binding a binding.
+     * @throws IllegalArgumentException if either {@code pair} or {@code binding} are {@code null}.
+     * @throws PairIncompatibleWithBindingException if {@code pair} and {@code binding} are not compatible.
+     * @throws PairInstantiationException if {@code binding} cannot be used to extract a pair. 
+     */
     protected void checkForCompatibility(Pair pair, Binding binding) 
     throws PairIncompatibleWithBindingException {
       nonNull(pair, "pair"); 
@@ -50,14 +113,42 @@ public class Transmuter {
         throw new PairIncompatibleWithBindingException(pair, binding);
     }
 
+    /**
+     * Checks if the pair and the binding can be stored in this map.
+     * 
+     * @param pair a pair.
+     * @param binding a binding.
+     * @return {@code true} if {@code pair} is already associated with {@code binding} in this map, or {@code false} 
+     * if there's no binding.
+     * @throws IllegalArgumentException if either {@code pair}, {@code binding} or {@code map} are {@code null}.
+     * @throws ConverterCollisionException if this map already has a different binding associated to {@code pair}.
+     * @see {@link #checkMapForCollision(Pair, Binding, Map)}.
+     */
     protected boolean checkForCollision(Pair pair, Binding binding) 
     throws ConverterCollisionException {
       return checkMapForCollision(pair, binding, this);
     }
     
+    /**
+     * Checks if the pair and the binding can be stored in the map.
+     * <p>
+     * The restrictions are:
+     * <ul>
+     * <li>neither {@code pair} nor {@code binding} nor {@code map} can be {@code null}.</li>
+     * <li>{@code map} must not have {@code pair} associated to a binding different than {@code binding}.</li>
+     * </ul>
+     * 
+     * @param pair a pair.
+     * @param binding a binding.
+     * @param map a map.
+     * @return {@code true} if {@code pair} is already associated with {@code binding} in {@code map}, or {@code false} 
+     * if there's no binding in {@code map}.
+     * @throws IllegalArgumentException if either {@code pair}, {@code binding} or {@code map} are {@code null}.
+     * @throws ConverterCollisionException if this map already has a different binding associated to {@code pair}.
+     */
     protected static boolean checkMapForCollision(Pair pair, Binding binding, Map<? extends Pair, ? extends Binding> map) 
     throws ConverterCollisionException {
-      nonNull(pair, "pair"); 
+      nonNull(pair, "pair");
       nonNull(binding, "binding");
       nonNull(map, "map");
       
@@ -124,7 +215,6 @@ public class Transmuter {
   }
   
   // operations
-  // XXX what about erasure types?
   public <From, To> To convert(From from, Class<To> toType) {
     return convert(from, TypeToken.get(toType));
   }

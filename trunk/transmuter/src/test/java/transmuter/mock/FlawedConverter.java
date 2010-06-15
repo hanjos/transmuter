@@ -14,7 +14,7 @@ public final class FlawedConverter {
   }
   
   /**
-   * @param whatever 
+   * @param whatever asklj
    */
   @Converts
   public void voidAsReturnType(Object whatever) {
@@ -22,8 +22,8 @@ public final class FlawedConverter {
   }
   
   /**
-   * @param a  
-   * @param b 
+   * @param a asd
+   * @param b asd
    * @return something
    */
   @Converts
@@ -42,10 +42,10 @@ public final class FlawedConverter {
   }
   
   /**
-   * @param a  
-   * @param b 
-   * @param c 
-   * @param d 
+   * @param a asdasd
+   * @param b asdasd
+   * @param c asdasd
+   * @param d asdasd
    */
   @Converts
   public void voidAndTooManyParameters(int a, int b, int c, int d) {
