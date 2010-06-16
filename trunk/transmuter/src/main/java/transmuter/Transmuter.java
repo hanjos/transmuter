@@ -20,6 +20,7 @@ import transmuter.exception.PairIncompatibleWithBindingException;
 import transmuter.exception.PairInstantiationException;
 import transmuter.exception.TooManyConvertersFoundException;
 import transmuter.type.TypeToken;
+import transmuter.util.exception.BindingInvocationException;
 
 /**
  * A central provider of conversion operations and converter registry.
@@ -49,7 +50,7 @@ public class Transmuter {
      * 
      * @return {@code null} if there was no previous binding for {@code pair}, or {@code binding} if it was already 
      * associated with {@code pair}.
-     * @throws - all exceptions thrown by {@link #validatePut(Pair, Binding)}. 
+     * @throws RuntimeException all exceptions thrown by {@link #validatePut(Pair, Binding)}. 
      */
     @Override
     public Binding put(Pair pair, Binding binding) {
@@ -249,6 +250,22 @@ public class Transmuter {
     return convert(from, TypeToken.get(fromType), TypeToken.get(toType));
   }
   
+  /**
+   * Performs a conversion, taking {@code from} (which is considered to be of type {@code fromType} for the purposes
+   * of this operation) and generating a new object of type {@code toType}. 
+   * 
+   * @param from the object to convert.
+   * @param fromType the type of the object to convert.
+   * @param toType the type of the converted object.
+   * @param <From> the input type of the conversion.
+   * @param <To> the output type of the conversion.
+   * @param <SubFrom> the actual type of the object to convert.
+   * @return an instance of {@code toType}.
+   * @throws NoCompatibleConvertersFoundException if no converters for {@code fromType} to {@code toType} were found.
+   * @throws TooManyConvertersFoundException if more than one converter for {@code fromType} to {@code toType} was found.
+   * @throws IllegalArgumentException if {@code fromType} or {@code toType} is null or void. 
+   * @throws BindingInvocationException if there was an error during the converter's invocation.
+   */
   @SuppressWarnings("unchecked")
   public <From, To, SubFrom extends From> To convert(SubFrom from, TypeToken<From> fromType, TypeToken<To> toType) {
     return (To) convertRaw(from, fromType, toType);
@@ -258,13 +275,13 @@ public class Transmuter {
     return convertRaw(from, TypeToken.get(classOf(from)), toType);
   }
   
-  protected Object convertRaw(Object from, TypeToken<?> fromType, TypeToken<?> toType) {
-    nonNull(fromType, "fromType"); nonNull(toType, "toType");
-    
+  protected Object convertRaw(Object from, TypeToken<?> fromType, TypeToken<?> toType) 
+  throws NoCompatibleConvertersFoundException, TooManyConvertersFoundException, IllegalArgumentException, 
+  BindingInvocationException {
     return getConverterFor(new Pair(fromType, toType)).invoke(from);
   }
   
-  public void register(Object object) {
+  public void register(Object object) throws ConverterRegistrationException {
     if(object == null)
       return;
     
@@ -315,7 +332,8 @@ public class Transmuter {
   }
   
   // helper methods
-  protected Binding getConverterFor(Pair pair) {
+  protected Binding getConverterFor(Pair pair) 
+  throws NoCompatibleConvertersFoundException, TooManyConvertersFoundException {
     if(pair == null)
       throw new NoCompatibleConvertersFoundException(pair);
     
