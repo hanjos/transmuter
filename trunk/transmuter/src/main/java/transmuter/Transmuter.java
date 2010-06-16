@@ -186,16 +186,31 @@ public class Transmuter {
       return super.remove(key);
     }
   }
-    
+  
+  /**
+   * A {@link PairBindingMap} which 
+   * {@link #checkMapForCollision(Pair, Binding, Map) checks for collisions} against itself and a master map. 
+   * 
+   * @author Humberto S. N. dos Anjos
+   */
   protected static class TempPairBindingMap extends PairBindingMap {
     private static final long serialVersionUID = 1L;
 
-    private Map<Pair, Binding> masterMap;
+    private Map<? extends Pair, ? extends Binding> masterMap;
 
-    public TempPairBindingMap(Map<Pair, Binding> masterMap) {
+    /**
+     * Creates a new {@link TempPairBindingMap} object, which will be backed by {@code masterMap}.
+     * 
+     * @param masterMap the master map which backs this map.
+     * @throws IllegalArgumentException if {@code masterMap} is {@code null}.
+     */
+    public TempPairBindingMap(Map<? extends Pair, ? extends Binding> masterMap) {
       this.masterMap = nonNull(masterMap);
     }
     
+    /**
+     * Checks for collision in this and in the master map.
+     */
     @Override
     protected boolean checkForCollision(Pair pair, Binding binding) 
     throws ConverterCollisionException {
@@ -203,13 +218,19 @@ public class Transmuter {
           || super.checkMapForCollision(pair, binding, getMasterMap());
     }
     
-    public Map<Pair, Binding> getMasterMap() {
+    /**
+     * @return the map which backs this instance.
+     */
+    public Map<? extends Pair, ? extends Binding> getMasterMap() {
       return masterMap;
     }
   }
   
   private Map<Pair, Binding> converterMap;
   
+  /**
+   * Constructs a new {@link Transmuter}.
+   */
   public Transmuter() {
     converterMap = new PairBindingMap();
   }
