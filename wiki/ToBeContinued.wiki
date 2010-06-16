@@ -29,6 +29,8 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
   * Accept more than one converter for the same type? How to distinguish them? Yet another parameter (for Transmuter)?
     * This looks more like a Transmuter subclass than an extra parameter.
 
+  * Generalize the `register` operation for the programmer to be able to say how to obtain the bindings.
+
 == New stuff to implement! ==
 
   * A Converter interface. (A lot) Less checking needed, but not sure how a Converter implementation with @Converts methods will work. Does just marking the Converter method with @Converts do the trick (I think so)?
