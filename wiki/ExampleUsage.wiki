@@ -1,0 +1,56 @@
+#summary An example of usage.
+#labels Featured
+
+Obs.: check the ProjectGlossary fo the specific terminology used here.
+
+=== Creating converters ===
+
+Create a class with all converter methods marked with the Converts annotation:
+
+{{{
+public class SomeConverter {
+  @Converts
+  public String dateToString(Date date) {
+    // code 
+  }
+
+  @Converts
+  public Date stringToDate() {
+    // more code
+  }
+}
+}}}
+
+=== Registering the converters in the transmuter ===
+
+Just `register` an instance of the class in the transmuter:
+
+{{{
+// in some method...
+SomeConverter someConverter = new SomeConverter();
+transmuter.register(someConverter);
+}}}
+
+The transmuter will iterate through the instance's methods and register all the converter methods found, binding them to the instance.
+
+=== Doing a conversion ===
+
+Just call `convert`:
+
+{{{
+// in some method...
+String string = "";
+
+// all these calls do the same thing
+string = transmuter.convert(new Date(), String.class);
+string = transmuter.convert(new Date(), TypeToken.STRING);
+string = transmuter.convert(new Date(), Date.class, String.class);
+string = transmuter.convert(new Date(), TypeToken.get(Date.class), TypeToken.STRING);
+}}}
+
+The `convert` calls above are the same as:
+
+{{{
+// it's the same someConverter created in the register example!
+string = someConverter.dateToString(new Date());
+}}}
