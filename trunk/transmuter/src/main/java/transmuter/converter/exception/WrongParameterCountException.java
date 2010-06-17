@@ -1,4 +1,4 @@
-package transmuter.exception;
+package transmuter.converter.exception;
 
 import java.lang.reflect.Method;
 

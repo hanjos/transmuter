@@ -16,15 +16,15 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import transmuter.Binding;
 import transmuter.Converts;
-import transmuter.ConverterType;
+import transmuter.converter.Binding;
+import transmuter.converter.ConverterType;
+import transmuter.converter.exception.BindingInstantiationException;
+import transmuter.converter.exception.BindingInvocationException;
+import transmuter.converter.exception.InaccessibleMethodException;
+import transmuter.converter.exception.MethodInstanceIncompatibilityException;
+import transmuter.converter.exception.NullInstanceWithNonStaticMethodException;
 import transmuter.type.TypeToken;
-import transmuter.util.exception.BindingInstantiationException;
-import transmuter.util.exception.BindingInvocationException;
-import transmuter.util.exception.InaccessibleMethodException;
-import transmuter.util.exception.MethodInstanceIncompatibilityException;
-import transmuter.util.exception.NullInstanceWithNonStaticMethodException;
 
 public class BindingTest {
   private String string;
