@@ -18,7 +18,7 @@ import org.junit.Test;
 
 import transmuter.Binding;
 import transmuter.Converts;
-import transmuter.Pair;
+import transmuter.ConverterType;
 import transmuter.type.TypeToken;
 import transmuter.util.exception.BindingInstantiationException;
 import transmuter.util.exception.BindingInvocationException;
@@ -86,7 +86,7 @@ public class BindingTest {
   @Test
   public void constructorWithIncompatibleInstanceAndMethod() throws SecurityException, NoSuchMethodException {
     try {
-      new Binding("0123456789", extractMethod(Pair.class, "getFromType"));
+      new Binding("0123456789", extractMethod(ConverterType.class, "getFromType"));
       fail();
     } catch(BindingInstantiationException e) {
       assertEquals(1, e.getCauses().size());
@@ -94,21 +94,21 @@ public class BindingTest {
       
       MethodInstanceIncompatibilityException ex = (MethodInstanceIncompatibilityException) e.getCauses().get(0);
       assertEquals("0123456789", ex.getInstance());
-      assertEquals(extractMethod(Pair.class, "getFromType"), ex.getMethod());
+      assertEquals(extractMethod(ConverterType.class, "getFromType"), ex.getMethod());
     }
   }
   
   @Test
   public void constructorWithNullInstanceAndNonStaticMethod() throws SecurityException, NoSuchMethodException {
     try {
-      new Binding(null, extractMethod(Pair.class, "getFromType"));
+      new Binding(null, extractMethod(ConverterType.class, "getFromType"));
       fail();
     } catch(BindingInstantiationException e) {
       assertEquals(1, e.getCauses().size());
       assertEquals(NullInstanceWithNonStaticMethodException.class, e.getCauses().get(0).getClass());
       
       NullInstanceWithNonStaticMethodException ex = (NullInstanceWithNonStaticMethodException) e.getCauses().get(0);
-      assertEquals(extractMethod(Pair.class, "getFromType"), ex.getMethod());
+      assertEquals(extractMethod(ConverterType.class, "getFromType"), ex.getMethod());
     }
   }
   
@@ -140,7 +140,7 @@ public class BindingTest {
     assertEquals("42", binding.invoke(42));
     assertEquals("sbrubbles", binding.invoke("sbrubbles"));
     assertEquals("true", binding.invoke(true));
-    assertEquals("java.lang.Object -> java.lang.Object", binding.invoke(new Pair(Object.class, Object.class)));
+    assertEquals("java.lang.Object -> java.lang.Object", binding.invoke(new ConverterType(Object.class, Object.class)));
   }
   
   

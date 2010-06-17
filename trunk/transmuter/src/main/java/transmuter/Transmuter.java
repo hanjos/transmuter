@@ -16,8 +16,8 @@ import transmuter.exception.ConverterCollisionException;
 import transmuter.exception.ConverterRegistrationException;
 import transmuter.exception.MultipleCausesException;
 import transmuter.exception.NoCompatibleConvertersFoundException;
-import transmuter.exception.PairIncompatibleWithBindingException;
-import transmuter.exception.PairInstantiationException;
+import transmuter.exception.ConverterTypeIncompatibleWithBindingException;
+import transmuter.exception.ConverterTypeInstantiationException;
 import transmuter.exception.TooManyConvertersFoundException;
 import transmuter.type.TypeToken;
 import transmuter.util.exception.BindingInvocationException;
@@ -36,135 +36,140 @@ public class Transmuter {
    * 
    *  @author Humberto S. N. dos Anjos
    */
-  protected static class PairBindingMap extends HashMap<Pair, Binding> {
+  protected static class ConverterTypeBindingMap extends HashMap<ConverterType, Binding> {
     private static final long serialVersionUID = 1L;
 
-    public PairBindingMap() { /* empty block */ }
+    public ConverterTypeBindingMap() { /* empty block */ }
 
     /**
-     * Validates the pair and the binding (using {@link #validatePut(Pair, Binding) validatePut}) before insertion, 
-     * throwing an exception if a problem is found.
+     * Validates the converter type and the binding (using {@link #validatePut(ConverterType, Binding) validatePut}) 
+     * before insertion, throwing an exception if a problem is found.
      * <p>
      * In particular, bindings cannot be overwritten; they must be specifically removed from this map before a new put
-     * operation with {@code pair} can be done.
+     * operation with the given converter type can be done.
      * 
-     * @return {@code null} if there was no previous binding for {@code pair}, or {@code binding} if it was already 
-     * associated with {@code pair}.
-     * @throws RuntimeException all exceptions thrown by {@link #validatePut(Pair, Binding)}. 
+     * @return {@code null} if there was no previous binding for {@code converterType}, or {@code binding} if it was 
+     * already associated with {@code converterType}.
+     * @throws RuntimeException all exceptions thrown by {@link #validatePut(ConverterType, Binding)}. 
      */
     @Override
-    public Binding put(Pair pair, Binding binding) {
-      return validatePut(pair, binding) 
+    public Binding put(ConverterType converterType, Binding binding) {
+      return validatePut(converterType, binding) 
            ? binding
-           : super.put(pair, binding);
+           : super.put(converterType, binding);
     }
 
     /**
-     * Checks if the pair and the binding can be stored in this map.
+     * Checks if the converter type and the binding can be stored in this map.
      * <p>
      * The restrictions are:
      * <ul>
-     * <li>neither {@code pair} nor {@code binding} can be {@code null}.</li>
-     * <li>a pair must be buildable using {@code binding}.</li>
-     * <li>{@code pair} must be assignable from {@code binding}'s pair.</li>
-     * <li>this map must not have {@code pair} associated to a binding different than {@code binding}.</li>
+     * <li>neither {@code converterType} nor {@code binding} can be {@code null}.</li>
+     * <li>a converter type must be buildable using {@code binding}.</li>
+     * <li>{@code converterType} must be assignable from {@code binding}'s converter type.</li>
+     * <li>this map must not have {@code converterType} associated to a binding different than {@code binding}.</li>
      * </ul>
      * 
-     * @param pair a pair.
+     * @param converterType a converter type.
      * @param binding a binding.
-     * @return {@code true} if {@code pair} is already associated with {@code binding}, or {@code false} 
+     * @return {@code true} if {@code converterType} is already associated with {@code binding}, or {@code false} 
      * if there's no binding.
-     * @throws IllegalArgumentException if either {@code pair} or {@code binding} are {@code null}.
-     * @throws PairIncompatibleWithBindingException if {@code pair} and {@code binding} are not compatible.
-     * @throws PairInstantiationException if {@code binding} cannot be used to extract a pair.
-     * @throws ConverterCollisionException if this map already has a different binding associated to {@code pair}.
-     * @see {@link #checkForCompatibility(Pair, Binding)}
-     * @see {@link #checkForCollision(Pair, Binding)}
+     * @throws IllegalArgumentException if either {@code converterType} or {@code binding} are {@code null}.
+     * @throws ConverterTypeIncompatibleWithBindingException if {@code converterType} and {@code binding} are not 
+     * compatible.
+     * @throws ConverterTypeInstantiationException if {@code binding} cannot be used to extract a converter type.
+     * @throws ConverterCollisionException if this map already has a different binding associated to 
+     * {@code converterType}.
+     * @see {@link #checkForCompatibility(ConverterType, Binding)}
+     * @see {@link #checkForCollision(ConverterType, Binding)}
      */
-    protected boolean validatePut(Pair pair, Binding binding) {
-      // check if the binding matches the pair
-      checkForCompatibility(pair, binding);
+    protected boolean validatePut(ConverterType converterType, Binding binding) {
+      // check if the binding matches the converter type
+      checkForCompatibility(converterType, binding);
       
       // check for collisions here
-      return checkForCollision(pair, binding);
+      return checkForCollision(converterType, binding);
     }
 
     /**
-     * Checks if the pair and the binding are mutually compatible.
+     * Checks if the converter type and the binding are mutually compatible.
      * <p>
      * The restrictions are:
      * <ul>
-     * <li>neither {@code pair} nor {@code binding} can be {@code null}.</li>
-     * <li>a pair must be buildable using {@code binding}.</li>
-     * <li>{@code pair} must be assignable from {@code binding}'s pair.</li>
+     * <li>neither {@code converterType} nor {@code binding} can be {@code null}.</li>
+     * <li>a converter type must be buildable using {@code binding}.</li>
+     * <li>{@code converterType} must be assignable from {@code binding}'s converter type.</li>
      * </ul>
      * 
-     * @param pair a pair.
+     * @param converterType a converter type.
      * @param binding a binding.
-     * @throws IllegalArgumentException if either {@code pair} or {@code binding} are {@code null}.
-     * @throws PairIncompatibleWithBindingException if {@code pair} and {@code binding} are not compatible.
-     * @throws PairInstantiationException if {@code binding} cannot be used to extract a pair. 
+     * @throws IllegalArgumentException if either {@code converterType} or {@code binding} are {@code null}.
+     * @throws ConverterTypeIncompatibleWithBindingException if {@code converterType} and {@code binding} are not compatible.
+     * @throws ConverterTypeInstantiationException if {@code binding} cannot be used to extract a converter type. 
      */
-    protected void checkForCompatibility(Pair pair, Binding binding) 
-    throws PairIncompatibleWithBindingException {
-      nonNull(pair, "pair"); 
+    protected void checkForCompatibility(ConverterType converterType, Binding binding) 
+    throws ConverterTypeIncompatibleWithBindingException {
+      nonNull(converterType, "converterType"); 
       nonNull(binding, "binding");
       
-      if(! pair.isAssignableFrom(Pair.fromBinding(binding)))
-        throw new PairIncompatibleWithBindingException(pair, binding);
+      if(! converterType.isAssignableFrom(ConverterType.fromBinding(binding)))
+        throw new ConverterTypeIncompatibleWithBindingException(converterType, binding);
     }
 
     /**
-     * Checks if the pair and the binding can be stored in this map.
+     * Checks if the converter type and the binding can be stored in this map.
      * 
-     * @param pair a pair.
+     * @param converterType a converter type.
      * @param binding a binding.
-     * @return {@code true} if {@code pair} is already associated with {@code binding} in this map, or {@code false} 
-     * if there's no binding.
-     * @throws IllegalArgumentException if either {@code pair}, {@code binding} or {@code map} are {@code null}.
-     * @throws ConverterCollisionException if this map already has a different binding associated to {@code pair}.
-     * @see {@link #checkMapForCollision(Pair, Binding, Map)}.
+     * @return {@code true} if {@code converterType} is already associated with {@code binding} in this map, or 
+     * {@code false} if there's no binding.
+     * @throws IllegalArgumentException if either {@code converterType}, {@code binding} or {@code map} are 
+     * {@code null}.
+     * @throws ConverterCollisionException if this map already has a different binding associated to 
+     * {@code converterType}.
+     * @see {@link #checkMapForCollision(ConverterType, Binding, Map)}.
      */
-    protected boolean checkForCollision(Pair pair, Binding binding) 
+    protected boolean checkForCollision(ConverterType converterType, Binding binding) 
     throws ConverterCollisionException {
-      return checkMapForCollision(pair, binding, this);
+      return checkMapForCollision(converterType, binding, this);
     }
     
     /**
-     * Checks if the pair and the binding can be stored in the map.
+     * Checks if the converter type and the binding can be stored in the map.
      * <p>
      * The restrictions are:
      * <ul>
-     * <li>neither {@code pair} nor {@code binding} nor {@code map} can be {@code null}.</li>
-     * <li>{@code map} must not have {@code pair} associated to a binding different than {@code binding}.</li>
+     * <li>neither {@code converterType} nor {@code binding} nor {@code map} can be {@code null}.</li>
+     * <li>{@code map} must not have {@code converterType} associated to a binding different than {@code binding}.</li>
      * </ul>
      * 
-     * @param pair a pair.
+     * @param converterType a converter type.
      * @param binding a binding.
      * @param map a map.
-     * @return {@code true} if {@code pair} is already associated with {@code binding} in {@code map}, or {@code false} 
-     * if there's no binding in {@code map}.
-     * @throws IllegalArgumentException if either {@code pair}, {@code binding} or {@code map} are {@code null}.
-     * @throws ConverterCollisionException if this map already has a different binding associated to {@code pair}.
+     * @return {@code true} if {@code converterType} is already associated with {@code binding} in {@code map}, or 
+     * {@code false} if there's no binding in {@code map}.
+     * @throws IllegalArgumentException if either {@code converterType}, {@code binding} or {@code map} are 
+     * {@code null}.
+     * @throws ConverterCollisionException if this map already has a different binding associated to the converter type.
      */
-    protected static boolean checkMapForCollision(Pair pair, Binding binding, Map<? extends Pair, ? extends Binding> map) 
-    throws ConverterCollisionException {
-      nonNull(pair, "pair");
+    protected static boolean checkMapForCollision(ConverterType converterType, Binding binding, 
+        Map<? extends ConverterType, ? extends Binding> map) throws ConverterCollisionException {
+      nonNull(converterType, "converterType");
       nonNull(binding, "binding");
       nonNull(map, "map");
       
-      if(! map.containsKey(pair))
+      if(! map.containsKey(converterType))
         return false;
       
-      if(areEqual(binding, map.get(pair)))
+      if(areEqual(binding, map.get(converterType)))
         return true;
       
       // converter collision, throw up
-      throw new ConverterCollisionException(pair, binding, map.get(pair));
+      throw new ConverterCollisionException(converterType, binding, map.get(converterType));
     }
     
     @Override
-    public void putAll(Map<? extends Pair, ? extends Binding> map) {
+    public void putAll(Map<? extends ConverterType, ? extends Binding> map) {
       if(map == null || map.isEmpty())
         return;
       
@@ -189,23 +194,23 @@ public class Transmuter {
   }
   
   /**
-   * A {@link PairBindingMap} which 
-   * {@link #checkMapForCollision(Pair, Binding, Map) checks for collisions} against itself and a master map. 
+   * A {@link ConverterTypeBindingMap} which 
+   * {@link #checkMapForCollision(ConverterType, Binding, Map) checks for collisions} against itself and a master map. 
    * 
    * @author Humberto S. N. dos Anjos
    */
-  protected static class TempPairBindingMap extends PairBindingMap {
+  protected static class TempConverterTypeBindingMap extends ConverterTypeBindingMap {
     private static final long serialVersionUID = 1L;
 
-    private Map<? extends Pair, ? extends Binding> masterMap;
+    private Map<? extends ConverterType, ? extends Binding> masterMap;
 
     /**
-     * Creates a new {@link TempPairBindingMap} object, which will be backed by {@code masterMap}.
+     * Creates a new {@link TempConverterTypeBindingMap} object, which will be backed by {@code masterMap}.
      * 
      * @param masterMap the master map which backs this map.
      * @throws IllegalArgumentException if {@code masterMap} is {@code null}.
      */
-    public TempPairBindingMap(Map<? extends Pair, ? extends Binding> masterMap) {
+    public TempConverterTypeBindingMap(Map<? extends ConverterType, ? extends Binding> masterMap) {
       this.masterMap = nonNull(masterMap);
     }
     
@@ -213,39 +218,82 @@ public class Transmuter {
      * Checks for collision in this and in the master map.
      */
     @Override
-    protected boolean checkForCollision(Pair pair, Binding binding) 
+    protected boolean checkForCollision(ConverterType converterType, Binding binding) 
     throws ConverterCollisionException {
-      return super.checkForCollision(pair, binding)
-          || super.checkMapForCollision(pair, binding, getMasterMap());
+      return super.checkForCollision(converterType, binding)
+          || super.checkMapForCollision(converterType, binding, getMasterMap());
     }
     
     /**
      * @return the map which backs this instance.
      */
-    public Map<? extends Pair, ? extends Binding> getMasterMap() {
+    public Map<? extends ConverterType, ? extends Binding> getMasterMap() {
       return masterMap;
     }
   }
   
-  private Map<Pair, Binding> converterMap;
+  private Map<ConverterType, Binding> converterMap;
   
   /**
    * Constructs a new {@link Transmuter}.
    */
   public Transmuter() {
-    converterMap = new PairBindingMap();
+    converterMap = new ConverterTypeBindingMap();
   }
   
   // operations
+  /**
+   * Performs a conversion, taking {@code from} and generating a new object of type {@code toType}.
+   * 
+   * @param from the object to convert.
+   * @param toType the type of the converted object.
+   * @param <From> the input type of the conversion.
+   * @param <To> the output type of the conversion.
+   * @return an instance of {@code toType}.
+   * @throws NoCompatibleConvertersFoundException if no converters for {@code from}'s type to {@code toType} were found.
+   * @throws TooManyConvertersFoundException if more than one converter for {@code from}'s type to {@code toType} was found.
+   * @throws IllegalArgumentException if {@code from} or {@code toType} is null (or {@code void} for {@code toType}). 
+   * @throws BindingInvocationException if there was an error during the converter's invocation.
+   */
   public <From, To> To convert(From from, Class<To> toType) {
     return convert(from, TypeToken.get(toType));
   }
   
+  /**
+   * Performs a conversion, taking {@code from} and generating a new object of type {@code toType}.
+   * 
+   * @param from the object to convert.
+   * @param toType the type of the converted object.
+   * @param <From> the input type of the conversion.
+   * @param <To> the output type of the conversion.
+   * @return an instance of {@code toType}.
+   * @throws NoCompatibleConvertersFoundException if no converters for {@code from}'s type to {@code toType} were found.
+   * @throws TooManyConvertersFoundException if more than one converter for {@code from}'s type to {@code toType} was found.
+   * @throws IllegalArgumentException if {@code from} or {@code toType} is null (or {@code void} for {@code toType}). 
+   * @throws BindingInvocationException if there was an error during the converter's invocation.
+   */
   @SuppressWarnings("unchecked")
   public <From, To> To convert(From from, TypeToken<To> toType) {
     return convert(from, TypeToken.get((Class<From>) classOf(from)), toType);
   }
 
+  /**
+   * Performs a conversion, taking {@code from} (which is considered to be of type {@code fromType} for the purposes
+   * of this operation) and generating a new object of type {@code toType}. 
+   * 
+   * @param from the object to convert.
+   * @param fromType the type of the object to convert.
+   * @param toType the type of the converted object.
+   * @param <From> the input type of the conversion.
+   * @param <To> the output type of the conversion.
+   * @param <SubFrom> the actual type of the object to convert. Used only to ensure that {@code from} is a subtype of 
+   * {@code fromType}.
+   * @return an instance of {@code toType}.
+   * @throws NoCompatibleConvertersFoundException if no converters for {@code fromType} to {@code toType} were found.
+   * @throws TooManyConvertersFoundException if more than one converter for {@code fromType} to {@code toType} was found.
+   * @throws IllegalArgumentException if {@code fromType} or {@code toType} is null or void. 
+   * @throws BindingInvocationException if there was an error during the converter's invocation.
+   */
   public <From, To, SubFrom extends From> To convert(SubFrom from, Class<From> fromType, Class<To> toType) {
     return convert(from, TypeToken.get(fromType), TypeToken.get(toType));
   }
@@ -259,7 +307,8 @@ public class Transmuter {
    * @param toType the type of the converted object.
    * @param <From> the input type of the conversion.
    * @param <To> the output type of the conversion.
-   * @param <SubFrom> the actual type of the object to convert.
+   * @param <SubFrom> the actual type of the object to convert. Used only to ensure that {@code from} is a subtype of 
+   * {@code fromType}.
    * @return an instance of {@code toType}.
    * @throws NoCompatibleConvertersFoundException if no converters for {@code fromType} to {@code toType} were found.
    * @throws TooManyConvertersFoundException if more than one converter for {@code fromType} to {@code toType} was found.
@@ -271,21 +320,56 @@ public class Transmuter {
     return (To) convertRaw(from, fromType, toType);
   }
 
+  /**
+   * Performs a conversion, taking {@code from} and generating a new object of type {@code toType}.
+   * 
+   * This method doesn't use generics for compile-time checking, returning the result as a raw {@link Object}. 
+   * 
+   * @param from the object to convert.
+   * @param toType the type of the converted object.
+   * @return an instance of {@code toType}.
+   * @throws NoCompatibleConvertersFoundException if no converters for {@code from}'s type to {@code toType} were found.
+   * @throws TooManyConvertersFoundException if more than one converter for {@code from}'s type to {@code toType} was found.
+   * @throws IllegalArgumentException if {@code from} or {@code toType} is null (or {@code void} for {@code toType}). 
+   * @throws BindingInvocationException if there was an error during the converter's invocation.
+   */
   protected Object convertRaw(Object from, TypeToken<?> toType) {
     return convertRaw(from, TypeToken.get(classOf(from)), toType);
   }
   
+  /**
+   * Performs a conversion, taking {@code from} (which is considered to be of type {@code fromType} for the purposes
+   * of this operation) and generating a new object of type {@code toType}.
+   * 
+   * This method doesn't use generics for compile-time checking, returning the result as a raw {@link Object}. 
+   * 
+   * @param from the object to convert.
+   * @param fromType the type of the object to convert.
+   * @param toType the type of the converted object.
+   * @return an instance of {@code toType}.
+   * @throws NoCompatibleConvertersFoundException if no converters for {@code fromType} to {@code toType} were found.
+   * @throws TooManyConvertersFoundException if more than one converter for {@code fromType} to {@code toType} was found.
+   * @throws IllegalArgumentException if {@code fromType} or {@code toType} is null or void. 
+   * @throws BindingInvocationException if there was an error during the converter's invocation.
+   */
   protected Object convertRaw(Object from, TypeToken<?> fromType, TypeToken<?> toType) 
   throws NoCompatibleConvertersFoundException, TooManyConvertersFoundException, IllegalArgumentException, 
   BindingInvocationException {
-    return getConverterFor(new Pair(fromType, toType)).invoke(from);
+    return getConverterFor(new ConverterType(fromType, toType)).invoke(from);
   }
   
+  /**
+   * Scans the given object for converter methods, registering them. Errors encountered during the process will be
+   * bundled together and thrown as a single exception.
+   * 
+   * @param object an object, hopefully with converter methods.
+   * @throws ConverterRegistrationException if there's is some error during the operation.
+   */
   public void register(Object object) throws ConverterRegistrationException {
     if(object == null)
       return;
     
-    Map<Pair, Binding> temp = new TempPairBindingMap(getConverterMap());
+    Map<ConverterType, Binding> temp = new TempConverterTypeBindingMap(getConverterMap());
     List<Exception> exceptions = new ArrayList<Exception>();
     
     for(Method method : object.getClass().getMethods()) {
@@ -293,7 +377,7 @@ public class Transmuter {
         continue;
       
       try {
-        temp.put(Pair.fromMethod(method, object.getClass()), new Binding(object, method));
+        temp.put(ConverterType.fromMethod(method, object.getClass()), new Binding(object, method));
       } catch (MultipleCausesException e) {
         exceptions.addAll(e.getCauses());
       } catch(Exception e) {
@@ -301,74 +385,136 @@ public class Transmuter {
       }
     }
     
-    if(exceptions.size() > 0) // errors during registration
+    if(! exceptions.isEmpty())
       throw new ConverterRegistrationException(exceptions);
     
-    getConverterMap().putAll(temp);
+    try {
+      getConverterMap().putAll(temp);
+      return;
+    } catch (MultipleCausesException e) {
+      exceptions.addAll(e.getCauses());
+    } catch(Exception e) {
+      exceptions.add(e);
+    }
+    
+    // something happened at putAll()
+    throw new ConverterRegistrationException(exceptions);
   }
   
+  /**
+   * @param fromType the input type.
+   * @param toType the output type.
+   * @return {@code true} if there is a converter for the given pairing.
+   */
   public boolean isRegistered(Type fromType, Type toType) {
-    return isRegistered(new Pair(fromType, toType));
+    return isRegistered(new ConverterType(fromType, toType));
   }
   
+  /**
+   * @param fromType the input type.
+   * @param toType the output type.
+   * @return {@code true} if there is a converter for the given pairing.
+   */
   public boolean isRegistered(TypeToken<?> fromType, TypeToken<?> toType) {
-    return isRegistered(new Pair(fromType, toType));
+    return isRegistered(new ConverterType(fromType, toType));
   }
   
-  public boolean isRegistered(Pair pair) {
-    return getConverterMap().containsKey(pair);
+  /**
+   * @param converterType a converter type.
+   * @return {@code true} if there is a converter for the given converter type.
+   */
+  public boolean isRegistered(ConverterType converterType) {
+    return getConverterMap().containsKey(converterType);
   }
   
+  /**
+   * Unregisters the converter for the converter type represented by the given types. 
+   * Does nothing if no such converter exists. 
+   * 
+   * @param fromType the input type.
+   * @param toType the output type.
+   */
   public void unregister(Type fromType, Type toType) {
-    unregister(new Pair(fromType, toType));
+    if(fromType == null || TypeToken.ValueType.VOID.matches(fromType)
+    || toType == null || TypeToken.ValueType.VOID.matches(toType))
+      return;
+    
+    unregister(new ConverterType(fromType, toType));
   }
   
+  /**
+   * Unregisters the converter for the converter type represented by the given types. 
+   * Does nothing if no such converter exists. 
+   * 
+   * @param fromType the input type.
+   * @param toType the output type.
+   */
   public void unregister(TypeToken<?> fromType, TypeToken<?> toType) {
-    unregister(new Pair(fromType, toType));
+    if(fromType == null || TypeToken.ValueType.VOID.matches(fromType)
+    || toType == null || TypeToken.ValueType.VOID.matches(toType))
+      return;
+    
+    unregister(new ConverterType(fromType, toType));
   }
   
-  public Binding unregister(Pair pair) {
-    return getConverterMap().remove(pair);
+  /**
+   * Unregisters the converter for the given converter type. Does nothing if no such converter exists. 
+   * 
+   * @param converterType a converter type.
+   */
+  public Binding unregister(ConverterType converterType) {
+    return getConverterMap().remove(converterType);
   }
   
   // helper methods
-  protected Binding getConverterFor(Pair pair) 
+  /**
+   * Attempts to return a converter compatible with the given converter type. 
+   * <p>
+   * There can only be one exact match registered in this object, which will be returned here; lacking that, 
+   * a compatible converter will be looked for. An exception will be thrown if no converter is found, or if more than 
+   * one compatible (non-exact match) converter is found, since this method cannot decide which should be returned.
+   * 
+   * @param converterType a converter type.
+   * @return a converter compatible with the given converter type. May not an exact match.
+   * @throws NoCompatibleConvertersFoundException no compatible converters were found.
+   * @throws TooManyConvertersFoundException more than one compatible converter was found.
+   */
+  protected Binding getConverterFor(ConverterType converterType) 
   throws NoCompatibleConvertersFoundException, TooManyConvertersFoundException {
-    if(pair == null)
-      throw new NoCompatibleConvertersFoundException(pair);
+    if(converterType == null)
+      throw new NoCompatibleConvertersFoundException(converterType);
     
-    Binding converter = getMostCompatibleConverterFor(pair);
+    // TODO determine a search algorithm for a "most compatible" converter type
+    // XXX parameterize it?
+    Binding converter = getConverterMap().get(converterType);
     if(converter != null)
       return converter;
     
-    List<Binding> compatibleBindings = getCompatibleConvertersFor(pair);
+    List<Binding> compatibleBindings = getCompatibleConvertersFor(converterType);
     
     if(compatibleBindings.isEmpty())
-      throw new NoCompatibleConvertersFoundException(pair);
+      throw new NoCompatibleConvertersFoundException(converterType);
     
     if(compatibleBindings.size() > 1)
-      throw new TooManyConvertersFoundException(pair, compatibleBindings);
+      throw new TooManyConvertersFoundException(converterType, compatibleBindings);
     
     return compatibleBindings.get(0);
   }
-
-  protected Binding getMostCompatibleConverterFor(Pair pair) {
-    if(pair == null)
-      return null;
-    
-    // TODO determine a search algorithm for a "most compatible" pair
-    // XXX parameterize it?
-    
-    return getConverterMap().get(pair);
-  }
   
-  protected List<Binding> getCompatibleConvertersFor(Pair pair) {
+  /**
+   * Returns a list of all the compatible bindings found in this instance. Will be empty if the given converter type
+   * is {@code null} or has no compatible bindings. 
+   * 
+   * @param converterType a converter type.
+   * @return a list with all the compatible bindings found.  
+   */
+  protected List<Binding> getCompatibleConvertersFor(ConverterType converterType) {
     List<Binding> compatibleBindings = new ArrayList<Binding>();
-    if(pair == null)
+    if(converterType == null)
       return compatibleBindings;
     
-    for(Entry<Pair, Binding> entry : getConverterMap().entrySet()) {
-      if(entry.getKey().isAssignableFrom(pair))
+    for(Entry<ConverterType, Binding> entry : getConverterMap().entrySet()) {
+      if(entry.getKey().isAssignableFrom(converterType))
         compatibleBindings.add(entry.getValue());
     }
     
@@ -376,7 +522,11 @@ public class Transmuter {
   } 
   
   // properties
-  protected Map<Pair, Binding> getConverterMap() {
+  /**
+   * @return a map holding all the registered converters, keyed by their converter types. This map is backed by 
+   * this instance, i.e. changes made in the transmuter are seen in the map and vice-versa.
+   */
+  protected Map<ConverterType, Binding> getConverterMap() {
     return converterMap;
   }
 }
