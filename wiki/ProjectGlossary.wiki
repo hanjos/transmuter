@@ -1,31 +1,35 @@
 #summary Some of the terms used in this project.
 #labels Featured
 
-= Binding =
+=== Binding ===
 
-An object which represents a certain method of a particular instance of an object. This binding may then be stored and invoked when necessary.
+An object which represents a method from a particular instance. Invoking the binding is equivalent to invoking said method on the particular instance. This binding may then be stored and invoked when necessary.
 
-= Conversion =
+=== Conversion ===
 
 The act of taking an object of a specific type and using the information within to obtain a new object of a different type.
 
-= Converter =
+=== Converter ===
 
 A [#Binding binding] which holds a [#Converter_method converter method]. [#Converter Converters] are registered in a [#Transmuter transmuter], which, on performing a [#Conversion conversion], will attempt to find the converter of the most appropriate [#Converter_type type] to do it.
 
-= Converter method =
+=== Converter method ===
 
-A method which can be used by the [#Transmuter transmuter] to perform a [#Conversion conversion]. This method must be invokable using reflection.
+A method which can be used by the [#Transmuter transmuter] to perform a [#Conversion conversion]. This method must be invokable using reflection. Converter methods must:
 
-= Converter type =
+  * be public
+  * take a single parameter
+  * not return `void`
+
+=== Converter type ===
 
 A pair of [#Type_token type tokens] representing the input type and the output type accepted by the [#Converter converter].
 
-= Transmuter =
+=== Transmuter ===
 
 The main object in the library. Registers [#Converter converters] (using their [#Converter_type type] as a key) and offers a `convert` operation, which attempts to perform the [#Conversion conversion] of a given object to a given type using the registered [#Converter converters].
 
-= Type token =
+=== Type token ===
 
 An object used to represent Java types which is also usable with generics. Java's native reflection mechanisms are clumsy when representing generic types such as `List<? extends String>[]` and `Map<Long, Object>`, and don't take advantage of the compiler's generic inference. In principle type tokens are needed only to obtain the complex types above, e.g.
 
@@ -48,7 +52,7 @@ public <T> T method(Class<T> cls) {
 }
 }}}
 
-Instead, one could use the type token directly:
+So, if one wants to represent a complex type and still retain generics' benefits, one could use the type token directly:
 
 {{{
 // ...but we can make a type token of List<? extends String>[]!
