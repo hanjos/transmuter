@@ -38,10 +38,10 @@ public class Transmuter {
    * 
    *  @author Humberto S. N. dos Anjos
    */
-  protected static class ConverterTypeBindingMap extends HashMap<ConverterType, Binding> {
+  protected static class ConverterMap extends HashMap<ConverterType, Binding> {
     private static final long serialVersionUID = 1L;
 
-    public ConverterTypeBindingMap() { /* empty block */ }
+    public ConverterMap() { /* empty block */ }
 
     /**
      * Validates the converter type and the binding (using {@link #validatePut(ConverterType, Binding) validatePut}) 
@@ -196,23 +196,23 @@ public class Transmuter {
   }
   
   /**
-   * A {@link ConverterTypeBindingMap} which 
+   * A {@link ConverterMap} which 
    * {@link #checkMapForCollision(ConverterType, Binding, Map) checks for collisions} against itself and a master map. 
    * 
    * @author Humberto S. N. dos Anjos
    */
-  protected static class TempConverterTypeBindingMap extends ConverterTypeBindingMap {
+  protected static class TempConverterMap extends ConverterMap {
     private static final long serialVersionUID = 1L;
 
     private Map<? extends ConverterType, ? extends Binding> masterMap;
 
     /**
-     * Creates a new {@link TempConverterTypeBindingMap} object, which will be backed by {@code masterMap}.
+     * Creates a new {@link TempConverterMap} object, which will be backed by {@code masterMap}.
      * 
      * @param masterMap the master map which backs this map.
      * @throws IllegalArgumentException if {@code masterMap} is {@code null}.
      */
-    public TempConverterTypeBindingMap(Map<? extends ConverterType, ? extends Binding> masterMap) {
+    public TempConverterMap(Map<? extends ConverterType, ? extends Binding> masterMap) {
       this.masterMap = nonNull(masterMap);
     }
     
@@ -240,7 +240,7 @@ public class Transmuter {
    * Constructs a new {@link Transmuter}.
    */
   public Transmuter() {
-    converterMap = new ConverterTypeBindingMap();
+    converterMap = new ConverterMap();
   }
   
   // operations
@@ -371,7 +371,7 @@ public class Transmuter {
     if(object == null)
       return;
     
-    Map<ConverterType, Binding> temp = new TempConverterTypeBindingMap(getConverterMap());
+    Map<ConverterType, Binding> temp = new TempConverterMap(getConverterMap());
     List<Exception> exceptions = new ArrayList<Exception>();
     
     for(Method method : object.getClass().getMethods()) {
