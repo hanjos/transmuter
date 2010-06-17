@@ -17,7 +17,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import transmuter.Transmuter.ConverterTypeBindingMap;
+import transmuter.Transmuter.ConverterMap;
 import transmuter.converter.Binding;
 import transmuter.converter.ConverterType;
 import transmuter.converter.exception.ConverterTypeIncompatibleWithBindingException;
@@ -28,7 +28,7 @@ import transmuter.mock.MultipleValidConverter;
 import transmuter.mock.StringConverter;
 import transmuter.type.TypeToken;
 
-public class ConverterTypeBindingMapTest {
+public class ConverterMapTest {
   private static final TypeToken<List<String>> LIST_OF_STRING = new TypeToken<List<String>>() {};
   private static final TypeToken<ArrayList<String>> ARRAYLIST_OF_STRING = new TypeToken<ArrayList<String>>() {};
   
@@ -164,7 +164,7 @@ public class ConverterTypeBindingMapTest {
   
   @Test
   public void checkForCollision() throws SecurityException, NoSuchMethodException {
-    ConverterTypeBindingMap pbm = (ConverterTypeBindingMap) map;
+    ConverterMap pbm = (ConverterMap) map;
     
     StringConverter converter = new StringConverter();
     ConverterType converterType = new ConverterType(Object.class, String.class);
@@ -202,7 +202,7 @@ public class ConverterTypeBindingMapTest {
     }
     
     try {
-      ConverterTypeBindingMap.checkMapForCollision(converterType, stringify, null);
+      ConverterMap.checkMapForCollision(converterType, stringify, null);
       fail();
     } catch(IllegalArgumentException e) {
       // empty block
@@ -216,13 +216,13 @@ public class ConverterTypeBindingMapTest {
     Map<ConverterType, Binding> noChecking = new HashMap<ConverterType, Binding>();
     noChecking.put(converterType, toString);
     
-    assertFalse(ConverterTypeBindingMap.checkMapForCollision(converterType, toString, pbm));
-    assertTrue(ConverterTypeBindingMap.checkMapForCollision(converterType, toString, noChecking));
+    assertFalse(ConverterMap.checkMapForCollision(converterType, toString, pbm));
+    assertTrue(ConverterMap.checkMapForCollision(converterType, toString, noChecking));
     
     assertFalse(pbm.checkForCollision(converterType, stringify));
     
     try {
-      ConverterTypeBindingMap.checkMapForCollision(converterType, stringify, noChecking);
+      ConverterMap.checkMapForCollision(converterType, stringify, noChecking);
       fail();
     } catch(ConverterCollisionException e) {
       assertEquals(converterType, e.getConverterType());

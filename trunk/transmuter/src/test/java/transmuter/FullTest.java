@@ -16,6 +16,6 @@ import transmuter.util.StringUtilsTest;
   ObjectUtilsTest.class,
   ReflectionUtilsTest.class,
   ConverterTypeTest.class,
-  ConverterTypeBindingMapTest.class,
+  ConverterMapTest.class,
   TransmuterTest.class })
 public class FullTest { /* empty block */ }
