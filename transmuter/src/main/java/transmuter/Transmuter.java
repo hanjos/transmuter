@@ -470,7 +470,7 @@ public class Transmuter {
   /**
    * Attempts to return a converter compatible with the given converter type. 
    * <p>
-   * There can only be one exact match registered in this object, which will be returned here; lacking that, 
+   * There can only be one exact match registered in the transmuter, which will be returned here; lacking that, 
    * a compatible converter will be looked for. An exception will be thrown if no converter is found, or if more than 
    * one compatible (non-exact match) converter is found, since this method cannot decide which should be returned.
    * 
