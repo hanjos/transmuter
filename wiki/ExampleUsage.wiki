@@ -9,13 +9,16 @@ Create a class with all converter methods marked with the Converts annotation:
 
 {{{
 public class SomeConverter {
+  // the parameter type is the input type: here, that's Date
+  // the return type is the output type: here, that's String
   @Converts
-  public String dateToString(Date date) {
+  public String dateToString(java.util.Date date) {
     // code 
   }
 
+  // converts a String to a Date
   @Converts
-  public Date stringToDate() {
+  public java.util.Date stringToDate(String string) {
     // more code
   }
 }
@@ -42,15 +45,19 @@ Just call `convert`:
 String string = "";
 
 // all these calls do the same thing
-string = transmuter.convert(new Date(), String.class);
-string = transmuter.convert(new Date(), TypeToken.STRING);
-string = transmuter.convert(new Date(), Date.class, String.class);
-string = transmuter.convert(new Date(), TypeToken.get(Date.class), TypeToken.STRING);
+// converts a Date object to a String
+string = transmuter.convert(new java.sql.Date(0L), String.class);
+string = transmuter.convert(new java.sql.Date(0L), TypeToken.STRING);
+
+// converts a java.sql.Date object, which is seen as a 
+// java.util.Date in this conversion, to a String
+string = transmuter.convert(new java.sql.Date(0L), java.util.Date.class, String.class);
+string = transmuter.convert(new java.sql.Date(0L), TypeToken.get(java.util.Date.class), TypeToken.STRING);
 }}}
 
 The `convert` calls above are the same as:
 
 {{{
 // it's the same someConverter created in the register example!
-string = someConverter.dateToString(new Date());
+string = someConverter.dateToString(new java.sql.Date(0L));
 }}}
