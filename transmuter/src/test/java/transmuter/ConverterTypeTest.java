@@ -12,13 +12,13 @@ import java.lang.reflect.Type;
 import org.junit.Before;
 import org.junit.Test;
 
-import transmuter.Binding;
-import transmuter.ConverterType;
-import transmuter.exception.InvalidReturnTypeException;
-import transmuter.exception.ConverterTypeInstantiationException;
-import transmuter.exception.WrongParameterCountException;
+import transmuter.converter.Binding;
+import transmuter.converter.ConverterType;
+import transmuter.converter.exception.ConverterTypeInstantiationException;
+import transmuter.converter.exception.InvalidReturnTypeException;
+import transmuter.converter.exception.MethodOwnerTypeIncompatibilityException;
+import transmuter.converter.exception.WrongParameterCountException;
 import transmuter.type.TypeToken;
-import transmuter.util.exception.MethodOwnerTypeIncompatibilityException;
 
 public class ConverterTypeTest {
   private ConverterType object2string;

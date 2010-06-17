@@ -1,4 +1,4 @@
-package transmuter;
+package transmuter.converter;
 
 import static com.googlecode.gentyref.GenericTypeReflector.getExactParameterTypes;
 import static com.googlecode.gentyref.GenericTypeReflector.getExactReturnType;
@@ -14,12 +14,12 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import transmuter.converter.exception.BindingInstantiationException;
+import transmuter.converter.exception.BindingInvocationException;
+import transmuter.converter.exception.InaccessibleMethodException;
+import transmuter.converter.exception.MethodInstanceIncompatibilityException;
+import transmuter.converter.exception.NullInstanceWithNonStaticMethodException;
 import transmuter.util.StringUtils;
-import transmuter.util.exception.BindingInstantiationException;
-import transmuter.util.exception.BindingInvocationException;
-import transmuter.util.exception.InaccessibleMethodException;
-import transmuter.util.exception.MethodInstanceIncompatibilityException;
-import transmuter.util.exception.NullInstanceWithNonStaticMethodException;
 
 /**
  * Represents an immutable invokable object, made binding a method 

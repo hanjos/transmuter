@@ -1,7 +1,7 @@
-package transmuter.exception;
+package transmuter.converter.exception;
 
-import transmuter.Binding;
-import transmuter.ConverterType;
+import transmuter.converter.Binding;
+import transmuter.converter.ConverterType;
 
 public class ConverterTypeIncompatibleWithBindingException extends RuntimeException {
   private static final long serialVersionUID = 1L;

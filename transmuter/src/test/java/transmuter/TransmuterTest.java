@@ -24,13 +24,15 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
+import transmuter.converter.Binding;
+import transmuter.converter.ConverterType;
+import transmuter.converter.exception.InvalidParameterTypeException;
+import transmuter.converter.exception.InvalidReturnTypeException;
+import transmuter.converter.exception.WrongParameterCountException;
 import transmuter.exception.ConverterCollisionException;
 import transmuter.exception.ConverterRegistrationException;
-import transmuter.exception.InvalidParameterTypeException;
-import transmuter.exception.InvalidReturnTypeException;
 import transmuter.exception.NoCompatibleConvertersFoundException;
 import transmuter.exception.TooManyConvertersFoundException;
-import transmuter.exception.WrongParameterCountException;
 import transmuter.mock.FlawedConverter;
 import transmuter.mock.GenericConverter;
 import transmuter.mock.GenericMethodConverter;

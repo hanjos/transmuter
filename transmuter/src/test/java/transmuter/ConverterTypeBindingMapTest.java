@@ -18,9 +18,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import transmuter.Transmuter.ConverterTypeBindingMap;
+import transmuter.converter.Binding;
+import transmuter.converter.ConverterType;
+import transmuter.converter.exception.ConverterTypeIncompatibleWithBindingException;
+import transmuter.converter.exception.ConverterTypeInstantiationException;
 import transmuter.exception.ConverterCollisionException;
-import transmuter.exception.ConverterTypeIncompatibleWithBindingException;
-import transmuter.exception.ConverterTypeInstantiationException;
 import transmuter.mock.MultipleConverter;
 import transmuter.mock.MultipleValidConverter;
 import transmuter.mock.StringConverter;

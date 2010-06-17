@@ -12,15 +12,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import transmuter.converter.Binding;
+import transmuter.converter.ConverterType;
+import transmuter.converter.exception.BindingInvocationException;
+import transmuter.converter.exception.ConverterTypeIncompatibleWithBindingException;
+import transmuter.converter.exception.ConverterTypeInstantiationException;
 import transmuter.exception.ConverterCollisionException;
 import transmuter.exception.ConverterRegistrationException;
 import transmuter.exception.MultipleCausesException;
 import transmuter.exception.NoCompatibleConvertersFoundException;
-import transmuter.exception.ConverterTypeIncompatibleWithBindingException;
-import transmuter.exception.ConverterTypeInstantiationException;
 import transmuter.exception.TooManyConvertersFoundException;
 import transmuter.type.TypeToken;
-import transmuter.util.exception.BindingInvocationException;
 
 /**
  * A central provider of conversion operations and converter registry.

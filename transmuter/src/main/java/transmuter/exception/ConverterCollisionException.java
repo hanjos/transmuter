@@ -6,8 +6,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import transmuter.Binding;
-import transmuter.ConverterType;
+import transmuter.converter.Binding;
+import transmuter.converter.ConverterType;
 
 public class ConverterCollisionException extends RuntimeException {
   private static final long serialVersionUID = 1L;

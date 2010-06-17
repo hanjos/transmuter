@@ -1,6 +1,8 @@
-package transmuter.exception;
+package transmuter.converter.exception;
 
 import java.util.List;
+
+import transmuter.exception.MultipleCausesException;
 
 public class ConverterTypeInstantiationException extends MultipleCausesException {
   private static final long serialVersionUID = 1L;

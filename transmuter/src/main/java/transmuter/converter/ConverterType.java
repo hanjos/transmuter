@@ -1,4 +1,4 @@
-package transmuter;
+package transmuter.converter;
 
 import static com.googlecode.gentyref.GenericTypeReflector.addWildcardParameters;
 import static com.googlecode.gentyref.GenericTypeReflector.capture;
@@ -13,13 +13,13 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import transmuter.exception.InvalidParameterTypeException;
-import transmuter.exception.InvalidReturnTypeException;
-import transmuter.exception.ConverterTypeInstantiationException;
-import transmuter.exception.WrongParameterCountException;
+import transmuter.converter.exception.ConverterTypeInstantiationException;
+import transmuter.converter.exception.InvalidParameterTypeException;
+import transmuter.converter.exception.InvalidReturnTypeException;
+import transmuter.converter.exception.MethodOwnerTypeIncompatibilityException;
+import transmuter.converter.exception.WrongParameterCountException;
 import transmuter.type.TypeToken;
 import transmuter.type.TypeToken.ValueType;
-import transmuter.util.exception.MethodOwnerTypeIncompatibilityException;
 
 import com.googlecode.gentyref.CaptureType;
 
