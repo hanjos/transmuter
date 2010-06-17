@@ -13,12 +13,10 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
 
   * Make the interface more Spring-friendly.
 
-  * Some extra `register` methods to ease registering?
-
 
 == To think about ==
 
-  * Rethink the validation process (especially for Pair and Binding) to ease inheritance. Maybe the ability to register validators with some pre-implemented ones (could end up being a separate mini-project).
+  * Rethink the validation process (especially for ConverterType and Binding) to ease inheritance. Maybe the ability to register validators with some pre-implemented ones (could end up being a separate mini-project).
     * On registering validators: too much work, and too much code. Would be easier on the eyes with some AOP, but it doesn't seem worth the bother.
     * Did some refactoring, it looks reasonable for now.
 
@@ -29,14 +27,15 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
   * Accept more than one converter for the same type? How to distinguish them? Yet another parameter (for Transmuter)?
     * This looks more like a Transmuter subclass than an extra parameter.
 
-  * Generalize the `register` operation for the programmer to be able to say how to obtain the bindings.
+  * Generalize the `register` operation for the programmer to be able to say how to obtain the bindings. Yet another parameter...
 
 == New stuff to implement! ==
 
   * A Converter interface. (A lot) Less checking needed, but not sure how a Converter implementation with @Converts methods will work. Does just marking the Converter method with @Converts do the trick (I think so)?
+    * Is this really necessary?
   
   * Implement some search algorithm for a most compatible converter if a perfect match isn't found. Parameterizing it seems good...
 
   * Transitive conversion (work on the name needed), e.g. if I have a String -> Unit converter and a Unit -> int converter, I can translate a String to an int. This will affect the most compatible converter algorithm mentioned above (or will it _be_ an alternative algorithm?).
 
-  * If lots of optional parameters show up (got three potential ones already!), a DSL would be cool.
+  * If lots of optional parameters show up (got three already!), a DSL would be cool.
