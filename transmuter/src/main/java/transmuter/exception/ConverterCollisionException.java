@@ -7,30 +7,30 @@ import java.util.Collections;
 import java.util.List;
 
 import transmuter.Binding;
-import transmuter.Pair;
+import transmuter.ConverterType;
 
 public class ConverterCollisionException extends RuntimeException {
   private static final long serialVersionUID = 1L;
   
   private List<Binding> bindings;
-  private Pair pair;
+  private ConverterType converterType;
   
-  private static String buildMessage(Pair pair, Binding... bindings) {
-    return "more than one converter for " + pair + ": " 
+  private static String buildMessage(ConverterType converterType, Binding... bindings) {
+    return "more than one converter for " + converterType + ": " 
          + ((bindings != null) ? Arrays.toString(bindings) : "null");
   }
   
   @SuppressWarnings("unchecked")
-  public ConverterCollisionException(Pair pair, Binding... bindings) {
-    super(buildMessage(pair, bindings));
+  public ConverterCollisionException(ConverterType converterType, Binding... bindings) {
+    super(buildMessage(converterType, bindings));
     
     this.bindings = Collections.unmodifiableList(
         (! isEmpty(bindings)) ? Arrays.asList(bindings) : Collections.EMPTY_LIST);
-    this.pair = pair;
+    this.converterType = converterType;
   }
 
-  public Pair getPair() {
-    return pair;
+  public ConverterType getConverterType() {
+    return converterType;
   }
 
   public List<Binding> getBindings() {

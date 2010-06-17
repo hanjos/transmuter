@@ -13,55 +13,55 @@ import org.junit.Before;
 import org.junit.Test;
 
 import transmuter.Binding;
-import transmuter.Pair;
+import transmuter.ConverterType;
 import transmuter.exception.InvalidReturnTypeException;
-import transmuter.exception.PairInstantiationException;
+import transmuter.exception.ConverterTypeInstantiationException;
 import transmuter.exception.WrongParameterCountException;
 import transmuter.type.TypeToken;
 import transmuter.util.exception.MethodOwnerTypeIncompatibilityException;
 
-public class PairTest {
-  private Pair object2string;
-  private Pair int2boolean;
+public class ConverterTypeTest {
+  private ConverterType object2string;
+  private ConverterType int2boolean;
   
   @Before
   public void setUp() {
-    object2string = new Pair(TypeToken.OBJECT, TypeToken.STRING);
-    int2boolean = new Pair(int.class, boolean.class);
+    object2string = new ConverterType(TypeToken.OBJECT, TypeToken.STRING);
+    int2boolean = new ConverterType(int.class, boolean.class);
   }
   
   @Test
   public void testFromMethod() throws SecurityException, NoSuchMethodException {
-    assertEquals(new Pair(int.class, String.class), Pair.fromMethod(String.class.getMethod("substring", int.class)));
+    assertEquals(new ConverterType(int.class, String.class), ConverterType.fromMethod(String.class.getMethod("substring", int.class)));
     
     try {
-      Pair.fromMethod(null);
-    } catch(PairInstantiationException e) {
+      ConverterType.fromMethod(null);
+    } catch(ConverterTypeInstantiationException e) {
       assertEquals(1, e.getCauses().size());
       assertEquals(IllegalArgumentException.class, e.getCauses().get(0).getClass());
     }
     
     try {
-      Pair.fromMethod(null, Object.class);
+      ConverterType.fromMethod(null, Object.class);
       fail();
-    } catch(PairInstantiationException e) {
+    } catch(ConverterTypeInstantiationException e) {
       assertEquals(1, e.getCauses().size());
       assertEquals(IllegalArgumentException.class, e.getCauses().get(0).getClass());
     }
     
     try {
-      Pair.fromMethod(String.class.getMethod("substring", int.class), null);
+      ConverterType.fromMethod(String.class.getMethod("substring", int.class), null);
       fail();
-    } catch(PairInstantiationException e) {
+    } catch(ConverterTypeInstantiationException e) {
       assertEquals(1, e.getCauses().size());
       assertEquals(IllegalArgumentException.class, e.getCauses().get(0).getClass());
     }
     
     Method substring_2 = String.class.getMethod("substring", int.class, int.class);
     try {
-      Pair.fromMethod(substring_2);
+      ConverterType.fromMethod(substring_2);
       fail();
-    } catch(PairInstantiationException e) {
+    } catch(ConverterTypeInstantiationException e) {
       assertEquals(1, e.getCauses().size());
       assertEquals(WrongParameterCountException.class, e.getCauses().get(0).getClass());
       
@@ -73,9 +73,9 @@ public class PairTest {
     
     Method toString = String.class.getMethod("toString");
     try {
-      Pair.fromMethod(toString);
+      ConverterType.fromMethod(toString);
       fail();
-    } catch(PairInstantiationException e) {
+    } catch(ConverterTypeInstantiationException e) {
       assertEquals(1, e.getCauses().size());
       assertEquals(WrongParameterCountException.class, e.getCauses().get(0).getClass());
       
@@ -87,9 +87,9 @@ public class PairTest {
     
     Method wait_timeout = Object.class.getMethod("wait", long.class);
     try {
-      Pair.fromMethod(wait_timeout);
+      ConverterType.fromMethod(wait_timeout);
       fail();
-    } catch(PairInstantiationException e) {
+    } catch(ConverterTypeInstantiationException e) {
       assertEquals(1, e.getCauses().size());
       assertEquals(InvalidReturnTypeException.class, e.getCauses().get(0).getClass());
       
@@ -100,45 +100,45 @@ public class PairTest {
   }
   
   @Test
-  public void testFromBinding() throws PairInstantiationException, SecurityException, NoSuchMethodException {
+  public void testFromBinding() throws ConverterTypeInstantiationException, SecurityException, NoSuchMethodException {
     try {
-      Pair.fromBinding(null);
+      ConverterType.fromBinding(null);
       fail();
-    } catch(PairInstantiationException e) {
+    } catch(ConverterTypeInstantiationException e) {
       assertEquals(1, e.getCauses().size());
       assertEquals(IllegalArgumentException.class, e.getCauses().get(0).getClass());
     }
     
     Method substring = String.class.getMethod("substring", int.class);
     
-    assertEquals(Pair.fromMethod(substring), Pair.fromBinding(new Binding("0123", substring)));
+    assertEquals(ConverterType.fromMethod(substring), ConverterType.fromBinding(new Binding("0123", substring)));
   }
   
   @Test
   public void constructorWithNulls() {
     try {
-      new Pair(null, Class.class);
+      new ConverterType(null, Class.class);
       fail();
     } catch(IllegalArgumentException e) {
       // empty block
     }
     
     try {
-      new Pair(TypeToken.OBJECT, null);
+      new ConverterType(TypeToken.OBJECT, null);
       fail();
     } catch(IllegalArgumentException e) {
       // empty block
     }
     
     try {
-      new Pair((Type) null, null);
+      new ConverterType((Type) null, null);
       fail();
     } catch(IllegalArgumentException e) {
       // empty block
     }
     
     try {
-      new Pair((TypeToken<?>) null, null);
+      new ConverterType((TypeToken<?>) null, null);
       fail();
     } catch(IllegalArgumentException e) {
       // empty block
@@ -148,28 +148,28 @@ public class PairTest {
   @Test
   public void constructorWithVoid() {
     try {
-      new Pair(void.class, Integer.class);
+      new ConverterType(void.class, Integer.class);
       fail();
     } catch(IllegalArgumentException e) {
       // empty block
     }
     
     try {
-      new Pair(Object.class, void.class);
+      new ConverterType(Object.class, void.class);
       fail();
     } catch(IllegalArgumentException e) {
       // empty block
     }
     
     try {
-      new Pair(Void.class, Integer.class);
+      new ConverterType(Void.class, Integer.class);
       fail();
     } catch(IllegalArgumentException e) {
       // empty block
     }
     
     try {
-      new Pair(Object.class, Void.class);
+      new ConverterType(Object.class, Void.class);
       fail();
     } catch(IllegalArgumentException e) {
       // empty block
@@ -180,8 +180,8 @@ public class PairTest {
   public void testFromMethodWithIncompatibleOwnerType() throws SecurityException, NoSuchMethodException {
     final Method valueOfBoolean = String.class.getMethod("valueOf", boolean.class);
     try {
-      Pair.fromMethod(valueOfBoolean, Object.class);
-    } catch(PairInstantiationException e) {
+      ConverterType.fromMethod(valueOfBoolean, Object.class);
+    } catch(ConverterTypeInstantiationException e) {
       assertEquals(1, e.getCauses().size());
       
       MethodOwnerTypeIncompatibilityException ex0 = (MethodOwnerTypeIncompatibilityException) e.getCauses().get(0);
@@ -203,53 +203,53 @@ public class PairTest {
   public void equals() {
     assertEquals(object2string, object2string);
     assertEquals(int2boolean, int2boolean);
-    assertEquals(new Pair(Object.class, String.class), object2string);
-    assertEquals(new Pair(TypeToken.ValueType.INTEGER.primitive, TypeToken.ValueType.BOOLEAN.primitive), int2boolean);
-    assertEquals(new Pair(String.class, boolean.class), new Pair(String.class, Boolean.class));
-    assertEquals(new Pair(byte.class, Object.class), new Pair(Byte.class, Object.class));
-    assertEquals(new Pair(int.class, Character.class), new Pair(Integer.class, char.class));
+    assertEquals(new ConverterType(Object.class, String.class), object2string);
+    assertEquals(new ConverterType(TypeToken.ValueType.INTEGER.primitive, TypeToken.ValueType.BOOLEAN.primitive), int2boolean);
+    assertEquals(new ConverterType(String.class, boolean.class), new ConverterType(String.class, Boolean.class));
+    assertEquals(new ConverterType(byte.class, Object.class), new ConverterType(Byte.class, Object.class));
+    assertEquals(new ConverterType(int.class, Character.class), new ConverterType(Integer.class, char.class));
     
     assertFalse(object2string.equals(int2boolean));
     assertFalse(int2boolean.equals(object2string));
-    assertFalse(object2string.equals(new Pair(String.class, String.class)));
+    assertFalse(object2string.equals(new ConverterType(String.class, String.class)));
     assertFalse(object2string.equals(null));
-    assertFalse(new Pair(int.class, int.class).equals(new Point(0, 0)));
+    assertFalse(new ConverterType(int.class, int.class).equals(new Point(0, 0)));
   }
   
   @Test
   public void isAssignableFrom() {
     assertTrue(object2string.isAssignableFrom(object2string));
     assertTrue(int2boolean.isAssignableFrom(int2boolean));
-    assertTrue(object2string.isAssignableFrom(new Pair(Object.class, String.class)));
-    assertTrue(int2boolean.isAssignableFrom(new Pair(TypeToken.ValueType.INTEGER.primitive, TypeToken.ValueType.BOOLEAN.primitive)));
+    assertTrue(object2string.isAssignableFrom(new ConverterType(Object.class, String.class)));
+    assertTrue(int2boolean.isAssignableFrom(new ConverterType(TypeToken.ValueType.INTEGER.primitive, TypeToken.ValueType.BOOLEAN.primitive)));
     
-    assertTrue(object2string.isAssignableFrom(new Pair(String.class, String.class)));
-    assertFalse(object2string.isAssignableFrom(new Pair(String.class, Object.class)));
+    assertTrue(object2string.isAssignableFrom(new ConverterType(String.class, String.class)));
+    assertFalse(object2string.isAssignableFrom(new ConverterType(String.class, Object.class)));
     assertFalse(object2string.isAssignableFrom(null));
   }
 
   @Test
   public void isAssignableFromWithPrimitives() {
-    final Pair Integer2Boolean = new Pair(Integer.class, Boolean.class);
+    final ConverterType Integer2Boolean = new ConverterType(Integer.class, Boolean.class);
     assertTrue(int2boolean.isAssignableFrom(Integer2Boolean));
     assertTrue(Integer2Boolean.isAssignableFrom(int2boolean));
     assertTrue(Integer2Boolean.equals(int2boolean));
     assertTrue(int2boolean.equals(Integer2Boolean));
     
-    final Pair int2Boolean = new Pair(int.class, Boolean.class);
+    final ConverterType int2Boolean = new ConverterType(int.class, Boolean.class);
     assertTrue(int2boolean.isAssignableFrom(int2Boolean));
     assertTrue(int2Boolean.isAssignableFrom(int2boolean));
     assertTrue(int2Boolean.equals(int2boolean));
     assertTrue(int2boolean.equals(int2Boolean));
     
-    final Pair Integer2boolean = new Pair(Integer.class, boolean.class);
+    final ConverterType Integer2boolean = new ConverterType(Integer.class, boolean.class);
     assertTrue(int2boolean.isAssignableFrom(Integer2boolean));
     assertTrue(Integer2boolean.isAssignableFrom(int2boolean));
     assertTrue(Integer2boolean.equals(int2boolean));
     assertTrue(int2boolean.equals(Integer2boolean));
     
-    final Pair Double2String = new Pair(Double.class, String.class);
-    final Pair d2s = new Pair(double.class, String.class);
+    final ConverterType Double2String = new ConverterType(Double.class, String.class);
+    final ConverterType d2s = new ConverterType(double.class, String.class);
     assertTrue(Double2String.isAssignableFrom(d2s));
     assertTrue(d2s.isAssignableFrom(Double2String));
     assertTrue(d2s.equals(Double2String));

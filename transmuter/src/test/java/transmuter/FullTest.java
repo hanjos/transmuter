@@ -15,7 +15,7 @@ import transmuter.util.StringUtilsTest;
   StringUtilsTest.class,
   ObjectUtilsTest.class,
   ReflectionUtilsTest.class,
-  PairTest.class,
-  PairBindingMapTest.class,
+  ConverterTypeTest.class,
+  ConverterTypeBindingMapTest.class,
   TransmuterTest.class })
 public class FullTest { /* empty block */ }

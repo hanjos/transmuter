@@ -1,19 +1,19 @@
 package transmuter.exception;
 
-import transmuter.Pair;
+import transmuter.ConverterType;
 
 public class NoCompatibleConvertersFoundException extends RuntimeException {
   private static final long serialVersionUID = 1L;
   
-  private Pair pair;
+  private ConverterType converterType;
 
-  public NoCompatibleConvertersFoundException(Pair pair) {
-    super("no compatible converters found for " + pair);
+  public NoCompatibleConvertersFoundException(ConverterType converterType) {
+    super("no compatible converters found for " + converterType);
     
-    this.pair = pair;
+    this.converterType = converterType;
   }
 
-  public Pair getPair() {
-    return pair;
+  public ConverterType getConverterType() {
+    return converterType;
   }
 }

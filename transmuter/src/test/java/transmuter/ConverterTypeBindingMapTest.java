@@ -6,7 +6,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -15,19 +17,21 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import transmuter.Transmuter.PairBindingMap;
+import transmuter.Transmuter.ConverterTypeBindingMap;
 import transmuter.exception.ConverterCollisionException;
-import transmuter.exception.PairIncompatibleWithBindingException;
-import transmuter.exception.PairInstantiationException;
+import transmuter.exception.ConverterTypeIncompatibleWithBindingException;
+import transmuter.exception.ConverterTypeInstantiationException;
 import transmuter.mock.MultipleConverter;
+import transmuter.mock.MultipleValidConverter;
 import transmuter.mock.StringConverter;
 import transmuter.type.TypeToken;
 
-public class PairBindingMapTest {
+public class ConverterTypeBindingMapTest {
   private static final TypeToken<List<String>> LIST_OF_STRING = new TypeToken<List<String>>() {};
+  private static final TypeToken<ArrayList<String>> ARRAYLIST_OF_STRING = new TypeToken<ArrayList<String>>() {};
   
   private Transmuter t;
-  private Map<Pair, Binding> map;
+  private Map<ConverterType, Binding> map;
 
   @Before
   public void setUp() {
@@ -42,31 +46,31 @@ public class PairBindingMapTest {
     t.register(new MultipleConverter());
     
     assertEquals(2, map.size());
-    assertTrue(map.containsKey(new Pair(double.class, String.class)));
-    assertTrue(map.containsKey(new Pair(TypeToken.STRING, LIST_OF_STRING)));
-    assertFalse(map.containsKey(new Pair(String.class, List.class)));
+    assertTrue(map.containsKey(new ConverterType(double.class, String.class)));
+    assertTrue(map.containsKey(new ConverterType(TypeToken.STRING, LIST_OF_STRING)));
+    assertFalse(map.containsKey(new ConverterType(String.class, List.class)));
     
     Object multiple = new MultipleConverter();
     
     try {
       map.put(
-          new Pair(double.class, String.class), 
+          new ConverterType(double.class, String.class), 
           new Binding(
               multiple, 
               multiple.getClass().getMethod("converter", double.class)));
       fail();
     } catch(ConverterCollisionException e) {
-      assertEquals(new Pair(double.class, String.class), e.getPair());
+      assertEquals(new ConverterType(double.class, String.class), e.getConverterType());
     }
     
-    Map<Pair, Binding> temp = new HashMap<Pair, Binding>();
+    Map<ConverterType, Binding> temp = new HashMap<ConverterType, Binding>();
     temp.put(
-        new Pair(double.class, String.class), 
+        new ConverterType(double.class, String.class), 
         new Binding(
             multiple, 
             multiple.getClass().getMethod("converter", double.class)));
     temp.put(
-        new Pair(TypeToken.STRING, LIST_OF_STRING), 
+        new ConverterType(TypeToken.STRING, LIST_OF_STRING), 
         new Binding(
             multiple, 
             multiple.getClass().getMethod("convert", String.class)));
@@ -94,7 +98,7 @@ public class PairBindingMapTest {
     assertTrue(map.isEmpty());
     
     try {
-      map.put(new Pair(double.class, String.class), null);
+      map.put(new ConverterType(double.class, String.class), null);
       fail();
     } catch(IllegalArgumentException e) {
       // empty block
@@ -106,7 +110,7 @@ public class PairBindingMapTest {
     
     assertTrue(map.isEmpty());
     
-    map.putAll(new HashMap<Pair, Binding>());
+    map.putAll(new HashMap<ConverterType, Binding>());
     
     assertTrue(map.isEmpty());
   }
@@ -118,28 +122,28 @@ public class PairBindingMapTest {
     
     final StringConverter a = new StringConverter();
     final Method stringify = StringConverter.class.getMethod("stringify", Object.class);
-    assertNull(map.put(new Pair(Object.class, String.class), new Binding(a, stringify)));
+    assertNull(map.put(new ConverterType(Object.class, String.class), new Binding(a, stringify)));
     
     assertTrue(t.isRegistered(Object.class, String.class));
     assertEquals(1, map.size());
     
-    assertEquals(new Binding(a, stringify), map.put(new Pair(Object.class, String.class), new Binding(a, stringify)));
+    assertEquals(new Binding(a, stringify), map.put(new ConverterType(Object.class, String.class), new Binding(a, stringify)));
     
     assertTrue(t.isRegistered(Object.class, String.class));
     assertEquals(1, map.size());
   }
   
-  @Test(expected = PairIncompatibleWithBindingException.class)
-  public void incompatiblePairAndBinding() throws SecurityException, NoSuchMethodException {
+  @Test(expected = ConverterTypeIncompatibleWithBindingException.class)
+  public void incompatibleConverterTypeAndBinding() throws SecurityException, NoSuchMethodException {
     map.put(
-        new Pair(String.class, double.class), 
+        new ConverterType(String.class, double.class), 
         new Binding(new StringConverter(), StringConverter.class.getMethod("stringify", Object.class)));
   }
   
-  @Test(expected = PairInstantiationException.class)
-  public void bindingWithNoPair() throws SecurityException, NoSuchMethodException {
+  @Test(expected = ConverterTypeInstantiationException.class)
+  public void bindingWithNoConverterType() throws SecurityException, NoSuchMethodException {
     map.put(
-        new Pair(String.class, double.class), 
+        new ConverterType(String.class, double.class), 
         new Binding("alksjdklajs", String.class.getMethod("codePointCount", int.class, int.class)));
   }
   
@@ -152,31 +156,31 @@ public class PairBindingMapTest {
   public void containsKeyWithPrimitives() {
     t.register(new MultipleConverter());
     
-    assertTrue(map.containsKey(new Pair(double.class, String.class)));
-    assertTrue(map.containsKey(new Pair(Double.class, String.class)));
+    assertTrue(map.containsKey(new ConverterType(double.class, String.class)));
+    assertTrue(map.containsKey(new ConverterType(Double.class, String.class)));
   }
   
   @Test
   public void checkForCollision() throws SecurityException, NoSuchMethodException {
-    PairBindingMap pbm = (PairBindingMap) map;
+    ConverterTypeBindingMap pbm = (ConverterTypeBindingMap) map;
     
     StringConverter converter = new StringConverter();
-    Pair pair = new Pair(Object.class, String.class);
+    ConverterType converterType = new ConverterType(Object.class, String.class);
     Binding stringify = new Binding(converter, StringConverter.class.getMethod("stringify", Object.class));
     Binding toString = new Binding(converter, StringConverter.class.getMethod("toString"));
     
-    assertFalse(pbm.checkForCollision(pair, stringify));
-    assertFalse(pbm.checkForCollision(pair, toString));
+    assertFalse(pbm.checkForCollision(converterType, stringify));
+    assertFalse(pbm.checkForCollision(converterType, toString));
     
-    pbm.put(pair, stringify);
+    pbm.put(converterType, stringify);
     
-    assertTrue(pbm.checkForCollision(pair, stringify));
+    assertTrue(pbm.checkForCollision(converterType, stringify));
     
     try {
-      pbm.checkForCollision(pair, toString);
+      pbm.checkForCollision(converterType, toString);
       fail();
     } catch(ConverterCollisionException e) {
-      assertEquals(pair, e.getPair());
+      assertEquals(converterType, e.getConverterType());
       assertTrue(e.getBindings().containsAll(Arrays.asList(stringify, toString)));
       assertTrue(Arrays.asList(stringify, toString).containsAll(e.getBindings()));
     }
@@ -189,14 +193,14 @@ public class PairBindingMapTest {
     }
     
     try {
-      pbm.checkForCollision(pair, null);
+      pbm.checkForCollision(converterType, null);
       fail();
     } catch(IllegalArgumentException e) {
       // empty block
     }
     
     try {
-      PairBindingMap.checkMapForCollision(pair, stringify, null);
+      ConverterTypeBindingMap.checkMapForCollision(converterType, stringify, null);
       fail();
     } catch(IllegalArgumentException e) {
       // empty block
@@ -204,24 +208,52 @@ public class PairBindingMapTest {
     
     pbm.clear();
     
-    assertFalse(pbm.checkForCollision(pair, stringify));
-    assertFalse(pbm.checkForCollision(pair, toString));
+    assertFalse(pbm.checkForCollision(converterType, stringify));
+    assertFalse(pbm.checkForCollision(converterType, toString));
     
-    Map<Pair, Binding> noChecking = new HashMap<Pair, Binding>();
-    noChecking.put(pair, toString);
+    Map<ConverterType, Binding> noChecking = new HashMap<ConverterType, Binding>();
+    noChecking.put(converterType, toString);
     
-    assertFalse(PairBindingMap.checkMapForCollision(pair, toString, pbm));
-    assertTrue(PairBindingMap.checkMapForCollision(pair, toString, noChecking));
+    assertFalse(ConverterTypeBindingMap.checkMapForCollision(converterType, toString, pbm));
+    assertTrue(ConverterTypeBindingMap.checkMapForCollision(converterType, toString, noChecking));
     
-    assertFalse(pbm.checkForCollision(pair, stringify));
+    assertFalse(pbm.checkForCollision(converterType, stringify));
     
     try {
-      PairBindingMap.checkMapForCollision(pair, stringify, noChecking);
+      ConverterTypeBindingMap.checkMapForCollision(converterType, stringify, noChecking);
       fail();
     } catch(ConverterCollisionException e) {
-      assertEquals(pair, e.getPair());
+      assertEquals(converterType, e.getConverterType());
       assertTrue(Arrays.asList(stringify, toString).containsAll(e.getBindings()));
       assertTrue(e.getBindings().containsAll(Arrays.asList(stringify, toString)));
     }
+  }
+  
+
+  
+  @Test
+  public void getMostCompatibleConverterFor() throws SecurityException, NoSuchMethodException {
+    final MultipleValidConverter converter = new MultipleValidConverter();
+    t.register(converter);
+    
+    assertEquals(
+        map.get(new ConverterType(Serializable.class, String.class)),
+        new Binding(
+            converter, 
+            extractMethod(converter.getClass(), "toString", Serializable.class)));
+    assertEquals(
+        map.get(new ConverterType(LIST_OF_STRING, TypeToken.STRING)),
+        new Binding(
+            converter, 
+            extractMethod(converter.getClass(), "toString", List.class)));
+    
+    assertNull(map.get(new ConverterType(ARRAYLIST_OF_STRING, TypeToken.STRING)));
+    assertNull(map.get(null));
+    assertNull(map.get(new ConverterType(Object.class, Integer.class)));
+  }
+  
+  private Method extractMethod(Class<?> cls, String name, Class<?>... parameterTypes) 
+  throws SecurityException, NoSuchMethodException {
+    return cls.getMethod(name, parameterTypes);
   }
 }

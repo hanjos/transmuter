@@ -4,24 +4,24 @@ import java.util.Collections;
 import java.util.List;
 
 import transmuter.Binding;
-import transmuter.Pair;
+import transmuter.ConverterType;
 
 public class TooManyConvertersFoundException extends RuntimeException {
   private static final long serialVersionUID = 1L;
   
-  private Pair pair;
+  private ConverterType converterType;
   private List<Binding> bindings;
   
   @SuppressWarnings("unchecked")
-  public TooManyConvertersFoundException(Pair pair, List<Binding> bindings) {
-    super("too many converters found for " + pair + ": " + bindings);
+  public TooManyConvertersFoundException(ConverterType converterType, List<Binding> bindings) {
+    super("too many converters found for " + converterType + ": " + bindings);
     
-    this.pair = pair;
+    this.converterType = converterType;
     this.bindings = bindings != null ? Collections.unmodifiableList(bindings) : Collections.EMPTY_LIST;
   }
 
-  public Pair getPair() {
-    return pair;
+  public ConverterType getConverterType() {
+    return converterType;
   }
 
   public List<Binding> getBindings() {
