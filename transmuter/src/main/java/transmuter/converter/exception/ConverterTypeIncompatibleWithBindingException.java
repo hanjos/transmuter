@@ -3,6 +3,11 @@ package transmuter.converter.exception;
 import transmuter.converter.Binding;
 import transmuter.converter.ConverterType;
 
+/**
+ * Thrown when the given converter type is not compatible with the one extracted from the given binding.
+ * 
+ * @author Humberto S. N. dos Anjos
+ */
 public class ConverterTypeIncompatibleWithBindingException extends RuntimeException {
   private static final long serialVersionUID = 1L;
 
@@ -14,20 +19,22 @@ public class ConverterTypeIncompatibleWithBindingException extends RuntimeExcept
   private Binding binding;
   
   public ConverterTypeIncompatibleWithBindingException(ConverterType converterType, Binding binding) {
-    this(converterType, binding, buildMessage(converterType, binding));
-  }
-
-  public ConverterTypeIncompatibleWithBindingException(ConverterType converterType, Binding binding, String message) {
-    super(message);
+    super(buildMessage(converterType, binding));
     
     this.converterType = converterType;
     this.binding = binding;
   }
 
+  /**
+   * @return the converter type.
+   */
   public ConverterType getConverterType() {
     return converterType;
   }
 
+  /**
+   * @return the binding.
+   */
   public Binding getBinding() {
     return binding;
   }

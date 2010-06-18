@@ -2,6 +2,11 @@ package transmuter.converter.exception;
 
 import java.lang.reflect.Method;
 
+/**
+ * Thrown when there is an attempt to {@link Binding bind} a non-static method to a null instance.
+ * 
+ * @author Humberto S. N. dos Anjos
+ */
 public class NullInstanceWithNonStaticMethodException extends RuntimeException {
   private static final long serialVersionUID = 1L;
 
@@ -17,6 +22,9 @@ public class NullInstanceWithNonStaticMethodException extends RuntimeException {
     this.method = method;
   }
 
+  /**
+   * @return the faulty method.
+   */
   public Method getMethod() {
     return method;
   }

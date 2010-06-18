@@ -5,10 +5,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Thrown when an unexpected type is received.
+ * 
+ * @author Humberto S. N. dos Anjos
+ */
 public class UnexpectedTypeException extends RuntimeException {
   private static final long serialVersionUID = 1L;
   
-  private static String buildMessage(Type type, Class<?>... expected) {
+  private static String buildMessage(Type type, Type... expected) {
     StringBuilder message = new StringBuilder();
     
     if(expected == null || expected.length == 0) {
@@ -16,8 +21,14 @@ public class UnexpectedTypeException extends RuntimeException {
     } else {
       message.append("Expected one of: ");
     
-      for (Class<?> clazz : expected)
-        message.append(clazz.getName()).append(", ");
+      for (Type clazz : expected) {
+        message
+          .append((clazz instanceof Class<?>)
+            ? ((Class<?>) clazz).getName() 
+            : clazz)
+          .append(", ");
+      }
+      
     }
     
     if(type != null)
@@ -30,20 +41,30 @@ public class UnexpectedTypeException extends RuntimeException {
   }
   
   private Type type;
-  private List<Class<?>> expected;
+  private List<Type> expected;
 
-  public UnexpectedTypeException(Type type, Class<?>... expected) {
+  /**
+   * @param type the unexpected type.
+   * @param expected the expected types.
+   */
+  public UnexpectedTypeException(Type type, Type... expected) {
     super(buildMessage(type, expected));
     
     this.type = type;
     this.expected = Collections.unmodifiableList(Arrays.asList(expected));
   }
 
+  /**
+   * @return the unexpected type.
+   */
   public Type getType() {
     return type;
   }
 
-  public List<Class<?>> getExpected() {
+  /**
+   * @return the expected types.
+   */
+  public List<Type> getExpected() {
     return expected;
   }
 }

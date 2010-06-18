@@ -6,13 +6,20 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import transmuter.Transmuter;
 import transmuter.converter.Binding;
 import transmuter.converter.ConverterType;
 
+/**
+ * Thrown when an attempt to {@link Transmuter#register(Object) register} a converter fails due to the presence of 
+ * another converter with the same registered type.
+ * 
+ * @author Humberto S. N. dos Anjos
+ */
 public class ConverterCollisionException extends RuntimeException {
   private static final long serialVersionUID = 1L;
   
-  private List<Binding> bindings;
+  private List<? extends Binding> bindings;
   private ConverterType converterType;
   
   private static String buildMessage(ConverterType converterType, Binding... bindings) {
@@ -20,6 +27,10 @@ public class ConverterCollisionException extends RuntimeException {
          + ((bindings != null) ? Arrays.toString(bindings) : "null");
   }
   
+  /**
+   * @param converterType the converter type.
+   * @param the conflicting bindings.
+   */
   @SuppressWarnings("unchecked")
   public ConverterCollisionException(ConverterType converterType, Binding... bindings) {
     super(buildMessage(converterType, bindings));
@@ -29,11 +40,17 @@ public class ConverterCollisionException extends RuntimeException {
     this.converterType = converterType;
   }
 
+  /**
+   * @return the converter type.
+   */
   public ConverterType getConverterType() {
     return converterType;
   }
 
-  public List<Binding> getBindings() {
+  /**
+   * @return a list with the conflicting bindings.
+   */
+  public List<? extends Binding> getBindings() {
     return bindings;
   }
 }

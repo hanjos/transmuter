@@ -3,6 +3,11 @@ package transmuter.converter.exception;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
+/**
+ * Thrown when the given type (dubbed owner type) is not in the given method's declaring class hierarchy.
+ * 
+ * @author Humberto S. N. dos Anjos
+ */
 public class MethodOwnerTypeIncompatibilityException extends RuntimeException {
   private static final long serialVersionUID = 1L;
   
@@ -13,6 +18,10 @@ public class MethodOwnerTypeIncompatibilityException extends RuntimeException {
   private Method method;
   private Type ownerType;
 
+  /**
+   * @param method the method.
+   * @param the would-be owner type.
+   */
   public MethodOwnerTypeIncompatibilityException(Method method, Type ownerType) {
     super(buildMessage(method, ownerType));
     
@@ -20,14 +29,16 @@ public class MethodOwnerTypeIncompatibilityException extends RuntimeException {
     this.ownerType = ownerType;
   }
 
-  public static long getSerialversionuid() {
-    return serialVersionUID;
-  }
-
+  /**
+   * @return the method.
+   */
   public Method getMethod() {
     return method;
   }
 
+  /**
+   * @return the would-be owner type.
+   */
   public Type getOwnerType() {
     return ownerType;
   }

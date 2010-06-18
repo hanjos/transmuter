@@ -1,20 +1,27 @@
 package transmuter.type.exception;
 
+/**
+ * Thrown if the given base class has no accessible type parameter.
+ * 
+ * @author Humberto S. N. dos Anjos
+ */
 public class MissingTypeParameterException extends RuntimeException {
   private static final long serialVersionUID = 1L;
 
   private Class<?> baseClass;
   
+  /**
+   * @param baseClass the base class.
+   */
   public MissingTypeParameterException(Class<?> baseClass) {
-    this(baseClass, baseClass + " has no accessible type parameter!");
-  }
-  
-  public MissingTypeParameterException(Class<?> baseClass, String message) {
-    super(message);
+    super(baseClass + " has no accessible type parameter!");
     
     this.baseClass = baseClass;
   }
 
+  /**
+   * @return the base class.
+   */
   public Class<?> getBaseClass() {
     return baseClass;
   }
