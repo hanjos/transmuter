@@ -5,11 +5,16 @@ import java.lang.reflect.Type;
 
 import transmuter.util.ReflectionUtils;
 
+/**
+ * Thrown when the parameter type of a would-be converter method is considered invalid.
+ * 
+ * @author Humberto S. N. dos Anjos
+ */
 public class InvalidParameterTypeException extends RuntimeException {
   private static final long serialVersionUID = 1L;
   
   private static Type getParameterTypeOf(Method method) {
-    if(method == null || method.getParameterTypes().length == 0)
+    if(method == null || method.getParameterTypes().length != 1)
       return null;
     
     return method.getGenericParameterTypes()[0];
@@ -18,6 +23,9 @@ public class InvalidParameterTypeException extends RuntimeException {
   private Method method;
   private Type type;
   
+  /**
+   * @param method the would-be converter method.
+   */
   public InvalidParameterTypeException(Method method) {
     super(getParameterTypeOf(method) + " is an invalid parameter type in " + ReflectionUtils.simpleMethodToString(method));
     
@@ -25,10 +33,16 @@ public class InvalidParameterTypeException extends RuntimeException {
     this.type = getParameterTypeOf(method);
   }
 
+  /**
+   * @return the would-be converter method.
+   */
   public Method getMethod() {
     return method;
   }
 
+  /**
+   * @return {@code method}'s (invalid) parameter type.
+   */
   public Type getType() {
     return type;
   }

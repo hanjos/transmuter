@@ -2,6 +2,11 @@ package transmuter.converter.exception;
 
 import java.lang.reflect.Method;
 
+/**
+ * Thrown when the given method cannot be invoked on the given instance.
+ * 
+ * @author Humberto S. N. dos Anjos
+ */
 public class MethodInstanceIncompatibilityException extends RuntimeException {
   private static final long serialVersionUID = 1L;
 
@@ -12,6 +17,10 @@ public class MethodInstanceIncompatibilityException extends RuntimeException {
   private Object instance;
   private Method method;
   
+  /**
+   * @param instance the given instance.
+   * @param method the given method.
+   */
   public MethodInstanceIncompatibilityException(Object instance, Method method) {
     super(buildMessage(instance, method));
     
@@ -19,10 +28,16 @@ public class MethodInstanceIncompatibilityException extends RuntimeException {
     this.method = method;
   }
 
+  /**
+   * @return the given instance.
+   */
   public Object getInstance() {
     return instance;
   }
 
+  /**
+   * @return the given method.
+   */
   public Method getMethod() {
     return method;
   }

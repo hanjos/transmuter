@@ -2,6 +2,13 @@ package transmuter.exception;
 
 import java.util.List;
 
+import transmuter.Transmuter;
+
+/**
+ * Thrown by the {@link Transmuter#register(Object) register} operation on failure, bundling the causes. 
+ * 
+ * @author Humberto S. N. dos Anjos
+ */
 public class ConverterRegistrationException extends MultipleCausesException {
   private static final long serialVersionUID = 1L;
 

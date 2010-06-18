@@ -5,6 +5,11 @@ import java.lang.reflect.Type;
 
 import transmuter.util.ReflectionUtils;
 
+/**
+ * Thrown when the return type of a would-be converter method is considered invalid.
+ * 
+ * @author Humberto S. N. dos Anjos
+ */
 public class InvalidReturnTypeException extends RuntimeException {
   private static final long serialVersionUID = 1L;
 
@@ -18,6 +23,9 @@ public class InvalidReturnTypeException extends RuntimeException {
   private Method method;
   private Type type;
 
+  /**
+   * @param method the would-be converter method.
+   */
   public InvalidReturnTypeException(Method method) {
     super(getReturnTypeOf(method) + " is an invalid return type in " + ReflectionUtils.simpleMethodToString(method));
     
@@ -25,10 +33,16 @@ public class InvalidReturnTypeException extends RuntimeException {
     this.type = getReturnTypeOf(method);
   }
 
+  /**
+   * @return the would-be converter method.
+   */
   public Method getMethod() {
     return method;
   }
 
+  /**
+   * @return {@code method}'s (invalid) return type.
+   */
   public Type getType() {
     return type;
   }
