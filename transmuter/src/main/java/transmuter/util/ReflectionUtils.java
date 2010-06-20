@@ -1,15 +1,30 @@
 package transmuter.util;
 
+import static transmuter.util.ObjectUtils.isEmpty;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 
+/**
+ * Contains utility methods for common reflection operations.
+ * This class is not meant to be inherited from or instantiated.
+ * 
+ * @author Humberto S. N. dos Anjos
+ */
 public final class ReflectionUtils {
   private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
   // ensuring non-instantiability and non-inheritability
   private ReflectionUtils() { /* empty block */ }
 
+  /**
+   * Returns a simplified string representation of the given method.
+   * 
+   * @param method a method object.
+   * @return a simplified string representation of the given method, or the string {@code "<null>"} if the given 
+   * method is {@code null}.
+   */
   public static String simpleMethodToString(Method method) {
     if(method == null)
       return "<null>";
@@ -48,6 +63,19 @@ public final class ReflectionUtils {
    * Adapted from Field.getTypeName. Utility routine to paper over array type
    * names
    */
+  /**
+   * Returns a simple string representation for the given type.
+   * 
+   * @param type a type object.
+   * @return a simple string representation of {@code type}, which is: 
+   * <ul>
+   * <li>the string {@code "null"}, if {@code type} is {@code null};</li>
+   * <li>the type's name, if {@code type} is a {@code Class} object;</li>
+   * <li>the type's name followed by the necessary {@code []}s, if {@code type} is a {@code Class} object representing 
+   * an array;</li>
+   * <li>the result of {@code type}'s {@link Type#toString() toString} method otherwise.</li> 
+   * </ul>
+   */
   @SuppressWarnings("unchecked")
   public static String getTypeName(Type type) {
     if (type == null)
@@ -73,8 +101,17 @@ public final class ReflectionUtils {
     return cls.getName();
   }
 
+  /**
+   * Translates the array of types received into an array of Strings holding the types' {@link #getTypeName(Type) names}.
+   * 
+   * @param types several type objects.
+   * @return an array of Strings holding the types' {@link #getTypeName(Type) names}. This array has length 0 if the 
+   * given array of types is {@link ObjectUtils#isEmpty(Object...) empty}.
+   * @see ReflectionUtils#getTypeName(Type)
+   * @see ObjectUtils#isEmpty(Object...)
+   */
   public static String[] getTypeNames(Type... types) {
-    if(types == null || types.length == 0)
+    if(isEmpty(types))
       return EMPTY_STRING_ARRAY;
     
     String[] typesAsStrings = new String[types.length];
