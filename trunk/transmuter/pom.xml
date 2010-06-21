@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.googlecode</groupId>
-	<artifactId>transmuter</artifactId>
+	<artifactId>com.googlecode.transmuter</artifactId>
 	<packaging>jar</packaging>
 	<version>0.1-SNAPSHOT</version>
 	<inceptionYear>2010</inceptionYear>
@@ -26,13 +26,13 @@
 
 	<issueManagement>
 		<system>Google Code Issue Tracking</system>
-		<url>http://code.google.com/p/transmuter/issues/list</url>
+		<url>http://code.google.com/p/com.googlecode.transmuter/issues/list</url>
 	</issueManagement>
 
 	<scm>
-		<connection>scm:svn:http://transmuter.googlecode.com/svn/trunk</connection>
-		<developerConnection>https://transmuter.googlecode.com/svn/trunk</developerConnection>
-		<url>http://code.google.com/p/transmuter/source</url>
+		<connection>scm:svn:http://com.googlecode.transmuter.googlecode.com/svn/trunk</connection>
+		<developerConnection>https://com.googlecode.transmuter.googlecode.com/svn/trunk</developerConnection>
+		<url>http://code.google.com/p/com.googlecode.transmuter/source</url>
 	</scm>
 
 	<repositories>
@@ -139,7 +139,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
 				<configuration>
-					<tagBase>https://transmuter.googlecode.com/svn/tags</tagBase>
+					<tagBase>https://com.googlecode.transmuter.googlecode.com/svn/tags</tagBase>
 					<scmCommentPrefix>release:</scmCommentPrefix>
 				</configuration>
 			</plugin>
