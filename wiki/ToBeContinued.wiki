@@ -29,6 +29,8 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
 
   * Generalize the `register` operation for the programmer to be able to say how to obtain the bindings. Yet another parameter...
 
+  * Maybe use something like Apache Commons instead of some homebrew util classes.
+
 == New stuff to implement! ==
 
   * A Converter interface. (A lot) Less checking needed, but not sure how a Converter implementation with @Converts methods will work. Does just marking the Converter method with @Converts do the trick (I think so)?
@@ -36,6 +38,6 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
   
   * Implement some search algorithm for a most compatible converter if a perfect match isn't found. Parameterizing it seems good...
 
-  * Transitive conversion (work on the name needed), e.g. if I have a String -> Unit converter and a Unit -> int converter, I can translate a String to an int. This will affect the most compatible converter algorithm mentioned above (or will it _be_ an alternative algorithm?).
+  * Transitive conversion, e.g. if I have a String -> Unit converter and a Unit -> int converter, I can translate a String to an int. This will affect the most compatible converter algorithm mentioned above (or will it _be_ an alternative algorithm?).
 
   * If lots of optional parameters show up (got three already!), a DSL would be cool.
