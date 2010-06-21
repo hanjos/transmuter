@@ -7,7 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import transmuter.type.TypeToken;
+import com.googlecode.transmuter.type.TypeToken;
+
 
 public class Test {
   private static final Method CONVERT_METHOD;
