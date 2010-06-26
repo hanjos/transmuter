@@ -32,16 +32,15 @@
 	<scm>
 		<connection>scm:svn:http://transmuter.googlecode.com/svn/trunk</connection>
 		<developerConnection>scm:svn:https://transmuter.googlecode.com/svn/trunk</developerConnection>
-		<url>http://code.google.com/p/transmuter/source/browse</url>
+		<url>http://code.google.com/p/transmuter/source</url>
 	</scm>
 
+  <!-- Making the build platform-dependent -->
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  
 	<repositories>
-		<repository>
-			<id>java.net</id>
-			<url>http://download.java.net/maven/1</url>
-			<layout>legacy</layout>
-		</repository>
-
 		<repository>
 			<id>maven-repository.dev.java.net</id>
 			<url>http://download.java.net/maven/2</url>
@@ -142,7 +141,7 @@
 						<link>http://gentyref.googlecode.com/svn/tags/1.1.0/docs/apidocs/</link>
 					</links>
 					<version>true</version>
-					<show>public</show>
+					<show>protected</show>
 				</configuration>
 			</plugin>
 

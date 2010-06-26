@@ -259,11 +259,13 @@ public abstract class TypeToken<T> {
      * demonstrated. 
      * 
      * @param value an object which is not of type {@code T}.
-     * @see {@link #cast(Object)} 
+     * @see ValueType#cast(Object)
      */
     protected abstract T castToThis(Object value);
     
     /**
+     * Checks if the given type's matching value type is the same as this instance.
+     * 
      * @param type a generic type.
      * @return {@code true} if {@code type} represents the same value 
      * type as this instance.
@@ -273,6 +275,8 @@ public abstract class TypeToken<T> {
     }
     
     /**
+     * Checks if the given type token's matching value type is the same as this instance.
+     * 
      * @param token a type token.
      * @return {@code true} if {@code token} represents the same value 
      * type as this instance.
@@ -283,6 +287,8 @@ public abstract class TypeToken<T> {
     
     // static methods
     /**
+     * Checks if the given type represents a primitive type.
+     * 
      * @param type a generic type.
      * @return {@code true} if {@code type} is a primitive type.
      */
@@ -291,6 +297,8 @@ public abstract class TypeToken<T> {
     }
     
     /**
+     * Checks if the given type token represents a primitive type.
+     * 
      * @param token a type token.
      * @return {@code true} if {@code token} is a primitive type.
      */
@@ -299,6 +307,8 @@ public abstract class TypeToken<T> {
     }
     
     /**
+     * Checks if the given type represents a wrapper type.
+     * 
      * @param type a generic type.
      * @return {@code true} if {@code type} is a wrapper type.
      */
@@ -307,6 +317,8 @@ public abstract class TypeToken<T> {
     }
     
     /**
+     * Checks if the given type token represents a wrapper type.
+     * 
      * @param token a type token.
      * @return {@code true} if {@code token} is a wrapper type.
      */

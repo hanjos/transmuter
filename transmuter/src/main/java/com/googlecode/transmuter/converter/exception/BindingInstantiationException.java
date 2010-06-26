@@ -2,6 +2,7 @@ package com.googlecode.transmuter.converter.exception;
 
 import java.util.List;
 
+import com.googlecode.transmuter.converter.Binding;
 import com.googlecode.transmuter.exception.MultipleCausesException;
 
 

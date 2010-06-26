@@ -2,6 +2,8 @@ package com.googlecode.transmuter.converter.exception;
 
 import java.lang.reflect.Method;
 
+import com.googlecode.transmuter.converter.Binding;
+
 /**
  * Thrown when the method given to a {@link Binding} constructor cannot be externally accessed.
  * 
@@ -12,6 +14,11 @@ public class InaccessibleMethodException extends RuntimeException {
   
   private Method method;
 
+  /**
+   * Builds a new instance.
+   * 
+   * @param method the flawed method.
+   */
   public InaccessibleMethodException(Method method) {
     super(method + " cannot be externally accessed");
     
@@ -19,6 +26,8 @@ public class InaccessibleMethodException extends RuntimeException {
   }
 
   /**
+   * Returns the method.
+   * 
    * @return the method.
    */
   public Method getMethod() {

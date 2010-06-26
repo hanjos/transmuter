@@ -83,8 +83,8 @@ public class Transmuter {
      * @throws ConverterTypeInstantiationException if {@code binding} cannot be used to extract a converter type.
      * @throws ConverterCollisionException if this map already has a different binding associated to 
      * {@code converterType}.
-     * @see {@link #checkForCompatibility(ConverterType, Binding)}
-     * @see {@link #checkForCollision(ConverterType, Binding)}
+     * @see #checkForCompatibility(ConverterType, Binding)
+     * @see #checkForCollision(ConverterType, Binding)
      */
     protected boolean validatePut(ConverterType converterType, Binding binding) {
       // check if the binding matches the converter type
@@ -130,7 +130,7 @@ public class Transmuter {
      * {@code null}.
      * @throws ConverterCollisionException if this map already has a different binding associated to 
      * {@code converterType}.
-     * @see {@link #checkMapForCollision(ConverterType, Binding, Map)}.
+     * @see #checkMapForCollision(ConverterType, Binding, Map)
      */
     protected boolean checkForCollision(ConverterType converterType, Binding binding) 
     throws ConverterCollisionException {
@@ -405,6 +405,8 @@ public class Transmuter {
   }
   
   /**
+   * Checks if there is a registered converter with this exact type. 
+   * 
    * @param fromType the input type.
    * @param toType the output type.
    * @return {@code true} if there is a converter for the given pairing.
@@ -414,6 +416,8 @@ public class Transmuter {
   }
   
   /**
+   * Checks if there is a registered converter with this exact converter type.
+   * 
    * @param fromType the input type.
    * @param toType the output type.
    * @return {@code true} if there is a converter for the given pairing.
@@ -423,6 +427,8 @@ public class Transmuter {
   }
   
   /**
+   * Checks if there is a registered converter with this exact converter type.
+   * 
    * @param converterType a converter type.
    * @return {@code true} if there is a converter for the given converter type.
    */

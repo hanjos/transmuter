@@ -20,7 +20,7 @@ public final class StringUtils {
    * concatenate(", ", new Object[] { false, "b", "c" })   // --> "false, b, c"
    * concatenate("",   new Object[] { "a", 1, "c" })       // --> "a1c"
    * concatenate(null, new Object[] { "a", 1, "c" })       // --> "a1c"
-   * concatenate("//", new Object[] { "usr", "bin" })     // --> "usr//bin"
+   * concatenate("//", new Object[] { "usr", "bin" })      // --> "usr//bin"
    * concatenate("/",  new Object[] {}) // no arguments given --> ""
    * concatenate("/",  null)            // no arguments given --> ""
    * </pre>

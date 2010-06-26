@@ -19,8 +19,10 @@ public class MethodOwnerTypeIncompatibilityException extends RuntimeException {
   private Type ownerType;
 
   /**
+   * Builds a new instance.
+   * 
    * @param method the method.
-   * @param the would-be owner type.
+   * @param ownerType the would-be owner type.
    */
   public MethodOwnerTypeIncompatibilityException(Method method, Type ownerType) {
     super(buildMessage(method, ownerType));
@@ -30,6 +32,8 @@ public class MethodOwnerTypeIncompatibilityException extends RuntimeException {
   }
 
   /**
+   * Returns the sorted method.
+   * 
    * @return the method.
    */
   public Method getMethod() {
@@ -37,6 +41,8 @@ public class MethodOwnerTypeIncompatibilityException extends RuntimeException {
   }
 
   /**
+   * Returns the would-be owner type.
+   * 
    * @return the would-be owner type.
    */
   public Type getOwnerType() {

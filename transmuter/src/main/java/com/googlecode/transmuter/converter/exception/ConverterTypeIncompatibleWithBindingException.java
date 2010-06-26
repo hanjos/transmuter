@@ -18,6 +18,12 @@ public class ConverterTypeIncompatibleWithBindingException extends RuntimeExcept
   private ConverterType converterType;
   private Binding binding;
   
+  /**
+   * Builds a new instance.
+   * 
+   * @param converterType a converter type.
+   * @param binding a binding.
+   */
   public ConverterTypeIncompatibleWithBindingException(ConverterType converterType, Binding binding) {
     super(buildMessage(converterType, binding));
     
@@ -26,6 +32,8 @@ public class ConverterTypeIncompatibleWithBindingException extends RuntimeExcept
   }
 
   /**
+   * Returns the converter type.
+   * 
    * @return the converter type.
    */
   public ConverterType getConverterType() {
@@ -33,6 +41,8 @@ public class ConverterTypeIncompatibleWithBindingException extends RuntimeExcept
   }
 
   /**
+   * Returns the binding.
+   * 
    * @return the binding.
    */
   public Binding getBinding() {

@@ -25,6 +25,8 @@ public class InvalidReturnTypeException extends RuntimeException {
   private Type type;
 
   /**
+   * Builds a new instance.
+   * 
    * @param method the would-be converter method.
    */
   public InvalidReturnTypeException(Method method) {
@@ -35,6 +37,8 @@ public class InvalidReturnTypeException extends RuntimeException {
   }
 
   /**
+   * Returns the would-be converter method.
+   * 
    * @return the would-be converter method.
    */
   public Method getMethod() {
@@ -42,6 +46,8 @@ public class InvalidReturnTypeException extends RuntimeException {
   }
 
   /**
+   * Returns {@code method}'s (invalid) return type.
+   *  
    * @return {@code method}'s (invalid) return type.
    */
   public Type getType() {

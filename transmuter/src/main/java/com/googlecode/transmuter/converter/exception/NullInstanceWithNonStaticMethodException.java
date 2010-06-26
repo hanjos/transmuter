@@ -2,6 +2,8 @@ package com.googlecode.transmuter.converter.exception;
 
 import java.lang.reflect.Method;
 
+import com.googlecode.transmuter.converter.Binding;
+
 /**
  * Thrown when there is an attempt to {@link Binding bind} a non-static method to a null instance.
  * 
@@ -16,6 +18,11 @@ public class NullInstanceWithNonStaticMethodException extends RuntimeException {
 
   private Method method;
   
+  /**
+   * Builds a new instance.
+   * 
+   * @param method the faulty, non-static method.
+   */
   public NullInstanceWithNonStaticMethodException(Method method) {
     super(buildMessage(method));
     
@@ -23,6 +30,8 @@ public class NullInstanceWithNonStaticMethodException extends RuntimeException {
   }
 
   /**
+   * Returns the faulty method.
+   * 
    * @return the faulty method.
    */
   public Method getMethod() {

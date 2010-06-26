@@ -27,6 +27,8 @@ public class WrongParameterCountException extends RuntimeException {
   private int expected;
   
   /**
+   * Builds a new instance.
+   * 
    * @param method the faulty method.
    * @param expected the expected number of parameters.
    */
@@ -39,13 +41,17 @@ public class WrongParameterCountException extends RuntimeException {
   }
 
   /**
-   * @return the method.  
+   * Returns the faulty method.
+   * 
+   * @return the faulty method.  
    */
   public Method getMethod() {
     return method;
   }
 
   /**
+   * Returns the expected number of parameters.
+   * 
    * @return the expected number of parameters.
    */
   public int getExpected() {
@@ -53,6 +59,8 @@ public class WrongParameterCountException extends RuntimeException {
   }
   
   /**
+   * Returns the actual number of parameters, or {@code 0} if {@code method} is {@code null}.
+   * 
    * @return the actual number of parameters, or {@code 0} if {@code method} is {@code null}.
    */
   public int getActual() {
