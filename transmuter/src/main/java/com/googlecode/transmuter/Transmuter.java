@@ -28,7 +28,7 @@ import com.googlecode.transmuter.type.TypeToken;
 /**
  * A central provider of conversion operations and converter registry.
  * <p>
- * Although converter methods can still be individually called, a com.googlecode.transmuter 
+ * Although converter methods can still be individually called, a transmuter 
  * acts as a single point of access for conversion.
  * 
  * @author Humberto S. N. dos Anjos
