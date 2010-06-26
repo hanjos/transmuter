@@ -73,7 +73,7 @@ public final class ReflectionUtils {
    * <li>the type's name, if {@code type} is a {@code Class} object;</li>
    * <li>the type's name followed by the necessary {@code []}s, if {@code type} is a {@code Class} object representing 
    * an array;</li>
-   * <li>the result of {@code type}'s {@link Type#toString() toString} method otherwise.</li> 
+   * <li>the result of {@code type}'s {@code toString} method otherwise.</li> 
    * </ul>
    */
   @SuppressWarnings("unchecked")
@@ -107,7 +107,7 @@ public final class ReflectionUtils {
    * @param types several type objects.
    * @return an array of Strings holding the types' {@link #getTypeName(Type) names}. This array has length 0 if the 
    * given array of types is {@link ObjectUtils#isEmpty(Object...) empty}.
-   * @see ReflectionUtils#getTypeName(Type)
+   * @see #getTypeName(Type)
    * @see ObjectUtils#isEmpty(Object...)
    */
   public static String[] getTypeNames(Type... types) {

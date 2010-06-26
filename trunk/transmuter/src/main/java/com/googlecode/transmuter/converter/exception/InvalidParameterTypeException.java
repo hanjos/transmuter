@@ -25,6 +25,8 @@ public class InvalidParameterTypeException extends RuntimeException {
   private Type type;
   
   /**
+   * Builds a new instance.
+   * 
    * @param method the would-be converter method.
    */
   public InvalidParameterTypeException(Method method) {
@@ -35,6 +37,8 @@ public class InvalidParameterTypeException extends RuntimeException {
   }
 
   /**
+   * Returns the would-be converter method.
+   * 
    * @return the would-be converter method.
    */
   public Method getMethod() {
@@ -42,6 +46,8 @@ public class InvalidParameterTypeException extends RuntimeException {
   }
 
   /**
+   * Returns {@code method}'s (invalid) parameter type.
+   * 
    * @return {@code method}'s (invalid) parameter type.
    */
   public Type getType() {

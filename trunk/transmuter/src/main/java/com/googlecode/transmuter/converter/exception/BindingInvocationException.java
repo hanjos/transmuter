@@ -13,6 +13,8 @@ public class BindingInvocationException extends RuntimeException {
   private Binding binding;
 
   /**
+   * Builds a new instance.
+   * 
    * @param binding the binding whose invocation failed.  
    */
   public BindingInvocationException(Binding binding) {
@@ -20,6 +22,8 @@ public class BindingInvocationException extends RuntimeException {
   }
   
   /**
+   * Builds a new instance.
+   * 
    * @param binding the binding whose invocation failed.
    * @param cause the cause of the failure.   
    */

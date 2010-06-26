@@ -30,7 +30,7 @@ public class ConverterCollisionException extends RuntimeException {
   
   /**
    * @param converterType the converter type.
-   * @param the conflicting bindings.
+   * @param bindings the conflicting bindings.
    */
   @SuppressWarnings("unchecked")
   public ConverterCollisionException(ConverterType converterType, Binding... bindings) {
@@ -42,6 +42,8 @@ public class ConverterCollisionException extends RuntimeException {
   }
 
   /**
+   * Returns the converter type.
+   * 
    * @return the converter type.
    */
   public ConverterType getConverterType() {
@@ -49,6 +51,8 @@ public class ConverterCollisionException extends RuntimeException {
   }
 
   /**
+   * Returns a list with the conflicting bindings.
+   * 
    * @return a list with the conflicting bindings.
    */
   public List<? extends Binding> getBindings() {

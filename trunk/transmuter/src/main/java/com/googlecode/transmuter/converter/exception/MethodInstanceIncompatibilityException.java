@@ -18,6 +18,8 @@ public class MethodInstanceIncompatibilityException extends RuntimeException {
   private Method method;
   
   /**
+   * Builds a new instance.
+   * 
    * @param instance the given instance.
    * @param method the given method.
    */
@@ -29,6 +31,8 @@ public class MethodInstanceIncompatibilityException extends RuntimeException {
   }
 
   /**
+   * Returns the given instance.
+   * 
    * @return the given instance.
    */
   public Object getInstance() {
@@ -36,6 +40,8 @@ public class MethodInstanceIncompatibilityException extends RuntimeException {
   }
 
   /**
+   * Returns the given method.
+   * 
    * @return the given method.
    */
   public Method getMethod() {
