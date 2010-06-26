@@ -35,7 +35,7 @@
 		<url>http://code.google.com/p/transmuter/source</url>
 	</scm>
 
-  <!-- Making the build platform-dependent -->
+  <!-- Making the build platform-independent -->
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
