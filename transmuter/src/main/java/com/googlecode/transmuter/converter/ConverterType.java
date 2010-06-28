@@ -1,10 +1,8 @@
 package com.googlecode.transmuter.converter;
 
 import static com.googlecode.gentyref.GenericTypeReflector.addWildcardParameters;
-import static com.googlecode.gentyref.GenericTypeReflector.capture;
 import static com.googlecode.gentyref.GenericTypeReflector.getExactParameterTypes;
 import static com.googlecode.gentyref.GenericTypeReflector.getExactReturnType;
-import static com.googlecode.gentyref.GenericTypeReflector.getExactSuperType;
 import static com.googlecode.transmuter.util.ObjectUtils.hashCodeOf;
 import static com.googlecode.transmuter.util.ObjectUtils.nonNull;
 
@@ -12,7 +10,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-
 
 import com.googlecode.gentyref.CaptureType;
 import com.googlecode.transmuter.converter.exception.ConverterTypeInstantiationException;
@@ -22,6 +19,8 @@ import com.googlecode.transmuter.converter.exception.MethodOwnerTypeIncompatibil
 import com.googlecode.transmuter.converter.exception.WrongParameterCountException;
 import com.googlecode.transmuter.type.TypeToken;
 import com.googlecode.transmuter.type.TypeToken.ValueType;
+import com.googlecode.transmuter.util.ReflectionUtils;
+
 
 /**
  * Represents a converter's "type": the input type (called {@code fromType}) paired with its output type 
@@ -133,7 +132,7 @@ public class ConverterType {
       if(ownerType instanceof Class<?>)
         ownerType = addWildcardParameters((Class<?>) ownerType);
       
-      if(! isCompatible(method, ownerType))
+      if(! ReflectionUtils.isCompatible(method, ownerType))
         throw new MethodOwnerTypeIncompatibilityException(method, ownerType);
       
       List<Exception> exceptions = new ArrayList<Exception>();
@@ -150,13 +149,6 @@ public class ConverterType {
     } catch (Exception e) {
       throw new ConverterTypeInstantiationException(e);
     }
-  }
-
-  /**
-   * @return {@code true} if {@code ownerType} is a subtype of {@code method}'s declaring class.
-   */
-  protected static boolean isCompatible(Method method, Type ownerType) {
-    return getExactSuperType(capture(ownerType), method.getDeclaringClass()) != null;
   }
 
   private static TypeToken<?> extractParameterToken(Method method, Type ownerType, List<Exception> exceptions) {
@@ -295,6 +287,8 @@ public class ConverterType {
 
   // properties
   /**
+   * Returns the input type accepted by this instance.
+   * 
    * @return the input type accepted by this instance.
    */
   public TypeToken<?> getFromType() {
@@ -302,6 +296,8 @@ public class ConverterType {
   }
 
   /**
+   * Returns the output type accepted by this instance.
+   * 
    * @return the output type accepted by this instance.
    */
   public TypeToken<?> getToType() {

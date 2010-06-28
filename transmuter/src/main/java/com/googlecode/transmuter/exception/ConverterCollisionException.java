@@ -29,6 +29,8 @@ public class ConverterCollisionException extends RuntimeException {
   }
   
   /**
+   * Builds a new instance.
+   * 
    * @param converterType the converter type.
    * @param bindings the conflicting bindings.
    */

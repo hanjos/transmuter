@@ -1,5 +1,7 @@
 package com.googlecode.transmuter.util;
 
+import static com.googlecode.gentyref.GenericTypeReflector.capture;
+import static com.googlecode.gentyref.GenericTypeReflector.getExactSuperType;
 import static com.googlecode.transmuter.util.ObjectUtils.isEmpty;
 
 import java.lang.reflect.Method;
@@ -119,5 +121,16 @@ public final class ReflectionUtils {
       typesAsStrings[i] = getTypeName(types[i]);
     
     return typesAsStrings;
+  }
+
+  /**
+   * Checks if the given type is a subtype of the given method's declaring class.
+   * 
+   * @param method a method object. 
+   * @param type a type object.
+   * @return {@code true} if {@code ownerType} is a subtype of {@code method}'s declaring class.
+   */
+  public static boolean isCompatible(Method method, Type type) {
+    return getExactSuperType(capture(type), method.getDeclaringClass()) != null;
   }  
 }
