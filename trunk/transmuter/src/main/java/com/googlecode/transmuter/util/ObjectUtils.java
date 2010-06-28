@@ -73,6 +73,7 @@ public final class ObjectUtils {
   /**
    * Checks if the array with the arguments is empty.
    * 
+   * @param <T> the array's component type.
    * @param objects an array of objects.
    * @return {@code true} if {@code objects} is either {@code null} or has length 0; {@code false} otherwise.
    */
