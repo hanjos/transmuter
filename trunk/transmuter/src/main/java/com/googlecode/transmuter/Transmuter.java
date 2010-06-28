@@ -24,7 +24,6 @@ import com.googlecode.transmuter.exception.NoCompatibleConvertersFoundException;
 import com.googlecode.transmuter.exception.TooManyConvertersFoundException;
 import com.googlecode.transmuter.type.TypeToken;
 
-
 /**
  * A central provider of conversion operations and converter registry.
  * <p>
@@ -65,22 +64,22 @@ public class Transmuter {
     /**
      * Checks if the converter type and the binding can be stored in this map.
      * <p>
-     * The restrictions are:
+     * The restrictions implemented here are:
      * <ul>
      * <li>neither {@code converterType} nor {@code binding} can be {@code null}.</li>
-     * <li>a converter type must be buildable using {@code binding}.</li>
+     * <li>a converter type must be buildable from {@code binding}.</li>
      * <li>{@code converterType} must be assignable from {@code binding}'s converter type.</li>
-     * <li>this map must not have {@code converterType} associated to a binding different than {@code binding}.</li>
+     * <li>this map must not have {@code converterType} associated to a binding other than {@code binding}.</li>
      * </ul>
      * 
      * @param converterType a converter type.
      * @param binding a binding.
      * @return {@code true} if {@code converterType} is already associated with {@code binding}, or {@code false} 
-     * if there's no binding.
+     * if {@code converterType} is not associated to a binding here.
      * @throws IllegalArgumentException if either {@code converterType} or {@code binding} are {@code null}.
      * @throws ConverterTypeIncompatibleWithBindingException if {@code converterType} and {@code binding} are not 
      * compatible.
-     * @throws ConverterTypeInstantiationException if {@code binding} cannot be used to extract a converter type.
+     * @throws ConverterTypeInstantiationException if a converter type cannot be obtained from {@code binding}.
      * @throws ConverterCollisionException if this map already has a different binding associated to 
      * {@code converterType}.
      * @see #checkForCompatibility(ConverterType, Binding)
@@ -171,6 +170,9 @@ public class Transmuter {
       throw new ConverterCollisionException(converterType, binding, map.get(converterType));
     }
     
+    /**
+     * Attempts to add the bindings in the given map to this map.
+     */
     @Override
     public void putAll(Map<? extends ConverterType, ? extends Binding> map) {
       if(map == null || map.isEmpty())
@@ -179,6 +181,9 @@ public class Transmuter {
       super.putAll(map);
     }
     
+    /**
+     * A {@code null} key is never contained in the map.
+     */
     @Override
     public boolean containsKey(Object key) {
       if(key == null)
@@ -187,6 +192,10 @@ public class Transmuter {
       return super.containsKey(key);
     }
     
+    /**
+     * A {@code null} key is never contained in the map, so invoking this operation on {@code null} does nothing and
+     * returns {@code null}.
+     */
     @Override
     public Binding remove(Object key) {
       if(key == null)
@@ -228,6 +237,8 @@ public class Transmuter {
     }
     
     /**
+     * Returns the map which backs this instance.
+     * 
      * @return the map which backs this instance.
      */
     public Map<? extends ConverterType, ? extends Binding> getMasterMap() {
@@ -366,7 +377,7 @@ public class Transmuter {
    * bundled together and thrown as a single exception.
    * 
    * @param object an object, hopefully with converter methods.
-   * @throws ConverterRegistrationException if there's is some error during the operation.
+   * @throws ConverterRegistrationException if there is some error during the operation.
    */
   public void register(Object object) throws ConverterRegistrationException {
     if(object == null)
@@ -405,7 +416,7 @@ public class Transmuter {
   }
   
   /**
-   * Checks if there is a registered converter with this exact type. 
+   * Checks if there is a registered converter with this exact converter type. 
    * 
    * @param fromType the input type.
    * @param toType the output type.
@@ -534,8 +545,10 @@ public class Transmuter {
   
   // properties
   /**
-   * @return a map holding all the registered converters, keyed by their converter types. This map is backed by 
-   * this instance, i.e. changes made in the com.googlecode.transmuter are seen in the map and vice-versa.
+   * Returns a map holding all the registered converters, keyed by their converter types. This map is backed by 
+   * this instance, i.e. changes made in this transmuter are seen in the map and vice-versa.
+   * 
+   * @return a map holding all the registered converters, keyed by their converter types and backed by this instance.
    */
   protected Map<ConverterType, Binding> getConverterMap() {
     return converterMap;

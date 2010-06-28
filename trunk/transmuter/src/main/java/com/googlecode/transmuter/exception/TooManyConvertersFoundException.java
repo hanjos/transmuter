@@ -20,6 +20,8 @@ public class TooManyConvertersFoundException extends RuntimeException {
   private List<Binding> bindings;
   
   /**
+   * Builds a new instance.
+   * 
    * @param converterType the converter type.
    * @param bindings the compatible bindings found.
    */
@@ -32,6 +34,8 @@ public class TooManyConvertersFoundException extends RuntimeException {
   }
 
   /**
+   * Returns the converter type.
+   * 
    * @return the converter type.
    */
   public ConverterType getConverterType() {
@@ -39,6 +43,8 @@ public class TooManyConvertersFoundException extends RuntimeException {
   }
 
   /**
+   * Returns the compatible bindings found.
+   * 
    * @return the compatible bindings found.
    */
   public List<Binding> getBindings() {

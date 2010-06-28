@@ -31,6 +31,8 @@ public class MultipleCausesException extends RuntimeException {
   private List<? extends Exception> causes;
   
   /**
+   * Builds a new instance.
+   * 
    * @param causes the exceptions to be bundled.
    */
   public MultipleCausesException(Exception... causes) {
@@ -38,6 +40,8 @@ public class MultipleCausesException extends RuntimeException {
   }
   
   /**
+   * Builds a new instance.
+   * 
    * @param causes the exceptions to be bundled.
    */
   public MultipleCausesException(List<? extends Exception> causes) {
@@ -47,6 +51,8 @@ public class MultipleCausesException extends RuntimeException {
   }
 
   /**
+   * Returns the bundled exceptions.
+   * 
    * @return the bundled exceptions.
    */
   public List<? extends Exception> getCauses() {
@@ -54,7 +60,8 @@ public class MultipleCausesException extends RuntimeException {
   }
   
   /**
-   * @return the first bundled exception, or {@code null} if there is none.
+   * Returns the first bundled exception, or {@code null} if none were given.
+   * @return the first bundled exception, or {@code null} if none were given.
    */
   @Override
   public Throwable getCause() {

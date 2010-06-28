@@ -128,7 +128,7 @@ public class Binding {
    * 
    * @param args the arguments in the method call.
    * @return the result of this binding's method invoked on
-   * this binding's instance with the arguments in {@code args}.
+   * this binding's instance with the given arguments.
    * @throws BindingInvocationException if an exception is thrown during the
    * invocation.
    */
@@ -153,6 +153,9 @@ public class Binding {
     return "Binding[" + getInstance() + "." + methodToString() + "]";
   }
   
+  /**
+   * If two bindings hold the same instance and the same method, they will have the same hash code.
+   */
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -176,6 +179,9 @@ public class Binding {
   }
   
   // helper methods
+  /* (non-Javadoc)
+   * Returns a simplified string rendition of this object's method.
+   */
   private String methodToString() {
     Class<?> instanceClass = getInstanceClass();
     String params = StringUtils.concatenate(", ", 
@@ -201,6 +207,8 @@ public class Binding {
   }
   
   /**
+   * Returns this binding's underlying instance.
+   * 
    * @return this binding's underlying instance. 
    */
   public Object getInstance() {
@@ -208,6 +216,8 @@ public class Binding {
   }
   
   /**
+   * Returns this binding's underlying method object.
+   * 
    * @return this binding's underlying method object. 
    */
   public Method getMethod() {

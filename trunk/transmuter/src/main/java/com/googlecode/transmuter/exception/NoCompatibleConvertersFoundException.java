@@ -22,6 +22,8 @@ public class NoCompatibleConvertersFoundException extends RuntimeException {
   }
 
   /**
+   * Returns the converter type.
+   * 
    * @return the converter type.
    */
   public ConverterType getConverterType() {

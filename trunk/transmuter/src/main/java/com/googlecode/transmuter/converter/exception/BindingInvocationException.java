@@ -34,6 +34,8 @@ public class BindingInvocationException extends RuntimeException {
   }
 
   /**
+   * Returns the binding whose invocation failed.
+   * 
    * @return the binding whose invocation failed.
    */
   public Binding getBinding() {
