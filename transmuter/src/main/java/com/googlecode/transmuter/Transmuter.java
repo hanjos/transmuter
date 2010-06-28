@@ -26,9 +26,12 @@ import com.googlecode.transmuter.type.TypeToken;
 
 /**
  * A transmuter provides a centralized type conversion operation, using previously registered methods as converters.
+ * Objects containing converter methods (public methods marked with the {@link Converts} annotation) may register 
+ * them in the transmuter. These methods may later be used as converters when a conversion operation is made with 
+ * matching types.
  * <p>
- * Objects containing converter methods (methods marked with the {@link Converts} annotation) may register them in the 
- * transmuter. These methods may later be used as converters when a conversion operation is made with matching types. 
+ * There cannot be more than one registered converter with the exact same {@linkplain ConverterType type}; the 
+ * existing one must be explicitly unregistered before the new one is included.  
  * 
  * @author Humberto S. N. dos Anjos
  */
@@ -67,7 +70,7 @@ public class Transmuter {
      * The restrictions implemented here are:
      * <ul>
      * <li>neither {@code converterType} nor {@code binding} can be {@code null}.</li>
-     * <li>a converter type must be buildable from {@code binding}.</li>
+     * <li>a converter type must be obtainable from {@code binding}.</li>
      * <li>{@code converterType} must be assignable from {@code binding}'s converter type.</li>
      * <li>this map must not have {@code converterType} associated to a binding other than {@code binding}.</li>
      * </ul>
