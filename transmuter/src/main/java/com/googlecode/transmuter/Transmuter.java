@@ -470,6 +470,8 @@ public class Transmuter {
    * Unregisters the converter for the given converter type. Does nothing if no such converter exists. 
    * 
    * @param converterType a converter type.
+   * @return the binding previously associated with the given converter type, or {@code null} if there was 
+   * no such binding.
    */
   public Binding unregister(ConverterType converterType) {
     return getConverterMap().remove(converterType);
