@@ -174,14 +174,19 @@ public class Transmuter {
     }
     
     /**
-     * Attempts to add the bindings in the given map to this map.
+     * Attempts to add the bindings in the given map to this map, doing nothing if the given map is null or empty. 
+     * All entries are validated before actual insertion.
      */
     @Override
     public void putAll(Map<? extends ConverterType, ? extends Binding> map) {
       if(map == null || map.isEmpty())
         return;
       
-      super.putAll(map);
+      for(Entry<? extends ConverterType, ? extends Binding> entry : map.entrySet())
+        validatePut(entry.getKey(), entry.getValue());
+      
+      for(Entry<? extends ConverterType, ? extends Binding> entry : map.entrySet())
+        super.put(entry.getKey(), entry.getValue());
     }
     
     /**
