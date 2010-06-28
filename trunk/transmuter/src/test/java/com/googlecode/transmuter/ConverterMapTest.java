@@ -17,7 +17,6 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.googlecode.transmuter.Transmuter;
 import com.googlecode.transmuter.Transmuter.ConverterMap;
 import com.googlecode.transmuter.converter.Binding;
 import com.googlecode.transmuter.converter.ConverterType;
@@ -67,7 +66,25 @@ public class ConverterMapTest {
       assertEquals(new ConverterType(double.class, String.class), e.getConverterType());
     }
     
+    
+  }
+  
+  @Test
+  public void putAll() throws SecurityException, NoSuchMethodException {
+    t.register(new MultipleConverter());
+    
+    assertTrue(map.containsKey(new ConverterType(double.class, String.class)));
+    assertTrue(map.containsKey(new ConverterType(TypeToken.STRING, LIST_OF_STRING)));
+    assertFalse(map.containsKey(new ConverterType(TypeToken.OBJECT, TypeToken.STRING)));
+    
+    Object multiple = new MultipleConverter();
+    
     Map<ConverterType, Binding> temp = new HashMap<ConverterType, Binding>();
+    temp.put(
+        new ConverterType(TypeToken.OBJECT, TypeToken.STRING),
+        new Binding(
+            new StringConverter(),
+            StringConverter.class.getMethod("stringify", Object.class)));
     temp.put(
         new ConverterType(double.class, String.class), 
         new Binding(
@@ -86,6 +103,11 @@ public class ConverterMapTest {
       // TODO no way of knowing which error comes first
       // think of a better way to handle this
     }
+    
+    assertEquals(2, map.size());
+    assertTrue(map.containsKey(new ConverterType(double.class, String.class)));
+    assertTrue(map.containsKey(new ConverterType(TypeToken.STRING, LIST_OF_STRING)));
+    assertFalse(map.containsKey(new ConverterType(TypeToken.OBJECT, TypeToken.STRING)));
   }
   
   @Test
