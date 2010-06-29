@@ -66,24 +66,31 @@ public abstract class TypeToken<T> {
   }
   
   /**
-   * An enum-like class which represents Java's primitive data types 
-   * (plus {@code void}). Each instance of this class holds two type tokens: 
-   * one with a primitive type and the other with the matching wrapper type.
-   * 
-   * It behaves logically like an enum, except that Java's enums don't take 
-   * generic parameters.
+   * An enum-like class which represents Java's primitive data types (plus {@code void}). Each instance of this class 
+   * holds two type tokens: one with a primitive type and the other with the matching wrapper type.
+   * <p>
+   * It behaves logically like an enum, except that Java enums don't take generic parameters.
    * 
    * @param <T> a wrapper type or {@code Void}.
    */
   public static abstract class ValueType<T> {
+    /** Represents Java's {@code boolean} type. */
     public static final ValueType<Boolean> BOOLEAN;
+    /** Represents Java's {@code byte} type. */
     public static final ValueType<Byte> BYTE;
+    /** Represents Java's {@code character} type. */
     public static final ValueType<Character> CHARACTER;
+    /** Represents Java's {@code double} type. */
     public static final ValueType<Double> DOUBLE;
+    /** Represents Java's {@code float} type. */
     public static final ValueType<Float> FLOAT;
+    /** Represents Java's {@code integer} type. */
     public static final ValueType<Integer> INTEGER;
+    /** Represents Java's {@code long} type. */
     public static final ValueType<Long> LONG;
+    /** Represents Java's {@code short} type. */
     public static final ValueType<Short> SHORT;
+    /** Represents Java's {@code void} type. */
     public static final ValueType<Void> VOID;
     
     private static Map<Class<?>, ValueType<?>> primitiveReverseMap;
@@ -231,8 +238,7 @@ public abstract class TypeToken<T> {
     /**
      * Attempts to cast {@code value} to the wrapper type {@code T} 
      * represented by this instance. A value of {@code null} is 
-     * interpreted as an instance of {@code Void}, and {@code null} is
-     * returned, accordingly "cast".
+     * interpreted as an instance of {@code Void}.
      *  
      * @param value an object. 
      * @return {@code value} as an object of type {@code T}.
@@ -244,7 +250,7 @@ public abstract class TypeToken<T> {
           value == null ? void.class : value.getClass());
       
       if(valueType == null)
-        throw new ClassCastException(value + " not a primitive nor a wrapper instance");
+        throw new ClassCastException(value + " not a primitive nor a wrapper instance!");
       
       if(this.equals(valueType))
         return (T) value;
@@ -253,10 +259,8 @@ public abstract class TypeToken<T> {
     }
     
     /**
-     * Attempts to cast {@code value}, which is a value type but not an 
-     * instance of {@code T}, to {@code T}. Called by 
-     * {@link #cast(Object) cast}  when the constraints above have been 
-     * demonstrated. 
+     * Attempts to cast {@code value}, which is a value type but not an instance of {@code T}, to {@code T}. 
+     * Called by {@link #cast(Object) cast} when the constraint above has been demonstrated. 
      * 
      * @param value an object which is not of type {@code T}.
      * @see ValueType#cast(Object)
