@@ -7,14 +7,23 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
 
 
 = Stuff =
-== Refactorings ==
+== For today ==
 
-  * Finish the docs.
+  * Finish the darn docs :)
 
-  * Make the interface more Spring-friendly.
+
+== For tomorrow ==
+
+  * Generalize the `register` operation for the programmer to be able to say how to obtain the bindings. 
+
+  * Implement some search algorithm for a most compatible converter if a perfect match isn't found. Parameterizing it seems good...
+
+  * Transitive conversion, e.g. if I have a String -> Unit converter and a Unit -> int converter, I can translate a String to an int. This will affect the most compatible converter algorithm mentioned above (or will it _be_ an alternative algorithm?).
 
 
 == To think about ==
+
+  * Make the interface more Spring-friendly.
 
   * Rethink the validation process (especially for ConverterType and Binding) to ease inheritance. Maybe the ability to register validators with some pre-implemented ones (could end up being a separate mini-project).
     * On registering validators: too much work, and too much code. Would be easier on the eyes with some AOP, but it doesn't seem worth the bother.
@@ -22,22 +31,15 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
 
   * Investigate a better workaround (is there any?) for [http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4819108 bug 4819108] in the JVM.
 
-  * Figure out what should happen when a non-public method is marked with @Converts. Should it be ignored (silent bugs suck) or should an exception be thrown (extra effort needed to check them just to signal errors). Methinks a new parameter has just shown itself :)
+  * Figure out what should happen when a non-public method is marked with @Converts. Should it be ignored (silent bugs suck) or should an exception be thrown (extra effort needed just to signal errors). Methinks a new parameter has just shown itself :)
 
   * Accept more than one converter for the same type? How to distinguish them? Yet another parameter (for Transmuter)?
-    * This looks more like a Transmuter subclass than an extra parameter.
+    * Best left for later.
 
-  * Generalize the `register` operation for the programmer to be able to say how to obtain the bindings. Yet another parameter...
-
-  * Maybe use something like Apache Commons instead of some homebrew util classes.
-
-== New stuff to implement! ==
+  * Use something like Apache Commons instead of some homebrew util classes.
+    * Will do if more utility methods show up.
 
   * A Converter interface. (A lot) Less checking needed, but not sure how a Converter implementation with @Converts methods will work. Does just marking the Converter method with @Converts do the trick (I think so)?
-    * Is this really necessary?
+    * Is this really necessary? It is less... "magical", so to speak, although annotations are getting popular enough so that "regular folk" don't get too confused...
   
-  * Implement some search algorithm for a most compatible converter if a perfect match isn't found. Parameterizing it seems good...
-
-  * Transitive conversion, e.g. if I have a String -> Unit converter and a Unit -> int converter, I can translate a String to an int. This will affect the most compatible converter algorithm mentioned above (or will it _be_ an alternative algorithm?).
-
   * If lots of optional parameters show up (got three already!), a DSL would be cool.
