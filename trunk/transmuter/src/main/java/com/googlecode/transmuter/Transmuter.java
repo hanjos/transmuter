@@ -219,18 +219,18 @@ public class Transmuter {
    * 
    * @author Humberto S. N. dos Anjos
    */
-  protected static class TempConverterMap extends ConverterMap {
+  protected static class DependentConverterMap extends ConverterMap {
     private static final long serialVersionUID = 1L;
 
     private Map<? extends ConverterType, ? extends Binding> masterMap;
 
     /**
-     * Creates a new {@link TempConverterMap} object, which will be backed by {@code masterMap}.
+     * Creates a new {@link DependentConverterMap} object, which will be backed by {@code masterMap}.
      * 
      * @param masterMap the master map which backs this map.
      * @throws IllegalArgumentException if {@code masterMap} is {@code null}.
      */
-    public TempConverterMap(Map<? extends ConverterType, ? extends Binding> masterMap) {
+    public DependentConverterMap(Map<? extends ConverterType, ? extends Binding> masterMap) {
       this.masterMap = nonNull(masterMap);
     }
     
@@ -381,8 +381,10 @@ public class Transmuter {
   }
   
   /**
-   * Scans the given object for converter methods, registering them. Errors encountered during the process will be
-   * bundled together and thrown as a single exception.
+   * Scans the given object for converter methods, registering them. 
+   * <p>
+   * Errors encountered during the process will be bundled together and thrown as a single exception. No converters 
+   * will be registered then, even if valid.
    * 
    * @param object an object, hopefully with converter methods.
    * @throws ConverterRegistrationException if there is some error during the operation.
@@ -391,7 +393,7 @@ public class Transmuter {
     if(object == null)
       return;
     
-    Map<ConverterType, Binding> temp = new TempConverterMap(getConverterMap());
+    Map<ConverterType, Binding> temp = new DependentConverterMap(getConverterMap());
     List<Exception> exceptions = new ArrayList<Exception>();
     
     for(Method method : object.getClass().getMethods()) {
