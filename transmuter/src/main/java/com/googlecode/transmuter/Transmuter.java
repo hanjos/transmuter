@@ -25,13 +25,13 @@ import com.googlecode.transmuter.exception.TooManyConvertersFoundException;
 import com.googlecode.transmuter.type.TypeToken;
 
 /**
- * A transmuter provides a centralized type conversion operation, using previously registered methods as converters.
- * Objects containing converter methods (public methods marked with the {@link Converts} annotation) may register 
- * them in the transmuter. These methods may later be used as converters when a conversion operation is made with 
- * matching types.
+ * The main object in the library. A transmuter provides a centralized type conversion operation, using previously 
+ * registered methods as converters. Objects containing converter methods (public methods marked with the 
+ * {@link Converts} annotation) may register them in the transmuter. These methods may later be used as converters 
+ * when a conversion operation is made with matching types.
  * <p>
  * There cannot be more than one registered converter with the exact same {@linkplain ConverterType type}; the 
- * existing one must be explicitly unregistered before the new one is included.  
+ * existing one must be explicitly unregistered before the new one is included.
  * 
  * @author Humberto S. N. dos Anjos
  */
