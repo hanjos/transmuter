@@ -56,6 +56,7 @@ public class Transmuter {
      * @return {@code null} if there was no previous binding for {@code converterType}, or {@code binding} if it was 
      * already associated with {@code converterType}.
      * @throws RuntimeException all exceptions thrown by {@link #validatePut(ConverterType, Binding)}. 
+     * @see #validatePut(ConverterType, Binding)
      */
     @Override
     public Binding put(ConverterType converterType, Binding binding) {
@@ -176,6 +177,8 @@ public class Transmuter {
     /**
      * Attempts to add the bindings in the given map to this map, doing nothing if the given map is null or empty. 
      * All entries are validated before actual insertion.
+     * 
+     * @see #validatePut(ConverterType, Binding)
      */
     @Override
     public void putAll(Map<? extends ConverterType, ? extends Binding> map) {
@@ -190,7 +193,7 @@ public class Transmuter {
     }
     
     /**
-     * A {@code null} key is never contained in the map.
+     * Ensures a {@code null} key is never contained in this map.
      */
     @Override
     public boolean containsKey(Object key) {
@@ -201,8 +204,8 @@ public class Transmuter {
     }
     
     /**
-     * A {@code null} key is never contained in the map, so invoking this operation on {@code null} does nothing and
-     * returns {@code null}.
+     * Ensures {@code null} key is never contained in this map, so invoking this operation on {@code null} does nothing 
+     * and returns {@code null}.
      */
     @Override
     public Binding remove(Object key) {
