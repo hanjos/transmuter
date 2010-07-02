@@ -11,6 +11,8 @@ public class MissingTypeParameterException extends RuntimeException {
   private Class<?> baseClass;
   
   /**
+   * Builds a new instance.
+   * 
    * @param baseClass the base class.
    */
   public MissingTypeParameterException(Class<?> baseClass) {
@@ -20,7 +22,9 @@ public class MissingTypeParameterException extends RuntimeException {
   }
 
   /**
-   * @return the base class.
+   * Returns the faulty base class.
+   * 
+   * @return the faulty base class.
    */
   public Class<?> getBaseClass() {
     return baseClass;

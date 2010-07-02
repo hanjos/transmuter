@@ -8,14 +8,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marker annotation for registerable converter methods.
+ * Marks a method as a prospective converter method. 
+ * <p>
+ * Not all methods can be converter methods. This annotation should be used only on methods which can be successfully
+ * {@linkplain Transmuter#register(Object) registered} in a {@linkplain Transmuter transmuter}. 
  * 
  * @author Humberto S. N. dos Anjos
+ * @see Transmuter#register(Object)
  */
 @Documented
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface Converts {
-  // empty block
-}
+public @interface Converts { /* empty block */ }
