@@ -13,6 +13,8 @@ public class NoCompatibleConvertersFoundException extends RuntimeException {
   private ConverterType converterType;
 
   /**
+   * Builds a new instance.
+   * 
    * @param converterType the converter type.
    */
   public NoCompatibleConvertersFoundException(ConverterType converterType) {

@@ -55,9 +55,9 @@ import com.googlecode.transmuter.type.exception.UnexpectedTypeException;
  * @param <T> a generic type
  */
 public abstract class TypeToken<T> {
-  /** A type token instance representing java.lang.Object. */
+  /** A type token instance representing the {@link Object} class. */
   public static final TypeToken<Object> OBJECT;
-  /** A type token instance representing java.lang.String. */
+  /** A type token instance representing the {@link String} class. */
   public static final TypeToken<String> STRING;
   
   static {
@@ -229,6 +229,9 @@ public abstract class TypeToken<T> {
     }
     
     // utility methods
+    /**
+     * Returns a string representation of this value type.
+     */
     @Override
     public String toString() {
       return "ValueType<" + primitive + ">";
@@ -546,17 +549,11 @@ public abstract class TypeToken<T> {
   }
 
   /**
-   * Check if this type is assignable from the given class object.
-   * @param cls a class object
-   * @return {@code true} if this type is assignable from {@code cls}.
-   */
-  public boolean isAssignableFrom(Class<?> cls) {
-    return isAssignableFrom((Type) cls);
-  }
-
-  /**
-   * Check if this type is assignable from the given Type.
-   * @param from a {@code Type} object
+   * Checks if this type is assignable from the given type. Due to autoboxing, this method will return true if this 
+   * type token represents a primitive or wrapper type, and the given type represents its 
+   * {@linkplain ValueType#matching(Type) matching} type. 
+   * 
+   * @param from a {@link Type} object.
    * @return {@code true} if this type is assignable from {@code from}.
    */
   public boolean isAssignableFrom(Type from) {
@@ -584,7 +581,10 @@ public abstract class TypeToken<T> {
   }
 
   /**
-   * Check if this type is assignable from the given type token.
+   * Checks if this type is assignable from the given type token. Due to autoboxing, this method will return true if 
+   * this type token represents a primitive or wrapper type, and the given token represents its 
+   * {@linkplain ValueType#matching(Type) matching} type. 
+   * 
    * @param token a type token
    * @return {@code true} if this type is assignable from {@code token}.
    */

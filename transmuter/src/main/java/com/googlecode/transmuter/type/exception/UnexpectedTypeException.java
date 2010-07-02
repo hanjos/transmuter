@@ -44,6 +44,8 @@ public class UnexpectedTypeException extends RuntimeException {
   private List<Type> expected;
 
   /**
+   * Builds a new instance.
+   * 
    * @param type the unexpected type.
    * @param expected the expected types.
    */
@@ -55,6 +57,8 @@ public class UnexpectedTypeException extends RuntimeException {
   }
 
   /**
+   * Returns the unexpected type.
+   * 
    * @return the unexpected type.
    */
   public Type getType() {
@@ -62,6 +66,8 @@ public class UnexpectedTypeException extends RuntimeException {
   }
 
   /**
+   * Returns the expected types.
+   * 
    * @return the expected types.
    */
   public List<Type> getExpected() {

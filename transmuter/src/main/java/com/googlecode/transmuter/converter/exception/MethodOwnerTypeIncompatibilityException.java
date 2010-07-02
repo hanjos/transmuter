@@ -32,7 +32,7 @@ public class MethodOwnerTypeIncompatibilityException extends RuntimeException {
   }
 
   /**
-   * Returns the sorted method.
+   * Returns the method.
    * 
    * @return the method.
    */

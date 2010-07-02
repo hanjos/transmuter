@@ -14,10 +14,20 @@ import com.googlecode.transmuter.exception.MultipleCausesException;
 public class ConverterTypeInstantiationException extends MultipleCausesException {
   private static final long serialVersionUID = 1L;
 
+  /**
+   * Builds a new instance.
+   * 
+   * @param causes the exceptions to be bundled.
+   */
   public ConverterTypeInstantiationException(Exception... causes) {
     super(causes);
   }
   
+  /**
+   * Builds a new instance.
+   * 
+   * @param causes the exceptions to be bundled.
+   */
   public ConverterTypeInstantiationException(List<? extends Exception> causes) {
     super(causes);
   }

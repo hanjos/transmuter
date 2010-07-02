@@ -26,9 +26,9 @@ public class InaccessibleMethodException extends RuntimeException {
   }
 
   /**
-   * Returns the method.
+   * Returns the inaccessible method.
    * 
-   * @return the method.
+   * @return the inaccessible method.
    */
   public Method getMethod() {
     return method;

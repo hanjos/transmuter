@@ -50,8 +50,8 @@ public class Transmuter {
      * Validates the converter type and the binding (using {@link #validatePut(ConverterType, Binding) validatePut}) 
      * before insertion, throwing an exception if a problem is found.
      * <p>
-     * In particular, bindings cannot be overwritten; they must be specifically removed from this map before a new put
-     * operation with the given converter type can be done.
+     * In particular, bindings cannot be overwritten; they must be specifically removed from this map before a new 
+     * {@code put} operation with the given converter type can be done.
      * 
      * @return {@code null} if there was no previous binding for {@code converterType}, or {@code binding} if it was 
      * already associated with {@code converterType}.
@@ -193,7 +193,7 @@ public class Transmuter {
     }
     
     /**
-     * Ensures a {@code null} key is never contained in this map.
+     * Ensures that a {@code null} key is never contained in this map.
      */
     @Override
     public boolean containsKey(Object key) {
@@ -204,8 +204,8 @@ public class Transmuter {
     }
     
     /**
-     * Ensures {@code null} key is never contained in this map, so invoking this operation on {@code null} does nothing 
-     * and returns {@code null}.
+     * Ensures that a {@code null} key is never contained in this map, so invoking this operation on {@code null} 
+     * does nothing and returns {@code null}.
      */
     @Override
     public Binding remove(Object key) {
@@ -384,13 +384,27 @@ public class Transmuter {
   }
   
   /**
-   * Scans the given object for converter methods, registering them. 
+   * Scans the given object for converter methods, registering them as bindings keyed by their 
+   * {@linkplain ConverterType types}. Does nothing if the given object is {@code null}.
    * <p>
-   * Errors encountered during the process will be bundled together and thrown as a single exception. No converters 
-   * will be registered then, even if valid.
+   * This method will iterate through all the given object's public methods and, for all methods marked with the 
+   * {@link Converts} annotation, it will:
+   * <ul>
+   * <li>extract the {@linkplain ConverterType converter type};</li>
+   * <li>{@linkplain Binding bind} the method with the given object;</li>
+   * <li>and {@linkplain DependentConverterMap check} if there is no registered converter with the same type,</li>
+   * </ul>
+   * registering all the converters in one fell swoop if no problem is found. Non-public methods, even if marked 
+   * with {@link Converts}, will be ignored.
+   * <p>
+   * Errors encountered during the process will be bundled together and thrown as a single exception. In that case, 
+   * no converters will be registered, even if they're valid.
    * 
    * @param object an object, hopefully with converter methods.
    * @throws ConverterRegistrationException if there is some error during the operation.
+   * @see ConverterType#fromMethod(Method, Type)
+   * @see Binding#Binding(Object, Method)
+   * @see DependentConverterMap
    */
   public void register(Object object) throws ConverterRegistrationException {
     if(object == null)
@@ -505,7 +519,7 @@ public class Transmuter {
   /**
    * Attempts to return a converter compatible with the given converter type. 
    * <p>
-   * There can only be one exact match registered in the com.googlecode.transmuter, which will be returned here; lacking that, 
+   * There can only be one exact match registered in the transmuter, which will be returned here; lacking that, 
    * a compatible converter will be looked for. An exception will be thrown if no converter is found, or if more than 
    * one compatible (non-exact match) converter is found, since this method cannot decide which should be returned.
    * 

@@ -23,16 +23,14 @@ import com.googlecode.transmuter.util.StringUtils;
 
 
 /**
- * Represents an immutable invokable object, made binding a method 
- * to an object (which may be {@code null} if the method is static).
+ * Represents an immutable invokable object, made binding a method to an object (which may be {@code null} if the 
+ * method is static).
  * <p> 
- * Not all objects, methods or combinations thereof may be bound. 
- * Validation is performed in the constructor 
- * (using {@link #validate(Object, Method) validate}), which will throw an 
- * exception if the object and the method are deemed invalid or incompatible. 
- * The standard validation attempts to ensure that 
- * {@link #invoke(Object...) invoke} calls will not fail due to a method or
- * object invalidity/incompatibility.
+ * Not all objects, methods or combinations thereof may be bound. Validation is performed in the constructor 
+ * (using {@link #validate(Object, Method) validate}), which will throw an exception if the object and the method 
+ * are deemed invalid or incompatible. The standard validation attempts to ensure that 
+ * {@link #invoke(Object...) invoke} calls will not fail due to a method or object invalidity/incompatibility, 
+ * i.e. that one cannot build an inherently uninvokable Binding.
  * 
  * @author Humberto S. N. dos Anjos
  */
@@ -41,12 +39,11 @@ public class Binding {
   private Method method;
   
   /**
-   * Constructs a new {@code Binding} object which represents a method 
-   * (which should be static) bound to {@code null}.
+   * Constructs a new {@code Binding} object which holds a static method.
    * 
    * @param method a static method object.
-   * @throws BindingInstantiationException if {@code method} is not deemed 
-   * valid by {@link #validate(Object, Method)}.
+   * @throws BindingInstantiationException if the given method is not deemed valid by 
+   * {@link #validate(Object, Method)}.
    */
   public Binding(Method method) throws BindingInstantiationException {
     this(null, method);
@@ -57,13 +54,13 @@ public class Binding {
    * 
    * @param instance an object.
    * @param method a method object.
-   * @throws BindingInstantiationException if {@code instance}, {@code method}, or
-   * their combination is not deemed valid by {@link #validate(Object, Method)}.
+   * @throws BindingInstantiationException if the given instance, method, or their combination is not deemed valid 
+   * by {@link #validate(Object, Method)}.
    */
   public Binding(Object instance, Method method) throws BindingInstantiationException {
     validate(instance, method);
     
-    // workaround necessary due to bug 4819108 in the JVM
+    // XXX workaround necessary due to bug 4819108 in the JVM
     // XXX but if one gets method from getDeclaredMethod it seems to work...
     if(Modifier.isPublic(method.getModifiers()))
       method.setAccessible(true);
@@ -73,30 +70,25 @@ public class Binding {
   }
   
   /**
-   * Checks if {@code instance} and {@code method} can be bound. 
-   * It returns if no problem was found. 
+   * Checks if the given instance and method can be bound. It returns safely if no problem was found. 
    * <p>
-   * Several checks are made, with each one of them having a corresponding 
-   * exception on error. The exceptions, if any, are collected and bundled 
-   * into a {@link BindingInstantiationException}, which is then thrown. 
-   * The checks implemented here are:
+   * Several checks are made, each one of them having a corresponding exception on error. If any exceptions are found, 
+   * they are collected and bundled into a {@link BindingInstantiationException} for throwing. The checks implemented 
+   * here are:
    * 
    * <ul>
-   * <li>{@code method} may not be {@code null}. This violation throws a 
-   * {@code BindingInstantiationException} with a single 
-   * {@link IllegalArgumentException}.</li>
-   * <li>{@code method} must have public visibility (signals an 
-   * {@link InaccessibleMethodException}).</li>
-   * <li>{@code method} must be static if {@code instance} is {@code null} 
-   * (signals a {@link NullInstanceWithNonStaticMethodException}).</li>
-   * <li>{@code method} must be invokable on {@code instance} 
-   * (signals a {@link MethodInstanceIncompatibilityException}).</li>
+   * <li>{@code method} may not be {@code null}. This violation throws a {@code BindingInstantiationException} with a 
+   * single {@link IllegalArgumentException}.</li>
+   * <li>{@code method} must have public visibility (signals an {@link InaccessibleMethodException}).</li>
+   * <li>{@code method} must be static if {@code instance} is {@code null} (signals a 
+   * {@link NullInstanceWithNonStaticMethodException}).</li>
+   * <li>{@code method} must be invokable on {@code instance} (signals a 
+   * {@link MethodInstanceIncompatibilityException}).</li>
    * </ul>
    * 
    * @param instance an object.
    * @param method a method object. 
-   * @throws BindingInstantiationException if {@code instance} and/or 
-   * {@code method} do not constitute a valid binding.
+   * @throws BindingInstantiationException if the given instance and/or method do not constitute a valid binding.
    */
   protected void validate(Object instance, Method method) throws BindingInstantiationException {
     try {
@@ -123,14 +115,11 @@ public class Binding {
 
   // operations
   /**
-   * Invokes this binding's method object on this binding's instance with the 
-   * given arguments.
+   * Invokes this binding's method object on this binding's instance with the given arguments.
    * 
-   * @param args the arguments in the method call.
-   * @return the result of this binding's method invoked on
-   * this binding's instance with the given arguments.
-   * @throws BindingInvocationException if an exception is thrown during the
-   * invocation.
+   * @param args the arguments for the method call.
+   * @return the result of this binding's method invoked on this binding's instance with the given arguments.
+   * @throws BindingInvocationException if an exception is thrown during the invocation.
    */
   public Object invoke(Object... args) throws BindingInvocationException {
     try {
@@ -145,12 +134,17 @@ public class Binding {
   }
   
   // utility methods
+  /**
+   * Returns a string representation of this object.
+   * 
+   * @return a string representation of this object.
+   */
   @Override
   public String toString() {
     if(instance == null) // static method
-      return "Binding[static " + methodToString() + "]";
+      return "static " + getInstanceClass().getName() + "." + methodToString();
     
-    return "Binding[" + getInstance() + "." + methodToString() + "]";
+    return getInstance() + "." + methodToString();
   }
   
   /**
@@ -193,12 +187,10 @@ public class Binding {
   
   // properties
   /**
-   * Returns the most specific instance class compatible with this binding's 
-   * instance and method object. That would be the instance's class, if the 
-   * instance is not null, or the method's declaring class otherwise.
+   * Returns the most specific instance class compatible with this binding's instance and method object. That would be 
+   * the instance's class, if the instance is not null, or the method's declaring class otherwise.
    * 
-   * @return the most specific instance class compatible with 
-   * this binding's instance and method object.
+   * @return the most specific instance class compatible with this binding's instance and method object.
    */
   public Class<?> getInstanceClass() {
     return getInstance() != null 

@@ -21,7 +21,6 @@ import com.googlecode.transmuter.type.TypeToken;
 import com.googlecode.transmuter.type.TypeToken.ValueType;
 import com.googlecode.transmuter.util.ReflectionUtils;
 
-
 /**
  * Represents a converter's "type": the input type (called {@code fromType}) paired with its output type 
  * (called {@code toType}). Converter types are immutable.
@@ -66,12 +65,10 @@ public class ConverterType {
   
   // factory methods
   /**
-   * Creates a new {@code ConverterType} extracting the information from a method 
-   * object. Calling this method is equivalent to calling 
-   * {@link #fromMethod(Method, Type)} with {@code method} and {@code method}'s
-   * declaring class.
+   * Creates a new {@code ConverterType} extracting the information from a method object. Calling this method is 
+   * equivalent to calling {@link #fromMethod(Method, Type)} with {@code method} and {@code method}'s declaring class.
    * 
-   * @param method a method object.
+   * @param method a method object. Cannot be null.
    * @return a new {@code ConverterType} instance.
    * @throws ConverterTypeInstantiationException if a converter type could not be made.
    * @see #fromMethod(Method, Type)
@@ -89,25 +86,23 @@ public class ConverterType {
   }
   
   /**
-   * Creates a new converter type extracting the information from a method object and 
-   * it's owner type. The owner type is used to resolve generic types referenced or 
-   * inherited by the method.
+   * Creates a new converter type extracting the information from a method object and it's owner type. The owner type 
+   * is used to resolve generic types referenced or inherited by the method.
    * <p>
-   * Several checks are made to see if the given method is a valid converter
-   * method, with each error associated to an exception. All the exceptions, 
-   * if any, are bundled up in a {@link ConverterTypeInstantiationException} for 
+   * Several checks are made to see if the given method is a valid converter method, with each error associated to an 
+   * exception. All the exceptions, if any, are bundled up in a {@link ConverterTypeInstantiationException} for 
    * throwing. The checks made are:
    * 
    * <ul>
    * <li>{@code method} cannot be null. This error forces a 
    * {@code ConverterTypeInstantiationException} containing a single 
-   * {@link IllegalArgumentException}</li>
+   * {@link IllegalArgumentException}.</li>
    * <li>{@code ownerType} cannot be null. This error forces a 
    * {@code ConverterTypeInstantiationException} containing a single 
-   * {@link IllegalArgumentException}</li>
+   * {@link IllegalArgumentException}.</li>
    * <li>{@code method} must be invokable on {@code ownerType}. This error 
    * forces a {@code ConverterTypeInstantiationException} containing a single 
-   * {@link MethodOwnerTypeIncompatibilityException}).</li>
+   * {@link MethodOwnerTypeIncompatibilityException}.</li>
    * <li>{@code method} must have one and only one parameter 
    * (signals a {@link WrongParameterCountException}).</li>
    * <li>{@code method}'s parameter must be a non-generic type 
@@ -119,10 +114,9 @@ public class ConverterType {
    * </ul>
    * 
    * @param method a method object.
-   * @param ownerType the specific instance class to which {@code method} belongs.
-   * @return a new {@code ConverterType} instance.
-   * @throws ConverterTypeInstantiationException if there are errors while extracting 
-   * the information.
+   * @param ownerType the specific instance class to which the given method belongs.
+   * @return a new {@link ConverterType} instance.
+   * @throws ConverterTypeInstantiationException if there are errors while extracting the information.
    */
   public static ConverterType fromMethod(Method method, Type ownerType) throws ConverterTypeInstantiationException {
     try {
@@ -130,6 +124,8 @@ public class ConverterType {
       nonNull(ownerType, "ownerType");
       
       if(ownerType instanceof Class<?>)
+        // fills any generic parameters found with wildcards, which helps when resolving method's 
+        // parameter and return types
         ownerType = addWildcardParameters((Class<?>) ownerType);
       
       if(! ReflectionUtils.isCompatible(method, ownerType))
@@ -158,7 +154,7 @@ public class ConverterType {
         throw new WrongParameterCountException(method, 1);
       
       Type parameterType = parameterTypes[0];
-      if(parameterType == null // means it's a generic method 
+      if(parameterType == null // XXX means it's a generic method; this may change in later versions of Gentyref 
       || parameterType instanceof CaptureType)
         throw new InvalidParameterTypeException(method);
       
@@ -174,7 +170,7 @@ public class ConverterType {
     try {
       Type returnType = getExactReturnType(method, ownerType);
       
-      if(returnType == null // means it's a generic method 
+      if(returnType == null // XXX means it's a generic method; this may change in later versions of Gentyref
       || returnType instanceof CaptureType
       || TypeToken.ValueType.VOID.matches(returnType))
         throw new InvalidReturnTypeException(method);
@@ -225,6 +221,11 @@ public class ConverterType {
   }
   
   // utility methods
+  /**
+   * Returns a string representation of this object.
+   * 
+   * @return a string representation of this object.
+   */
   @Override
   public String toString() {
     return getFromType() + " -> " + getToType();
