@@ -103,15 +103,18 @@ public class Transmuter {
      * The restrictions are:
      * <ul>
      * <li>neither {@code converterType} nor {@code binding} can be {@code null}.</li>
-     * <li>a converter type must be buildable using {@code binding}.</li>
+     * <li>a converter type must be obtainable using {@code binding}.</li>
      * <li>{@code converterType} must be assignable from {@code binding}'s converter type.</li>
      * </ul>
      * 
      * @param converterType a converter type.
      * @param binding a binding.
      * @throws IllegalArgumentException if either {@code converterType} or {@code binding} are {@code null}.
-     * @throws ConverterTypeIncompatibleWithBindingException if {@code converterType} and {@code binding} are not compatible.
-     * @throws ConverterTypeInstantiationException if {@code binding} cannot be used to extract a converter type. 
+     * @throws ConverterTypeIncompatibleWithBindingException if {@code converterType} and {@code binding} are not 
+     * compatible.
+     * @throws ConverterTypeInstantiationException if {@code binding} cannot be used to extract a converter type.
+     * @see ConverterType#fromBinding(Binding)
+     * @see ConverterType#isAssignableFrom(ConverterType)
      */
     protected void checkForCompatibility(ConverterType converterType, Binding binding) 
     throws ConverterTypeIncompatibleWithBindingException {
