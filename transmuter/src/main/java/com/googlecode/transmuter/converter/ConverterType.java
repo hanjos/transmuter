@@ -191,6 +191,9 @@ public class ConverterType {
    * @param binding a binding.
    * @return a {@code ConverterType} instance constructed from {@code binding}.
    * @throws ConverterTypeInstantiationException if binding is null or cannot be used to create a converter type.
+   * @see #fromMethod(Method, Type)
+   * @see Binding#getInstanceClass()
+   * @see Binding#getMethod()
    */
   public static ConverterType fromBinding(Binding binding) throws ConverterTypeInstantiationException {
     try {
