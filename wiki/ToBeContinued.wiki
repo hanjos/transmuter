@@ -9,7 +9,8 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
 = Stuff =
 == For today ==
 
-  * Finish the darn docs :)
+  * Check for last-minute head-scratchers
+  * Release!
 
 
 == For tomorrow ==
@@ -20,6 +21,7 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
 
   * Transitive conversion, e.g. if I have a String -> Unit converter and a Unit -> int converter, I can translate a String to an int. This will affect the most compatible converter algorithm mentioned above (or will it _be_ an alternative algorithm?).
 
+  * Exception instantiation is an expensive operation due to the stack trace filling, which isn't needed when we're just queueing 'em up for later throwage.
 
 == To think about ==
 
@@ -42,6 +44,6 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
     * Will do if more utility methods show up.
 
   * A Converter interface. (A lot) Less checking needed, but not sure how a Converter implementation with @Converts methods will work. Does just marking the Converter method with @Converts do the trick (I think so)?
-    * Is this really necessary? It is less... "magical", so to speak, although annotations are getting popular enough so that "regular folk" don't get too confused...
+    * Is this really necessary? It is less... "magical", so to speak, although annotations are getting popular enough so that "regular folk" won't get too confused...
   
-  * If lots of optional parameters show up (got three already!), a DSL would be cool.
+  * If lots of optional parameters show up (got a few already!), a DSL would be cool.
