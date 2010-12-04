@@ -9,7 +9,7 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
 = Stuff =
 == For today ==
 
-  * Check for last-minute head-scratchers
+  * Check for last-minute head-scratchers.
   * Release!
 
 
