@@ -352,6 +352,15 @@ public class Transmuter {
    * Performs a conversion, taking {@code from} and generating a new object of type {@code toType}.
    * 
    * This method doesn't use generics for compile-time checking, returning the result as a raw {@link Object}. 
+   * So, due to erasure-imposed limitations, {@code from}'s runtime class will be considered as the input type.
+   * For example, this means that both invocations below:
+   * 
+   * <pre>
+   * convertRaw(new ArrayList&lt;String&gt;(), TypeToken.STRING);
+   * convertRaw(new ArrayList&lt;Map&lt;java.util.Date, Set&lt;Thread&gt;&gt;&gt;&gt;(), TypeToken.STRING);
+   * </pre>
+   * 
+   * will attempt to use the same converter.
    * 
    * @param from the object to convert.
    * @param toType the type of the converted object.
