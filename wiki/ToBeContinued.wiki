@@ -23,9 +23,19 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
 
   * Exception instantiation is an expensive operation due to the stack trace filling, which isn't needed when we're just queueing 'em up for later throwage.
 
+  * Parameterize what should happen when a non-public method is marked with @Converts. It could be ignored (silent bugs suck) or an exception can be thrown (extra effort needed just to signal errors). 
+
+=== Current future parameters ===
+
+  * Compatible converter search algorithm injection.
+
+  * Give `register` a binding provider (`ConverterProvider`? Sounds so... enterprise-y :)
+
+  * Invalid converter detection.
+
 == To think about ==
 
-  * Make the interface more Spring-friendly.
+  * Make the API more Spring-friendly (a setConverters method or something like that, so that a transmuter can be instantiated and set up from Spring).
 
   * Make ValueType a real enum. We lose the generics, but is it really all that useful?
 
@@ -34,8 +44,6 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
     * Did some refactoring, it looks reasonable for now.
 
   * Investigate a better workaround (is there any?) for [http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4819108 bug 4819108] in the JVM.
-
-  * Figure out what should happen when a non-public method is marked with @Converts. Should it be ignored (silent bugs suck) or should an exception be thrown (extra effort needed just to signal errors). Methinks a new parameter has just shown itself :)
 
   * Accept more than one converter for the same type? How to distinguish them? Yet another parameter (for Transmuter)?
     * Best left for later.
