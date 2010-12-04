@@ -73,8 +73,7 @@ public class Binding {
    * Checks if the given instance and method can be bound. It returns safely if no problem was found. 
    * <p>
    * Several checks are made, each one of them having a corresponding exception on error. If any exceptions are found, 
-   * they are collected and bundled into a {@link BindingInstantiationException} for throwing. The checks implemented 
-   * here are:
+   * they are collected and bundled into a {@link BindingInstantiationException}. The checks implemented here are:
    * 
    * <ul>
    * <li>{@code method} may not be {@code null}. This violation throws a {@code BindingInstantiationException} with a 
@@ -126,7 +125,9 @@ public class Binding {
       return getMethod().invoke(getInstance(), args);
     } catch(IllegalArgumentException e) {
       throw new BindingInvocationException(this, e);
-    } catch(IllegalAccessException e) {
+    } catch(IllegalAccessException e) { 
+      // should never happen, given the checks at validate(), 
+      // but we all know how that goes... 
       throw new BindingInvocationException(this, e);
     } catch(InvocationTargetException e) {
       throw new BindingInvocationException(this, e);
@@ -199,7 +200,7 @@ public class Binding {
   }
   
   /**
-   * Returns this binding's underlying instance.
+   * Returns this binding's underlying instance. It may be {@code null} if this binding represents a static method.
    * 
    * @return this binding's underlying instance. 
    */

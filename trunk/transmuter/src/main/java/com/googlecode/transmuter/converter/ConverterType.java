@@ -150,7 +150,7 @@ public class ConverterType {
   private static TypeToken<?> extractParameterToken(Method method, Type ownerType, List<Exception> exceptions) {
     try {
       Type[] parameterTypes = getExactParameterTypes(method, ownerType);
-      if(parameterTypes.length == 0 || parameterTypes.length > 1)
+      if(parameterTypes.length != 1)
         throw new WrongParameterCountException(method, 1);
       
       Type parameterType = parameterTypes[0];
@@ -274,7 +274,7 @@ public class ConverterType {
   public int hashCode() {
     final int prime = 31;
     
-    // we must use the ValueType's hashCode for this calculation,
+    // XXX we must use the ValueType's hashCode for this calculation,
     // since we are 'equaling' ConverterTypes with matching primitive/wrapper types. 
     // HashMap's search algorithm fails otherwise
     

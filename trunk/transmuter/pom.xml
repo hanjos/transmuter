@@ -89,6 +89,7 @@
 				<configuration>
 					<enableAssertions>false</enableAssertions>
 					<excludes>
+                        <!-- Don't test everything twice! -->
 						<exclude>**/com/googlecode/transmuter/FullTest.java</exclude>
 					</excludes>
 				</configuration>

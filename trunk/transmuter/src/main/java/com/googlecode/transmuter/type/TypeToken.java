@@ -365,7 +365,7 @@ public abstract class TypeToken<T> {
      * 
      * @param <E> the specific type {@code cls} represents. 
      * @param cls a class object.
-     * @return one of the following, as a {@code Class&lt;E&gt;} object:
+     * @return one of the following, as a {@code Class<E>}:
      * <ul>
      * <li>the respective wrapper type if {@code cls} is primitive;</li>
      * <li>the respective primitive type if {@code cls} is a wrapper;</li>
