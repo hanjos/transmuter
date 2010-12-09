@@ -18,9 +18,8 @@
 
 	<distributionManagement>
 		<repository>
-			<id>local.repo</id>
-			<name>file repository to svn</name>
-			<url>file://${basedir}/../../mavenrepo</url>
+			<id>transmuter-releases</id>
+			<url>scm:svn:http://transmuter.googlecode.com/svn/repos/releases</url>
 		</repository>
 	</distributionManagement>
 
@@ -35,10 +34,10 @@
 		<url>http://code.google.com/p/transmuter/source</url>
 	</scm>
 
-  <!-- Making the build platform-independent -->
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+    <!-- Making the build platform-independent -->
+    <properties>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
   
 	<repositories>
 		<repository>
@@ -150,11 +149,11 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
-				<version>2.0-beta-8</version>
+				<version>2.1</version>
 				<configuration>
 					<tagBase>https://transmuter.googlecode.com/svn/tags</tagBase>
 					<scmCommentPrefix>release:</scmCommentPrefix>
-					<goals>deploy</goals>
+					<goals>source:jar javadoc:jar deploy</goals>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -163,7 +162,7 @@
 	<developers>
 		<developer>
 			<name>Humberto S. N. dos Anjos</name>
-			<email>h.anjos@gmail.com</email>
+			<email>h.anjos at gmail.com</email>
 		</developer>
 	</developers>
 </project>
