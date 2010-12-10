@@ -31,7 +31,7 @@
   <scm>
     <connection>scm:svn:http://transmuter.googlecode.com/svn/trunk</connection>
     <developerConnection>scm:svn:https://transmuter.googlecode.com/svn/trunk</developerConnection>
-    <url>http://code.google.com/p/transmuter/source</url>
+    <url>http://transmuter.googlecode.com/svn</url>
   </scm>
 
   <!-- Making the build platform-independent -->
@@ -153,7 +153,6 @@
         <configuration>
           <tagBase>https://transmuter.googlecode.com/svn/tags/</tagBase>
           <scmCommentPrefix>release:</scmCommentPrefix>
-          <goals>deploy</goals>
         </configuration>
       </plugin>
     </plugins>
