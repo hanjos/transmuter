@@ -19,7 +19,7 @@
   <distributionManagement>
     <repository>
       <id>transmuter-releases</id>
-      <url>scm:svn:http://transmuter.googlecode.com/svn/repos/releases</url>
+      <url>dav:https://transmuter.googlecode.com/svn/repos/releases</url>
     </repository>
   </distributionManagement>
 
