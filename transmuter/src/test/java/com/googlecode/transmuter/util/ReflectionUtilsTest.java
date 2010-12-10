@@ -17,7 +17,8 @@ import com.googlecode.transmuter.type.TypeToken;
 
 
 public class ReflectionUtilsTest {
-  private static final Type ARRAY_OF_ARRAY_OF_LIST_OF_SUPER_STRING = new TypeToken<List<? super String>[][]>() {}.getType();
+  private static final Type ARRAY_OF_ARRAY_OF_LIST_OF_SUPER_STRING = 
+    new TypeToken<List<? super String>[][]>() { /**/ }.getType();
 
   @Test
   public void testGetTypeName() {
@@ -25,8 +26,8 @@ public class ReflectionUtilsTest {
     assertEquals("double", getTypeName(double.class));
     assertEquals("java.lang.Double", getTypeName(Double.class));
     assertEquals("java.lang.Class", getTypeName(Class.class));
-    assertEquals("java.lang.Class<?>", getTypeName(new TypeToken<Class<?>>() {}.getType()));
-    assertEquals("java.util.List<java.lang.String>", getTypeName(new TypeToken<List<String>>() {}.getType()));
+    assertEquals("java.lang.Class<?>", getTypeName(new TypeToken<Class<?>>() { /**/ }.getType()));
+    assertEquals("java.util.List<java.lang.String>", getTypeName(new TypeToken<List<String>>() { /**/ }.getType()));
     assertEquals("java.util.List<? super java.lang.String>[][]", getTypeName(ARRAY_OF_ARRAY_OF_LIST_OF_SUPER_STRING));
   }
   

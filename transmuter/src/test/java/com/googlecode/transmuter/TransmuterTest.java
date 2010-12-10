@@ -48,8 +48,8 @@ import com.googlecode.transmuter.type.TypeToken;
 
 
 public class TransmuterTest {
-  private static final TypeToken<ArrayList<String>> ARRAYLIST_OF_STRING = new TypeToken<ArrayList<String>>() {};
-  private static final TypeToken<List<String>> LIST_OF_STRING = new TypeToken<List<String>>() {};
+  private static final TypeToken<ArrayList<String>> ARRAYLIST_OF_STRING = new TypeToken<ArrayList<String>>() { /**/ };
+  private static final TypeToken<List<String>> LIST_OF_STRING = new TypeToken<List<String>>() { /**/ };
   private Transmuter t;
   private Map<ConverterType, Binding> map;
 
@@ -511,9 +511,9 @@ public class TransmuterTest {
     };
     t.register(parameterized);
     
-    final TypeToken<Map<String, String>> MAP_STRING_TO_STRING = new TypeToken<Map<String, String>>() {};
+    final TypeToken<Map<String, String>> MAP_STRING_TO_STRING = new TypeToken<Map<String, String>>() { /**/ };
     final TypeToken<Map<ConverterType, Binding>> MAP_CONVERTERTYPE_TO_BINDING = 
-      new TypeToken<Map<ConverterType, Binding>>() {};
+      new TypeToken<Map<ConverterType, Binding>>() { /**/ };
     final TypeToken<Integer> INT = TypeToken.get(int.class);
     
     assertTrue(0 == t.convert(new HashMap<String, String>(), MAP_STRING_TO_STRING, INT));
