@@ -1,0 +1,167 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.googlecode.transmuter</groupId>
+  <artifactId>transmuter</artifactId>
+  <packaging>jar</packaging>
+  <version>0.1</version>
+  <inceptionYear>2010</inceptionYear>
+  <name>Transmuter</name>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <distributionManagement>
+    <repository>
+      <id>transmuter-releases</id>
+      <url>scm:svn:http://transmuter.googlecode.com/svn/repos/releases</url>
+    </repository>
+  </distributionManagement>
+
+  <issueManagement>
+    <system>Google Code Issue Tracking</system>
+    <url>http://code.google.com/p/transmuter/issues/list</url>
+  </issueManagement>
+
+  <scm>
+    <connection>scm:svn:http://transmuter.googlecode.com/svn/tags/transmuter-0.1</connection>
+    <developerConnection>scm:svn:https://transmuter.googlecode.com/svn/tags/transmuter-0.1</developerConnection>
+    <url>scm:svn:https://transmuter.googlecode.com/svn/tags/transmuter-0.1</url>
+  </scm>
+
+  <!-- Making the build platform-independent -->
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <repositories>
+    <repository>
+      <id>maven-repository.dev.java.net</id>
+      <url>http://download.java.net/maven/2</url>
+    </repository>
+
+    <repository>
+      <id>gentyref</id>
+      <url>http://gentyref.googlecode.com/svn/mavenrepo</url>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.8.1</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.googlecode.gentyref</groupId>
+      <artifactId>gentyref</artifactId>
+      <version>1.1.0</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <defaultGoal>package</defaultGoal>
+
+    <plugins>
+      <!-- Using Java 6 -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+
+      <!-- Tests -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.5</version>
+        <configuration>
+          <enableAssertions>false</enableAssertions>
+          <excludes>
+            <!-- Don't test everything twice! -->
+            <exclude>**/com/googlecode/transmuter/FullTest.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
+      <!-- Packaging releases -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Attaching sources -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Generating Javadocs -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <links>
+            <link>http://java.sun.com/javase/6/docs/api/</link>
+            <link>http://gentyref.googlecode.com/svn/tags/1.1.0/docs/apidocs/</link>
+          </links>
+          <version>true</version>
+          <show>protected</show>
+        </configuration>
+      </plugin>
+
+      <!-- Tagging releases -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.1</version>
+        <configuration>
+          <tagBase>https://transmuter.googlecode.com/svn/tags/</tagBase>
+          <scmCommentPrefix>release:</scmCommentPrefix>
+          <goals>source:jar javadoc:jar deploy</goals>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <developers>
+    <developer>
+      <name>Humberto S. N. dos Anjos</name>
+      <email>h.anjos at gmail.com</email>
+    </developer>
+  </developers>
+</project>
