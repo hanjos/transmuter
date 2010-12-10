@@ -30,8 +30,8 @@ import com.googlecode.transmuter.type.TypeToken;
 
 
 public class ConverterMapTest {
-  private static final TypeToken<List<String>> LIST_OF_STRING = new TypeToken<List<String>>() {};
-  private static final TypeToken<ArrayList<String>> ARRAYLIST_OF_STRING = new TypeToken<ArrayList<String>>() {};
+  private static final TypeToken<List<String>> LIST_OF_STRING = new TypeToken<List<String>>() { /**/ };
+  private static final TypeToken<ArrayList<String>> ARRAYLIST_OF_STRING = new TypeToken<ArrayList<String>>() { /**/ };
   
   private Transmuter t;
   private Map<ConverterType, Binding> map;
