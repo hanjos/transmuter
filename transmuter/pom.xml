@@ -152,7 +152,7 @@
         <configuration>
           <tagBase>https://transmuter.googlecode.com/svn/tags/</tagBase>
           <scmCommentPrefix>release:</scmCommentPrefix>
-          <goals>source:jar javadoc:jar deploy</goals>
+          <goals>deploy</goals>
         </configuration>
       </plugin>
     </plugins>
