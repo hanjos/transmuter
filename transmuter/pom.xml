@@ -152,7 +152,6 @@
         <configuration>
           <tagBase>https://transmuter.googlecode.com/svn/tags/</tagBase>
           <scmCommentPrefix>release:</scmCommentPrefix>
-          <goals>deploy</goals>
         </configuration>
       </plugin>
     </plugins>
