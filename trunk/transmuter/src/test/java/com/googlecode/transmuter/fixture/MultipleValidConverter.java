@@ -1,4 +1,4 @@
-package com.googlecode.transmuter.mock;
+package com.googlecode.transmuter.fixture;
 
 import java.io.Serializable;
 import java.util.List;

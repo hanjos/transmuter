@@ -1,4 +1,4 @@
-package com.googlecode.transmuter.mock;
+package com.googlecode.transmuter.fixture;
 
 import java.util.List;
 

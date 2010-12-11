@@ -35,15 +35,15 @@ import com.googlecode.transmuter.exception.ConverterCollisionException;
 import com.googlecode.transmuter.exception.ConverterRegistrationException;
 import com.googlecode.transmuter.exception.NoCompatibleConvertersFoundException;
 import com.googlecode.transmuter.exception.TooManyConvertersFoundException;
-import com.googlecode.transmuter.mock.FlawedConverter;
-import com.googlecode.transmuter.mock.GenericConverter;
-import com.googlecode.transmuter.mock.GenericMethodConverter;
-import com.googlecode.transmuter.mock.MultipleConverter;
-import com.googlecode.transmuter.mock.MultipleValidConverter;
-import com.googlecode.transmuter.mock.PartialGenericConverter;
-import com.googlecode.transmuter.mock.StringArrayToListStringConverter;
-import com.googlecode.transmuter.mock.StringConverter;
-import com.googlecode.transmuter.mock.VarargConverter;
+import com.googlecode.transmuter.fixture.FlawedConverter;
+import com.googlecode.transmuter.fixture.GenericConverter;
+import com.googlecode.transmuter.fixture.GenericMethodConverter;
+import com.googlecode.transmuter.fixture.MultipleConverter;
+import com.googlecode.transmuter.fixture.MultipleValidConverter;
+import com.googlecode.transmuter.fixture.PartialGenericConverter;
+import com.googlecode.transmuter.fixture.StringArrayToListStringConverter;
+import com.googlecode.transmuter.fixture.StringConverter;
+import com.googlecode.transmuter.fixture.VarargConverter;
 import com.googlecode.transmuter.type.TypeToken;
 
 
