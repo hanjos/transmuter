@@ -78,7 +78,6 @@ public final class ReflectionUtils {
    * <li>the result of {@code type}'s {@code toString} method otherwise.</li> 
    * </ul>
    */
-  @SuppressWarnings("unchecked")
   public static String getTypeName(Type type) {
     if (type == null)
       return "null";

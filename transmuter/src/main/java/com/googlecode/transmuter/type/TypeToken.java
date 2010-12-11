@@ -73,6 +73,7 @@ public abstract class TypeToken<T> {
    * 
    * @param <T> a wrapper type or {@code Void}.
    */
+  @SuppressWarnings("synthetic-access")
   public static abstract class ValueType<T> {
     /** Represents Java's {@code boolean} type. */
     public static final ValueType<Boolean> BOOLEAN;
@@ -772,7 +773,8 @@ public abstract class TypeToken<T> {
    * necessary.
    */
   private static class SimpleTypeToken<T> extends TypeToken<T> {
-    public SimpleTypeToken(Type type) {
+    @SuppressWarnings("synthetic-access")
+	public SimpleTypeToken(Type type) {
       super(type);
     }
   }

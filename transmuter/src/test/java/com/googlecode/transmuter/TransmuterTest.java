@@ -534,7 +534,7 @@ public class TransmuterTest {
     }
     
     final Object raw = new Object() {
-      @SuppressWarnings({ "unused", "unchecked" })
+      @SuppressWarnings({ "unused", "rawtypes" })
       @Converts
       public int size(Map map) {
         return map.size();
