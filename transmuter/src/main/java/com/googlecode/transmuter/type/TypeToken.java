@@ -774,7 +774,7 @@ public abstract class TypeToken<T> {
    */
   private static class SimpleTypeToken<T> extends TypeToken<T> {
     @SuppressWarnings("synthetic-access")
-	public SimpleTypeToken(Type type) {
+    public SimpleTypeToken(Type type) {
       super(type);
     }
   }

@@ -23,9 +23,9 @@ import com.googlecode.transmuter.converter.ConverterType;
 import com.googlecode.transmuter.converter.exception.ConverterTypeIncompatibleWithBindingException;
 import com.googlecode.transmuter.converter.exception.ConverterTypeInstantiationException;
 import com.googlecode.transmuter.exception.ConverterCollisionException;
-import com.googlecode.transmuter.mock.MultipleConverter;
-import com.googlecode.transmuter.mock.MultipleValidConverter;
-import com.googlecode.transmuter.mock.StringConverter;
+import com.googlecode.transmuter.fixture.MultipleConverter;
+import com.googlecode.transmuter.fixture.MultipleValidConverter;
+import com.googlecode.transmuter.fixture.StringConverter;
 import com.googlecode.transmuter.type.TypeToken;
 
 
