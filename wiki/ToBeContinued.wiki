@@ -1,5 +1,5 @@
 #summary Future features planned for, well, whenever.
-#labels Featured
+#labels Featured,Phase-Design
 
 = Introduction =
 
@@ -9,19 +9,15 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
 = Stuff =
 == For today ==
 
-  * Check for last-minute head-scratchers.
-  * Release!
+  * Generalize the `register` operation for the programmer to be able to say how to obtain the bindings. 
 
+  * Exception instantiation is an expensive operation due to the stack trace filling, which isn't needed when we're just queueing 'em up for later throwage.
 
 == For tomorrow ==
-
-  * Generalize the `register` operation for the programmer to be able to say how to obtain the bindings. 
 
   * Implement some search algorithm for a most compatible converter if a perfect match isn't found. Parameterizing it seems good...
 
   * Transitive conversion, e.g. if I have a String -> Unit converter and a Unit -> int converter, I can translate a String to an int. This will affect the most compatible converter algorithm mentioned above (or will it _be_ an alternative algorithm?).
-
-  * Exception instantiation is an expensive operation due to the stack trace filling, which isn't needed when we're just queueing 'em up for later throwage.
 
   * Parameterize what should happen when a non-public method is marked with @Converts. It could be ignored (silent bugs suck) or an exception can be thrown (extra effort needed just to signal errors). 
 
