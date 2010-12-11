@@ -18,7 +18,7 @@
   <distributionManagement>
     <repository>
       <id>transmuter-releases</id>
-      <url>scm:svn:https://transmuter.googlecode.com/svn/repos/releases</url>
+      <url>file://${basedir}/../../Repositories/transmuter</url>
       <uniqueVersion>false</uniqueVersion>
     </repository>
   </distributionManagement>
