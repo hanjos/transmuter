@@ -26,39 +26,122 @@ import com.googlecode.transmuter.util.StringUtils;
  * Represents an immutable invokable object, made binding a method to an object (which may be {@code null} if the 
  * method is static).
  * <p> 
- * Not all objects, methods or combinations thereof may be bound. Validation is performed in the constructor 
- * (using {@link #validate(Object, Method) validate}), which will throw an exception if the object and the method 
- * are deemed invalid or incompatible. The standard validation attempts to ensure that 
+ * Not all objects, methods or combinations thereof may be bound. If given a {@link Validator validator}, the 
+ * constructor will use it to make sure that the given arguments are valid mutually compatible or throw an exception 
+ * if they are deemed otherwise. The standard validation (in {@link DefaultValidator}) attempts to ensure that 
  * {@link #invoke(Object...) invoke} calls will not fail due to a method or object invalidity/incompatibility, 
  * i.e. that one cannot build an inherently uninvokable Binding.
  * 
  * @author Humberto S. N. dos Anjos
  */
 public class Binding {
+  /**
+   * Instances of this interface are responsible for ensuring that the given instance and method can be used as a
+   * valid binding.
+   * 
+   * @author Humberto S. N. dos Anjos
+   */
+  public static interface Validator {
+    /**
+     * Checks if the given instance and method can be bound. It returns safely if no problem was found, or throws 
+     * a {@link BindingInstantiationException} which bundles together the problems found. 
+     * 
+     * @param instance an object.
+     * @param method a method object. 
+     * @throws BindingInstantiationException if the given instance and/or method do not constitute a valid binding.
+     */
+    public void validate(Object instance, Method method) throws BindingInstantiationException;
+  }
+    
+  /**
+   * The default validator for {@link Binding}.
+   * 
+   * @author Humberto S. N. dos Anjos
+   */
+  public static class DefaultValidator implements Validator {
+    /**
+     * Several checks are made, each one of them having a corresponding exception on error. If any exceptions are 
+     * found, they are collected and bundled into a {@link BindingInstantiationException}. The checks made here are:
+     * 
+     * <ul>
+     * <li>{@code method} may not be {@code null}. This violation throws a {@code BindingInstantiationException} with a 
+     * single {@link IllegalArgumentException}.</li>
+     * <li>{@code method} must have public visibility (signals an {@link InaccessibleMethodException}).</li>
+     * <li>{@code method} must be static if {@code instance} is {@code null} (signals a 
+     * {@link NullInstanceWithNonStaticMethodException}).</li>
+     * <li>{@code method} must be invokable on {@code instance} (signals a 
+     * {@link MethodInstanceIncompatibilityException}).</li>
+     * </ul>
+     * 
+     * @param instance an object.
+     * @param method a method object. 
+     * @throws BindingInstantiationException if the given instance and/or method do not constitute a valid binding.
+     */
+    @Override
+    public void validate(Object instance, Method method) throws BindingInstantiationException {
+      try {
+        nonNull(method, "method");
+        
+        List<Exception> exceptions = new ArrayList<Exception>();
+        if(! Modifier.isPublic(method.getModifiers()))
+          exceptions.add(new InaccessibleMethodException(method));
+        
+        if(instance == null && ! Modifier.isStatic(method.getModifiers()))
+          exceptions.add(new NullInstanceWithNonStaticMethodException(method));
+        
+        if(instance != null && ! method.getDeclaringClass().isAssignableFrom(instance.getClass()))
+          exceptions.add(new MethodInstanceIncompatibilityException(instance, method));
+        
+        if(exceptions.size() > 0)
+          throw new BindingInstantiationException(exceptions);
+      } catch (BindingInstantiationException e) {
+        throw e;
+      } catch (Exception e) {
+        throw new BindingInstantiationException(e);
+      }
+    }
+  }
+  
+  protected static final Validator DEFAULT_VALIDATOR = new DefaultValidator();
+  
   private Object instance;
   private Method method;
   
   /**
-   * Constructs a new {@code Binding} object which holds a static method.
+   * Constructs a new {@code Binding} object which holds a static method, using the default validator.
    * 
    * @param method a static method object.
-   * @throws BindingInstantiationException if the given method is not deemed valid by 
-   * {@link #validate(Object, Method)}.
+   * @throws BindingInstantiationException if the given method is not deemed valid by the default validator.
    */
   public Binding(Method method) throws BindingInstantiationException {
-    this(null, method);
+    this(null, method, DEFAULT_VALIDATOR);
   }
 
   /**
-   * Constructs a new {@code Binding} object.
+   * Constructs a new {@code Binding} object, using the default validator.
    * 
    * @param instance an object.
    * @param method a method object.
    * @throws BindingInstantiationException if the given instance, method, or their combination is not deemed valid 
-   * by {@link #validate(Object, Method)}.
+   * by the default validator.
    */
   public Binding(Object instance, Method method) throws BindingInstantiationException {
-    validate(instance, method);
+    this(instance, method, DEFAULT_VALIDATOR);
+  }
+  
+  /**
+   * Constructs a new {@code Binding} object, using the given validator. If no validator is given, no validation will 
+   * be made.
+   * 
+   * @param instance an object.
+   * @param method a method object.
+   * @param validator the validator to be used on the given arguments. If {@code null}, no validation will be made.
+   * @throws BindingInstantiationException if the given instance, method, or their combination is not deemed valid 
+   * by the given validator.
+   */
+  public Binding(Object instance, Method method, Validator validator) throws BindingInstantiationException {
+    if(validator != null)
+      validator.validate(instance, method);
     
     // XXX workaround necessary due to bug 4819108 in the JVM
     // XXX but if one gets method from getDeclaredMethod it seems to work...
@@ -67,49 +150,6 @@ public class Binding {
     
     this.instance = instance;
     this.method = method;
-  }
-  
-  /**
-   * Checks if the given instance and method can be bound. It returns safely if no problem was found. 
-   * <p>
-   * Several checks are made, each one of them having a corresponding exception on error. If any exceptions are found, 
-   * they are collected and bundled into a {@link BindingInstantiationException}. The checks implemented here are:
-   * 
-   * <ul>
-   * <li>{@code method} may not be {@code null}. This violation throws a {@code BindingInstantiationException} with a 
-   * single {@link IllegalArgumentException}.</li>
-   * <li>{@code method} must have public visibility (signals an {@link InaccessibleMethodException}).</li>
-   * <li>{@code method} must be static if {@code instance} is {@code null} (signals a 
-   * {@link NullInstanceWithNonStaticMethodException}).</li>
-   * <li>{@code method} must be invokable on {@code instance} (signals a 
-   * {@link MethodInstanceIncompatibilityException}).</li>
-   * </ul>
-   * 
-   * @param instance an object.
-   * @param method a method object. 
-   * @throws BindingInstantiationException if the given instance and/or method do not constitute a valid binding.
-   */
-  protected void validate(Object instance, Method method) throws BindingInstantiationException {
-    try {
-      nonNull(method, "method");
-      
-      List<Exception> exceptions = new ArrayList<Exception>();
-      if(! Modifier.isPublic(method.getModifiers()))
-        exceptions.add(new InaccessibleMethodException(method));
-      
-      if(instance == null && ! Modifier.isStatic(method.getModifiers()))
-        exceptions.add(new NullInstanceWithNonStaticMethodException(method));
-      
-      if(instance != null && ! method.getDeclaringClass().isAssignableFrom(instance.getClass()))
-        exceptions.add(new MethodInstanceIncompatibilityException(instance, method));
-      
-      if(exceptions.size() > 0)
-        throw new BindingInstantiationException(exceptions);
-    } catch (BindingInstantiationException e) {
-      throw e;
-    } catch (Exception e) {
-      throw new BindingInstantiationException(e);
-    }
   }
 
   // operations
@@ -126,7 +166,7 @@ public class Binding {
     } catch(IllegalArgumentException e) {
       throw new BindingInvocationException(this, e);
     } catch(IllegalAccessException e) { 
-      // should never happen, given the checks at validate(), 
+      // should never happen if the validator does its job properly, 
       // but we all know how that goes... 
       throw new BindingInvocationException(this, e);
     } catch(InvocationTargetException e) {
