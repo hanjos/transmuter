@@ -40,7 +40,8 @@ import com.googlecode.transmuter.type.exception.UnexpectedTypeException;
  * You can use this class to get the generic type for a class. For example,
  * to get the generic type for <code>Collection&lt;Foo&gt;</code>, you can use:
  * <p>
- * <code>Type typeOfCollectionOfFoo = new TypeToken&lt;Collection&lt;Foo&gt;&gt;(){}.getType()
+ * <code>
+ * Type typeOfCollectionOfFoo = new TypeToken&lt;Collection&lt;Foo&gt;&gt;(){}.getType()
  * </code>
  * 
  * <p>Assumes {@code Type} implements {@code equals()} and {@code hashCode()}
@@ -267,7 +268,8 @@ public abstract class TypeToken<T> {
      * Called by {@link #cast(Object) cast} when the constraint above has been demonstrated. 
      * 
      * @param value an object which is not of type {@code T}.
-     * @see ValueType#cast(Object)
+     * @return the given value cast as a {@code T} instance.
+     * @see TypeToken.ValueType#cast(Object)
      */
     protected abstract T castToThis(Object value);
     
