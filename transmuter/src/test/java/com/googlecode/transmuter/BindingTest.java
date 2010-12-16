@@ -100,6 +100,22 @@ public class BindingTest {
   }
   
   @Test
+  public void constructorWithIncompatibleInstanceAndMethodButNoValidation() throws SecurityException, NoSuchMethodException {
+    final Method getFromType = extractMethod(ConverterType.class, "getFromType");
+    Binding b = new Binding("0123456789", getFromType, null);
+    
+    assertEquals("0123456789", b.getInstance());
+    assertEquals(getFromType, b.getMethod());
+    
+    try {
+      b.invoke();
+      fail();
+    } catch (BindingInvocationException e) {
+      assertEquals(IllegalArgumentException.class, e.getCause().getClass());
+    }
+  }
+  
+  @Test
   public void constructorWithNullInstanceAndNonStaticMethod() throws SecurityException, NoSuchMethodException {
     try {
       new Binding(null, extractMethod(ConverterType.class, "getFromType"));
@@ -115,15 +131,34 @@ public class BindingTest {
   
   @Test
   public void constructorWithNonPublicMethod() throws SecurityException, NoSuchMethodException {
+    final Method getRawType = extractDeclaredMethod(TypeToken.class, "getRawType", Type.class);
+
     try {
-      new Binding(null, extractDeclaredMethod(TypeToken.class, "getRawType", Type.class));
+      new Binding(null, getRawType);
       fail();
     } catch(BindingInstantiationException e) {
       assertEquals(1, e.getCauses().size());
       assertEquals(InaccessibleMethodException.class, e.getCauses().get(0).getClass());
       
       InaccessibleMethodException ex = (InaccessibleMethodException) e.getCauses().get(0);
-      assertEquals(extractDeclaredMethod(TypeToken.class, "getRawType", Type.class), ex.getMethod());
+      assertEquals(getRawType, ex.getMethod());
+    }
+  }
+  
+  @Test
+  public void constructorWithNonPublicMethodButNoValidation() throws SecurityException, NoSuchMethodException {
+    // private static Class<?> getRawType(Type type)
+    Method getRawType = extractDeclaredMethod(TypeToken.class, "getRawType", Type.class);
+    Binding b = new Binding(null, getRawType, null);
+    
+    assertNull(b.getInstance());
+    assertEquals(getRawType, b.getMethod());
+    
+    try {
+      b.invoke(getClass());
+      fail();
+    } catch(BindingInvocationException e) {
+      assertEquals(IllegalAccessException.class, e.getCause().getClass());
     }
   }
   
