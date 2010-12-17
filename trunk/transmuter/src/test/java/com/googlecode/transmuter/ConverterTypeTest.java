@@ -33,17 +33,17 @@ public class ConverterTypeTest {
   
   @Test
   public void testFromMethod() throws SecurityException, NoSuchMethodException {
-    assertEquals(new ConverterType(int.class, String.class), ConverterType.fromMethod(String.class.getMethod("substring", int.class)));
+    assertEquals(new ConverterType(int.class, String.class), ConverterType.from(String.class.getMethod("substring", int.class)));
     
     try {
-      ConverterType.fromMethod(null);
+      ConverterType.from((Method) null);
     } catch(ConverterTypeInstantiationException e) {
       assertEquals(1, e.getCauses().size());
       assertEquals(IllegalArgumentException.class, e.getCauses().get(0).getClass());
     }
     
     try {
-      ConverterType.fromMethod(null, Object.class);
+      ConverterType.from(null, Object.class);
       fail();
     } catch(ConverterTypeInstantiationException e) {
       assertEquals(1, e.getCauses().size());
@@ -51,7 +51,7 @@ public class ConverterTypeTest {
     }
     
     try {
-      ConverterType.fromMethod(String.class.getMethod("substring", int.class), null);
+      ConverterType.from(String.class.getMethod("substring", int.class), null);
       fail();
     } catch(ConverterTypeInstantiationException e) {
       assertEquals(1, e.getCauses().size());
@@ -60,7 +60,7 @@ public class ConverterTypeTest {
     
     Method substring_2 = String.class.getMethod("substring", int.class, int.class);
     try {
-      ConverterType.fromMethod(substring_2);
+      ConverterType.from(substring_2);
       fail();
     } catch(ConverterTypeInstantiationException e) {
       assertEquals(1, e.getCauses().size());
@@ -74,7 +74,7 @@ public class ConverterTypeTest {
     
     Method toString = String.class.getMethod("toString");
     try {
-      ConverterType.fromMethod(toString);
+      ConverterType.from(toString);
       fail();
     } catch(ConverterTypeInstantiationException e) {
       assertEquals(1, e.getCauses().size());
@@ -88,7 +88,7 @@ public class ConverterTypeTest {
     
     Method wait_timeout = Object.class.getMethod("wait", long.class);
     try {
-      ConverterType.fromMethod(wait_timeout);
+      ConverterType.from(wait_timeout);
       fail();
     } catch(ConverterTypeInstantiationException e) {
       assertEquals(1, e.getCauses().size());
@@ -103,7 +103,7 @@ public class ConverterTypeTest {
   @Test
   public void testFromBinding() throws ConverterTypeInstantiationException, SecurityException, NoSuchMethodException {
     try {
-      ConverterType.fromBinding(null);
+      ConverterType.from((Binding) null);
       fail();
     } catch(ConverterTypeInstantiationException e) {
       assertEquals(1, e.getCauses().size());
@@ -112,7 +112,7 @@ public class ConverterTypeTest {
     
     Method substring = String.class.getMethod("substring", int.class);
     
-    assertEquals(ConverterType.fromMethod(substring), ConverterType.fromBinding(new Binding("0123", substring)));
+    assertEquals(ConverterType.from(substring), ConverterType.from(new Binding("0123", substring)));
   }
   
   @Test
@@ -181,7 +181,7 @@ public class ConverterTypeTest {
   public void testFromMethodWithIncompatibleOwnerType() throws SecurityException, NoSuchMethodException {
     final Method valueOfBoolean = String.class.getMethod("valueOf", boolean.class);
     try {
-      ConverterType.fromMethod(valueOfBoolean, Object.class);
+      ConverterType.from(valueOfBoolean, Object.class);
     } catch(ConverterTypeInstantiationException e) {
       assertEquals(1, e.getCauses().size());
       

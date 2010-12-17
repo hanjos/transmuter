@@ -113,7 +113,7 @@ public class Transmuter {
      * @throws ConverterTypeIncompatibleWithBindingException if {@code converterType} and {@code binding} are not 
      * compatible.
      * @throws ConverterTypeInstantiationException if {@code binding} cannot be used to extract a converter type.
-     * @see ConverterType#fromBinding(Binding)
+     * @see ConverterType#from(Binding)
      * @see ConverterType#isAssignableFrom(ConverterType)
      */
     protected void checkForCompatibility(ConverterType converterType, Binding binding) 
@@ -121,7 +121,7 @@ public class Transmuter {
       nonNull(converterType, "converterType"); 
       nonNull(binding, "binding");
       
-      if(! converterType.isAssignableFrom(ConverterType.fromBinding(binding)))
+      if(! converterType.isAssignableFrom(ConverterType.from(binding)))
         throw new ConverterTypeIncompatibleWithBindingException(converterType, binding);
     }
 
@@ -414,7 +414,7 @@ public class Transmuter {
    * 
    * @param object an object, hopefully with converter methods.
    * @throws ConverterRegistrationException if there is some error during the operation.
-   * @see ConverterType#fromMethod(Method, Type)
+   * @see ConverterType#from(Method, Type)
    * @see Binding#Binding(Object, Method)
    * @see DependentConverterMap
    */
@@ -430,7 +430,7 @@ public class Transmuter {
         continue;
       
       try {
-        temp.put(ConverterType.fromMethod(method, object.getClass()), new Binding(object, method));
+        temp.put(ConverterType.from(method, object.getClass()), new Binding(object, method));
       } catch (MultipleCausesException e) {
         exceptions.addAll(e.getCauses());
       } catch(Exception e) {

@@ -66,18 +66,18 @@ public class ConverterType {
   // factory methods
   /**
    * Creates a new {@code ConverterType} extracting the information from a method object. Calling this method is 
-   * equivalent to calling {@link #fromMethod(Method, Type)} with {@code method} and {@code method}'s declaring class.
+   * equivalent to calling {@link #from(Method, Type)} with {@code method} and {@code method}'s declaring class.
    * 
    * @param method a method object. Cannot be null.
    * @return a new {@code ConverterType} instance.
    * @throws ConverterTypeInstantiationException if a converter type could not be made.
-   * @see #fromMethod(Method, Type)
+   * @see #from(Method, Type)
    */
-  public static ConverterType fromMethod(Method method) throws ConverterTypeInstantiationException {
+  public static ConverterType from(Method method) throws ConverterTypeInstantiationException {
     try {
       nonNull(method, "method");
       
-      return fromMethod(method, method.getDeclaringClass());
+      return from(method, method.getDeclaringClass());
     } catch (ConverterTypeInstantiationException e) {
       throw e;
     } catch (Exception e) {
@@ -118,7 +118,7 @@ public class ConverterType {
    * @return a new {@link ConverterType} instance.
    * @throws ConverterTypeInstantiationException if there are errors while extracting the information.
    */
-  public static ConverterType fromMethod(Method method, Type ownerType) throws ConverterTypeInstantiationException {
+  public static ConverterType from(Method method, Type ownerType) throws ConverterTypeInstantiationException {
     try {
       nonNull(method, "method");
       nonNull(ownerType, "ownerType");
@@ -185,21 +185,21 @@ public class ConverterType {
 
   /**
    * Creates a new {@code ConverterType} instance using the information from the given binding. Calling this is equivalent 
-   * to calling {@link #fromMethod(Method, Type)} with the binding's {@link Binding#getMethod() method} and
+   * to calling {@link #from(Method, Type)} with the binding's {@link Binding#getMethod() method} and
    * {@link Binding#getInstanceClass() instance class}.
    * 
    * @param binding a binding.
    * @return a {@code ConverterType} instance constructed from {@code binding}.
    * @throws ConverterTypeInstantiationException if binding is null or cannot be used to create a converter type.
-   * @see #fromMethod(Method, Type)
+   * @see #from(Method, Type)
    * @see Binding#getInstanceClass()
    * @see Binding#getMethod()
    */
-  public static ConverterType fromBinding(Binding binding) throws ConverterTypeInstantiationException {
+  public static ConverterType from(Binding binding) throws ConverterTypeInstantiationException {
     try {
       nonNull(binding, "binding");
       
-      return ConverterType.fromMethod(binding.getMethod(), binding.getInstanceClass());
+      return ConverterType.from(binding.getMethod(), binding.getInstanceClass());
     } catch (ConverterTypeInstantiationException e) {
       throw e;
     } catch (Exception e) {
