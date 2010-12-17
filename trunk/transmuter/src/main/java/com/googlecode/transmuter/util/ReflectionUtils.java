@@ -2,11 +2,14 @@ package com.googlecode.transmuter.util;
 
 import static com.googlecode.gentyref.GenericTypeReflector.capture;
 import static com.googlecode.gentyref.GenericTypeReflector.getExactSuperType;
+import static com.googlecode.gentyref.GenericTypeReflector.addWildcardParameters;
 import static com.googlecode.transmuter.util.ObjectUtils.isEmpty;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+
+import com.googlecode.transmuter.converter.exception.MethodOwnerTypeIncompatibilityException;
 
 /**
  * Contains utility methods for common reflection operations.
@@ -82,7 +85,7 @@ public final class ReflectionUtils {
     if (type == null)
       return "null";
     
-    if (! (type instanceof Class))
+    if (! (type instanceof Class<?>))
       return type.toString();
   
     Class<?> cls = (Class<?>) type;
@@ -130,6 +133,35 @@ public final class ReflectionUtils {
    * @return {@code true} if {@code ownerType} is a subtype of {@code method}'s declaring class.
    */
   public static boolean isCompatible(Method method, Type type) {
+    // TODO check for nulls 
     return getExactSuperType(capture(type), method.getDeclaringClass()) != null;
-  }  
+  }
+  
+  /**
+   * Returns the most specific class which holds the given method.
+   * 
+   * @param instance an object.
+   * @param method a method object.
+   * @return Either:
+   * <ul>
+   * <li>{@code null}, if no method is given;</li> 
+   * <li>{@code method}'s declaring class, if {@code instance} is null; or</li>
+   * <li>{@code instance}'s class, if {@code instance} is not null and compatible;</li>
+   * </ul>
+   * @throws MethodOwnerTypeIncompatibilityException if {@code instance}'s type and {@code method} are incompatible. 
+   */
+  public static Class<?> getOwnerType(Object instance, Method method) 
+  throws MethodOwnerTypeIncompatibilityException {
+    if(method == null)
+      return null;
+    
+    if(instance == null)
+      return method.getDeclaringClass();
+      
+    Type instanceType = addWildcardParameters(instance.getClass());
+    if(! isCompatible(method, instanceType))
+      throw new MethodOwnerTypeIncompatibilityException(method, instanceType);
+    
+    return instance.getClass();
+  }
 }

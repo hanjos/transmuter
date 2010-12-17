@@ -3,7 +3,7 @@ package com.googlecode.transmuter.converter.exception;
 import java.util.List;
 
 import com.googlecode.transmuter.converter.Binding;
-import com.googlecode.transmuter.exception.MultipleCausesException;
+import com.googlecode.transmuter.util.exception.MultipleCausesException;
 
 /**
  * Thrown when an attempt to create a new {@link Binding} instance fails, bundling the causes.

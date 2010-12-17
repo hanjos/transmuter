@@ -1,4 +1,4 @@
-package com.googlecode.transmuter.exception;
+package com.googlecode.transmuter.util.exception;
 
 import java.util.Arrays;
 import java.util.Collections;

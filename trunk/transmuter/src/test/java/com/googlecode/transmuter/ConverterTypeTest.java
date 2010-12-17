@@ -51,7 +51,7 @@ public class ConverterTypeTest {
     }
     
     try {
-      ConverterType.from(String.class.getMethod("substring", int.class), null);
+      ConverterType.from(String.class.getMethod("substring", int.class), (Type) null);
       fail();
     } catch(ConverterTypeInstantiationException e) {
       assertEquals(1, e.getCauses().size());
@@ -174,6 +174,35 @@ public class ConverterTypeTest {
       fail();
     } catch(IllegalArgumentException e) {
       // empty block
+    }
+  }
+  
+  @Test
+  public void testFromInstanceAndMethod() throws SecurityException, NoSuchMethodException {
+    final Method matches = String.class.getMethod("matches", String.class);
+    ConverterType ct = ConverterType.from("", matches);
+    
+    assertEquals(TypeToken.STRING, ct.getFromType());
+    assertEquals(TypeToken.ValueType.BOOLEAN.primitive, ct.getToType());
+  }
+  
+  @Test
+  public void testFromInstanceAndMethodWithIncompatibleInstance() throws SecurityException, NoSuchMethodException {
+    final Method matches = String.class.getMethod("matches", String.class);
+    Object o = new Object();
+    
+    try {
+      ConverterType.from(o, matches);
+      fail();
+    } catch(ConverterTypeInstantiationException e) {
+      assertEquals(1, e.getCauses().size());
+      
+      Exception exception = e.getCauses().get(0);
+      assertEquals(MethodOwnerTypeIncompatibilityException.class, exception.getClass());
+      
+      MethodOwnerTypeIncompatibilityException castException = (MethodOwnerTypeIncompatibilityException) exception;
+      assertEquals(Object.class, castException.getOwnerType());
+      assertEquals(matches, castException.getMethod());
     }
   }
   

@@ -3,6 +3,7 @@ package com.googlecode.transmuter.exception;
 import java.util.List;
 
 import com.googlecode.transmuter.Transmuter;
+import com.googlecode.transmuter.util.exception.MultipleCausesException;
 
 /**
  * Thrown by the {@link Transmuter#register(Object) register} operation on failure, bundling the causes. 

@@ -56,6 +56,9 @@ public class ConverterType {
     this.toType = nonNullOrVoid(toType, "toType");
   }
 
+  /* (non-javadoc)
+   * Throws IllegalArgumentException if object is null or void.class. 
+   */
   private static TypeToken<?> nonNullOrVoid(TypeToken<?> object, String varName) {
     if(object == null || TypeToken.ValueType.VOID.matches(object))
       throw new IllegalArgumentException(varName + ": " + object);
@@ -78,6 +81,28 @@ public class ConverterType {
       nonNull(method, "method");
       
       return from(method, method.getDeclaringClass());
+    } catch (ConverterTypeInstantiationException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new ConverterTypeInstantiationException(e);
+    }
+  }
+  
+  /**
+   * Creates a new {@code ConverterType} extracting the information from a given instance and a method object. 
+   * Calling this method is equivalent to calling {@link #from(Method, Type)} with {@code method} and its 
+   * {@link ReflectionUtils#getOwnerType(Object, Method) owner type}.
+   * 
+   * @param method a method object. Cannot be null.
+   * @return a new {@code ConverterType} instance.
+   * @throws ConverterTypeInstantiationException if a converter type could not be made.
+   * @see #from(Method, Type)
+   */
+  public static ConverterType from(Object instance, Method method) throws ConverterTypeInstantiationException {
+    try {
+      nonNull(method, "method");
+      
+      return from(method, ReflectionUtils.getOwnerType(instance, method));
     } catch (ConverterTypeInstantiationException e) {
       throw e;
     } catch (Exception e) {
@@ -185,8 +210,8 @@ public class ConverterType {
 
   /**
    * Creates a new {@code ConverterType} instance using the information from the given binding. Calling this is equivalent 
-   * to calling {@link #from(Method, Type)} with the binding's {@link Binding#getMethod() method} and
-   * {@link Binding#getInstanceClass() instance class}.
+   * to calling {@link #from(Object, Method)} with the binding's {@link Binding#getInstance() instance} and 
+   * {@link Binding#getMethod() method}.
    * 
    * @param binding a binding.
    * @return a {@code ConverterType} instance constructed from {@code binding}.
@@ -199,7 +224,7 @@ public class ConverterType {
     try {
       nonNull(binding, "binding");
       
-      return ConverterType.from(binding.getMethod(), binding.getInstanceClass());
+      return ConverterType.from(binding.getInstance(), binding.getMethod());
     } catch (ConverterTypeInstantiationException e) {
       throw e;
     } catch (Exception e) {
