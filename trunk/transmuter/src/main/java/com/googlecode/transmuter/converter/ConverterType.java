@@ -93,6 +93,7 @@ public class ConverterType {
    * Calling this method is equivalent to calling {@link #from(Method, Type)} with {@code method} and its 
    * {@link ReflectionUtils#getOwnerType(Object, Method) owner type}.
    * 
+   * @param instance an object. May be null. 
    * @param method a method object. Cannot be null.
    * @return a new {@code ConverterType} instance.
    * @throws ConverterTypeInstantiationException if a converter type could not be made.
