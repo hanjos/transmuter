@@ -100,8 +100,8 @@ public class ConverterMapTest {
       map.putAll(temp);
       fail();
     } catch(ConverterCollisionException e) { //  only the first exception
-      // TODO no way of knowing which error comes first
-      // think of a better way to handle this
+      // no way of knowing which error comes first
+      // TODO think of a better way to handle this
     }
     
     assertEquals(2, map.size());

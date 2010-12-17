@@ -219,7 +219,7 @@ public class ConverterType {
     if(converterType == null)
       return false;
     
-    // XXX is a raw converter type assignable from a generic converter type?
+    // ??? is a raw converter type assignable from a generic converter type?
     return getFromType().isAssignableFrom(converterType.getFromType())
         && getToType().isAssignableFrom(converterType.getToType());
   }

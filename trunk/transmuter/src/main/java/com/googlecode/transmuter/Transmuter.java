@@ -546,7 +546,7 @@ public class Transmuter {
       throw new NoCompatibleConvertersFoundException(converterType);
     
     // TODO determine a search algorithm for a "most compatible" converter type
-    // XXX parameterize it?
+    // ??? parameterize it?
     Binding converter = getConverterMap().get(converterType);
     if(converter != null)
       return converter;
