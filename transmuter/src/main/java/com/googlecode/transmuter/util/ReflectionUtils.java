@@ -87,7 +87,7 @@ public final class ReflectionUtils {
   
     Class<?> cls = (Class<?>) type;
     if (cls.isArray()) {
-      // XXX in Field.getTypeName, this block was wrapped with a try block
+      // ??? in Field.getTypeName, this block was wrapped with a try block
       // which allowed a Throwable to simply fall through. Why? 
       Class<?> cl = cls;
       StringBuilder rank = new StringBuilder();
