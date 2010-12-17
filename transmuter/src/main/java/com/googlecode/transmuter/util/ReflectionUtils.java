@@ -40,7 +40,7 @@ public final class ReflectionUtils {
       sb.append("<").append(StringUtils.concatenate(", ", getTypeNames(typeparms))).append("> ");
     
     /*
-     * XXX: Gentyref doesn't work well with methods with their own generic types; 
+     * XXX Gentyref doesn't work well with methods with their own generic types; 
      * so I'm using the good ol' method.getGeneric*() methods for now
      */
     sb.append(getTypeName(method.getGenericReturnType())).append(" ");
