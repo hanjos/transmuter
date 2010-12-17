@@ -20,6 +20,7 @@ import com.googlecode.transmuter.converter.exception.InaccessibleMethodException
 import com.googlecode.transmuter.converter.exception.MethodInstanceIncompatibilityException;
 import com.googlecode.transmuter.converter.exception.NullInstanceWithNonStaticMethodException;
 import com.googlecode.transmuter.util.StringUtils;
+import com.googlecode.transmuter.util.exception.MultipleCausesException;
 
 
 /**
@@ -89,6 +90,7 @@ public class Binding {
         if(instance == null && ! Modifier.isStatic(method.getModifiers()))
           exceptions.add(new NullInstanceWithNonStaticMethodException(method));
         
+        // ??? why not use ReflectionUtils.isCompatible?
         if(instance != null && ! method.getDeclaringClass().isAssignableFrom(instance.getClass()))
           exceptions.add(new MethodInstanceIncompatibilityException(instance, method));
         
@@ -112,6 +114,7 @@ public class Binding {
    * 
    * @param method a static method object.
    * @throws BindingInstantiationException if the given method is not deemed valid by the default validator.
+   * @see #initialize(Object, Method, Validator)
    */
   public Binding(Method method) throws BindingInstantiationException {
     this(null, method, DEFAULT_VALIDATOR);
@@ -124,6 +127,7 @@ public class Binding {
    * @param method a method object.
    * @throws BindingInstantiationException if the given instance, method, or their combination is not deemed valid 
    * by the default validator.
+   * @see #initialize(Object, Method, Validator)
    */
   public Binding(Object instance, Method method) throws BindingInstantiationException {
     this(instance, method, DEFAULT_VALIDATOR);
@@ -138,8 +142,33 @@ public class Binding {
    * @param validator the validator to be used on the given arguments. If {@code null}, no validation will be made.
    * @throws BindingInstantiationException if the given instance, method, or their combination is not deemed valid 
    * by the given validator.
+   * @see #initialize(Object, Method, Validator)
    */
   public Binding(Object instance, Method method, Validator validator) throws BindingInstantiationException {
+    try {
+      initialize(instance, method, validator);
+    } catch(BindingInstantiationException e) {
+      throw e;
+    } catch(MultipleCausesException e) {
+      throw new BindingInstantiationException(e.getCauses());
+    } catch(Exception e) {
+      throw new BindingInstantiationException(e);
+    }
+  }
+
+  /**
+   * Validates the given arguments, and populates this binding's fields accordingly. 
+   * <p>
+   * This method is protected so that subclasses can override it with their own initialization sequence.
+   * 
+   * @param instance an object.
+   * @param method a method object.
+   * @param validator the validator to be used on the given arguments. If {@code null}, no validation will be made.
+   * @throws BindingInstantiationException if the given instance, method, or their combination is not deemed valid 
+   * by the given validator.
+   */
+  protected void initialize(Object instance, Method method, Validator validator) 
+  throws BindingInstantiationException {
     if(validator != null)
       validator.validate(instance, method);
     
@@ -233,6 +262,7 @@ public class Binding {
    * 
    * @return the most specific instance class compatible with this binding's instance and method object.
    */
+  // ?? use ReflectionUtils.getOwnerType?
   public Class<?> getInstanceClass() {
     return getInstance() != null 
          ? getInstance().getClass() 

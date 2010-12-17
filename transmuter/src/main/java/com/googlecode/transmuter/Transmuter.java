@@ -19,10 +19,10 @@ import com.googlecode.transmuter.converter.exception.ConverterTypeIncompatibleWi
 import com.googlecode.transmuter.converter.exception.ConverterTypeInstantiationException;
 import com.googlecode.transmuter.exception.ConverterCollisionException;
 import com.googlecode.transmuter.exception.ConverterRegistrationException;
-import com.googlecode.transmuter.exception.MultipleCausesException;
 import com.googlecode.transmuter.exception.NoCompatibleConvertersFoundException;
 import com.googlecode.transmuter.exception.TooManyConvertersFoundException;
 import com.googlecode.transmuter.type.TypeToken;
+import com.googlecode.transmuter.util.exception.MultipleCausesException;
 
 /**
  * The main object in the library. A transmuter provides a centralized type conversion operation, using previously 
