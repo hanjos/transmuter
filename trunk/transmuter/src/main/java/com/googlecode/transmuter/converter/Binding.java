@@ -36,7 +36,7 @@ public class Binding {
   private Method method;
   
   /**
-   * Constructs a new {@code Binding} object which holds a static method.
+   * Makes a new {@code Binding} object which holds a static method.
    * 
    * @param method a static method object.
    * @throws BindingInstantiationException if the given method is not deemed valid.

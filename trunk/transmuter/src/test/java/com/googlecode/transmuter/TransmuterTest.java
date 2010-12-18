@@ -5,7 +5,6 @@ import static com.googlecode.transmuter.util.ObjectUtils.areEqual;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -16,7 +15,6 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -549,7 +547,7 @@ public class TransmuterTest {
       fail();
     } catch(TooManyConvertersFoundException e) {
       assertEquals(new ConverterType(t.getConverterMap().getClass(), int.class), e.getConverterType());
-      assertMatchingCollections(
+      TestUtils.assertMatchingCollections(
           e.getBindings(),
           Arrays.asList(
               new Binding(parameterized, parameterized.getClass().getDeclaredMethod("size2", Map.class)),
@@ -594,7 +592,7 @@ public class TransmuterTest {
     final MultipleValidConverter converter = new MultipleValidConverter();
     t.register(converter);
     
-    assertMatchingCollections(
+    TestUtils.assertMatchingCollections(
         t.getCompatibleConvertersFor(new ConverterType(ARRAYLIST_OF_STRING, TypeToken.STRING)),
         Arrays.asList(
             new Binding(
@@ -604,7 +602,7 @@ public class TransmuterTest {
                 converter, 
                 extractMethod(converter.getClass(), "toString", Serializable.class))));
     
-    assertMatchingCollections(
+    TestUtils.assertMatchingCollections(
         t.getCompatibleConvertersFor(new ConverterType(Serializable.class, String.class)),
         Arrays.asList(
             t.getConverterFor(new ConverterType(Serializable.class, String.class))));
@@ -650,7 +648,7 @@ public class TransmuterTest {
       assertEquals(new ConverterType(ARRAYLIST_OF_STRING, TypeToken.STRING), e.getConverterType());
       assertEquals(2, e.getBindings().size());
     
-      assertMatchingCollections(
+      TestUtils.assertMatchingCollections(
           e.getBindings(),
           Arrays.asList(
             new Binding(
@@ -671,13 +669,5 @@ public class TransmuterTest {
     t.register(new StringArrayToListStringConverter());
     
     assertTrue(t.isRegistered(ARRAY_OF_STRING, LIST_OF_STRING));
-  }
-  
-  private void assertMatchingCollections(final Collection<?> a, final Collection<?> b) {
-    assertNotNull(a);
-    assertNotNull(b);
-    
-    assertTrue(a.containsAll(b));
-    assertTrue(b.containsAll(a));
   }
 }

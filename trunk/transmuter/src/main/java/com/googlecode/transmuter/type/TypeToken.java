@@ -33,7 +33,6 @@ import java.util.Map;
 import com.googlecode.transmuter.type.exception.MissingTypeParameterException;
 import com.googlecode.transmuter.type.exception.UnexpectedTypeException;
 
-
 /**
  * Represents a generic type {@code T}.
  *

@@ -1,4 +1,4 @@
-package com.googlecode.transmuter;
+package com.googlecode.transmuter.converter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -18,6 +18,7 @@ import com.googlecode.transmuter.converter.exception.ConverterTypeInstantiationE
 import com.googlecode.transmuter.converter.exception.InvalidReturnTypeException;
 import com.googlecode.transmuter.converter.exception.MethodOwnerTypeIncompatibilityException;
 import com.googlecode.transmuter.converter.exception.WrongParameterCountException;
+import com.googlecode.transmuter.fixture.GenericConverter;
 import com.googlecode.transmuter.type.TypeToken;
 
 
@@ -113,6 +114,26 @@ public class ConverterTypeTest {
     Method substring = String.class.getMethod("substring", int.class);
     
     assertEquals(ConverterType.from(substring), ConverterType.from(new Binding("0123", substring)));
+  }
+  
+  @Test
+  public void fromInstanceAndMethod() throws SecurityException, NoSuchMethodException {
+    Method substring = String.class.getMethod("substring", int.class);
+    
+    assertEquals(ConverterType.from(substring), ConverterType.from("0123", substring));
+    assertEquals(ConverterType.from(substring, String.class), ConverterType.from("0123", substring));
+    
+    GenericConverter<Thread, String> converter = new GenericConverter<Thread, String>() {
+      @Override
+      public String convert(Thread from) {
+        return String.valueOf(from);
+      }
+    };
+    
+    final ConverterType THREAD_TO_STRING = new ConverterType(Thread.class, String.class);
+    final Method convertMethod = GenericConverter.class.getMethod("convert", Object.class);
+    assertEquals(THREAD_TO_STRING, ConverterType.from(converter, convertMethod));
+    assertEquals(THREAD_TO_STRING, ConverterType.from(convertMethod, converter.getClass()));
   }
   
   @Test

@@ -133,7 +133,9 @@ public final class ReflectionUtils {
    * @return {@code true} if {@code ownerType} is a subtype of {@code method}'s declaring class.
    */
   public static boolean isCompatible(Method method, Type type) {
-    // TODO check for nulls 
+    if(type == null || method == null)
+      return false;
+    
     return getExactSuperType(capture(type), method.getDeclaringClass()) != null;
   }
   

@@ -3,6 +3,9 @@ package com.googlecode.transmuter;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
+import com.googlecode.transmuter.converter.BindingTest;
+import com.googlecode.transmuter.converter.ConverterTest;
+import com.googlecode.transmuter.converter.ConverterTypeTest;
 import com.googlecode.transmuter.type.TypeTokenValueTypeTest;
 import com.googlecode.transmuter.util.NotificationTest;
 import com.googlecode.transmuter.util.ObjectUtilsTest;
@@ -14,6 +17,7 @@ import com.googlecode.transmuter.util.StringUtilsTest;
   TypeTokenValueTypeTest.class,
   NotificationTest.class,
   BindingTest.class,
+  ConverterTest.class,
   StringUtilsTest.class,
   ObjectUtilsTest.class,
   ReflectionUtilsTest.class,

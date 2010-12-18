@@ -1,5 +1,6 @@
 package com.googlecode.transmuter;
 
+import static com.googlecode.transmuter.TestUtils.extractMethod;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -27,7 +28,6 @@ import com.googlecode.transmuter.fixture.MultipleConverter;
 import com.googlecode.transmuter.fixture.MultipleValidConverter;
 import com.googlecode.transmuter.fixture.StringConverter;
 import com.googlecode.transmuter.type.TypeToken;
-
 
 public class ConverterMapTest {
   private static final TypeToken<List<String>> LIST_OF_STRING = new TypeToken<List<String>>() { /**/ };
@@ -276,10 +276,5 @@ public class ConverterMapTest {
     assertNull(map.get(new ConverterType(ARRAYLIST_OF_STRING, TypeToken.STRING)));
     assertNull(map.get(null));
     assertNull(map.get(new ConverterType(Object.class, Integer.class)));
-  }
-  
-  private Method extractMethod(Class<?> cls, String name, Class<?>... parameterTypes) 
-  throws SecurityException, NoSuchMethodException {
-    return cls.getMethod(name, parameterTypes);
   }
 }

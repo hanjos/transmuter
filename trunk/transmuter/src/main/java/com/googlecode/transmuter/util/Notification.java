@@ -1,6 +1,7 @@
 package com.googlecode.transmuter.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -13,6 +14,8 @@ import java.util.List;
  */
 // TODO improve prose
 public class Notification implements Iterable<Exception> {
+  private static final List<Exception> EMPTY_LIST = Collections.emptyList();
+  
   private List<Exception> errors;
 
   // constructors
@@ -38,13 +41,23 @@ public class Notification implements Iterable<Exception> {
 
   // operations
   /**
-   * Stores the errors in this notification. {@code null} values are ignored.
+   * Stores the given errors in this notification. {@code null} values are ignored.
    * 
    * @param _errors the reported errors. 
    * @return this instance.
    */
   public Notification report(Exception... _errors) {
-    if(_errors == null || _errors.length == 0)
+    return report((_errors != null) ? Arrays.asList(_errors) : EMPTY_LIST);
+  }
+  
+  /**
+   * Stores the given errors in this notification. {@code null} values are ignored.
+   * 
+   * @param _errors an iterable object holding the reported errors. 
+   * @return this instance.
+   */
+  public Notification report(Iterable<? extends Exception> _errors) {
+    if(_errors == null)
       return this;
     
     for(Exception error : _errors)
