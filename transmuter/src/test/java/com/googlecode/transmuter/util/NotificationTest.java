@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
@@ -48,6 +49,32 @@ public class NotificationTest {
   }
   
   @Test
+  public void reportWithIterable() {
+    assertTrue(n.isOk());
+    assertFalse(n.hasErrors());
+    assertTrue(n.getErrors().isEmpty());
+    
+    assertEquals(n, n.report(Arrays.asList(iae, npe, e)));
+    
+    assertFalse(n.isOk());
+    assertTrue(n.hasErrors());
+    assertArrayEquals(new Object[] { iae, npe, e }, n.getErrors().toArray());
+  }
+  
+  @Test
+  public void reportWithVarargs() {
+    assertTrue(n.isOk());
+    assertFalse(n.hasErrors());
+    assertTrue(n.getErrors().isEmpty());
+    
+    assertEquals(n, n.report(iae, npe, e));
+    
+    assertFalse(n.isOk());
+    assertTrue(n.hasErrors());
+    assertArrayEquals(new Object[] { iae, npe, e }, n.getErrors().toArray());
+  }
+  
+  @Test
   public void reportNulls() {
     assertTrue(n.isOk());
     assertFalse(n.hasErrors());
@@ -72,6 +99,12 @@ public class NotificationTest {
     assertTrue(n.getErrors().isEmpty());
     
     assertEquals(n, n.report(null, null, null));
+    
+    assertTrue(n.isOk());
+    assertFalse(n.hasErrors());
+    assertTrue(n.getErrors().isEmpty());
+    
+    assertEquals(n, n.report((Iterable<Exception>) null));
     
     assertTrue(n.isOk());
     assertFalse(n.hasErrors());

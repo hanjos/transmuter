@@ -1,4 +1,4 @@
-package com.googlecode.transmuter;
+package com.googlecode.transmuter.converter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -17,6 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.googlecode.transmuter.Converts;
+import com.googlecode.transmuter.TestUtils;
 import com.googlecode.transmuter.converter.Binding;
 import com.googlecode.transmuter.converter.ConverterType;
 import com.googlecode.transmuter.converter.exception.BindingInstantiationException;
@@ -25,7 +26,6 @@ import com.googlecode.transmuter.converter.exception.InaccessibleMethodException
 import com.googlecode.transmuter.converter.exception.MethodInstanceIncompatibilityException;
 import com.googlecode.transmuter.converter.exception.NullInstanceWithNonStaticMethodException;
 import com.googlecode.transmuter.type.TypeToken;
-
 
 public class BindingTest {
   private String string;
@@ -37,8 +37,8 @@ public class BindingTest {
   @Before
   public void setUp() throws SecurityException, NoSuchMethodException {
     string = "0123456789";
-    substringMethod = extractMethod(String.class, "substring", int.class, int.class);
-    valueOfMethod = extractMethod(String.class, "valueOf", Object.class);
+    substringMethod = TestUtils.extractMethod(String.class, "substring", int.class, int.class);
+    valueOfMethod = TestUtils.extractMethod(String.class, "valueOf", Object.class);
     
     substring = new Binding(string, substringMethod);
     valueOf = new Binding(null, valueOfMethod);
@@ -77,7 +77,7 @@ public class BindingTest {
 
   @Test
   public void constructorWithInstanceAndInheritedMethod() throws SecurityException, NoSuchMethodException {
-    final Method waitMethod = extractMethod(Object.class, "wait");
+    final Method waitMethod = TestUtils.extractMethod(Object.class, "wait");
     Binding b = new Binding(string, waitMethod);
     
     assertEquals(string, b.getInstance());
@@ -87,7 +87,7 @@ public class BindingTest {
   @Test
   public void constructorWithIncompatibleInstanceAndMethod() throws SecurityException, NoSuchMethodException {
     try {
-      new Binding("0123456789", extractMethod(ConverterType.class, "getFromType"));
+      new Binding("0123456789", TestUtils.extractMethod(ConverterType.class, "getFromType"));
       fail();
     } catch(BindingInstantiationException e) {
       assertEquals(1, e.getCauses().size());
@@ -95,27 +95,27 @@ public class BindingTest {
       
       MethodInstanceIncompatibilityException ex = (MethodInstanceIncompatibilityException) e.getCauses().get(0);
       assertEquals("0123456789", ex.getInstance());
-      assertEquals(extractMethod(ConverterType.class, "getFromType"), ex.getMethod());
+      assertEquals(TestUtils.extractMethod(ConverterType.class, "getFromType"), ex.getMethod());
     }
   }
   
   @Test
   public void constructorWithNullInstanceAndNonStaticMethod() throws SecurityException, NoSuchMethodException {
     try {
-      new Binding(null, extractMethod(ConverterType.class, "getFromType"));
+      new Binding(null, TestUtils.extractMethod(ConverterType.class, "getFromType"));
       fail();
     } catch(BindingInstantiationException e) {
       assertEquals(1, e.getCauses().size());
       assertEquals(NullInstanceWithNonStaticMethodException.class, e.getCauses().get(0).getClass());
       
       NullInstanceWithNonStaticMethodException ex = (NullInstanceWithNonStaticMethodException) e.getCauses().get(0);
-      assertEquals(extractMethod(ConverterType.class, "getFromType"), ex.getMethod());
+      assertEquals(TestUtils.extractMethod(ConverterType.class, "getFromType"), ex.getMethod());
     }
   }
   
   @Test
   public void constructorWithNonPublicMethod() throws SecurityException, NoSuchMethodException {
-    final Method getRawType = extractDeclaredMethod(TypeToken.class, "getRawType", Type.class);
+    final Method getRawType = TestUtils.extractDeclaredMethod(TypeToken.class, "getRawType", Type.class);
 
     try {
       new Binding(null, getRawType);
@@ -139,7 +139,7 @@ public class BindingTest {
       }
     };
     
-    Binding binding = new Binding(inner, extractMethod(inner.getClass(), "stringify", Object.class));
+    Binding binding = new Binding(inner, TestUtils.extractMethod(inner.getClass(), "stringify", Object.class));
     assertEquals("42", binding.invoke(42));
     assertEquals("sbrubbles", binding.invoke("sbrubbles"));
     assertEquals("true", binding.invoke(true));
@@ -179,9 +179,9 @@ public class BindingTest {
       substring.invoke(false, 0.0);
       fail();
     } catch(Exception e) {
-      assertType(BindingInvocationException.class, e);
+      TestUtils.assertType(BindingInvocationException.class, e);
       assertEquals(substring, ((BindingInvocationException) e).getBinding());
-      assertType(IllegalArgumentException.class, e.getCause());
+      TestUtils.assertType(IllegalArgumentException.class, e.getCause());
     }
   }
   
@@ -191,10 +191,10 @@ public class BindingTest {
       substring.invoke(-1, 9);
       fail();
     } catch(Exception e) {
-      assertType(BindingInvocationException.class, e);
+      TestUtils.assertType(BindingInvocationException.class, e);
       assertEquals(substring, ((BindingInvocationException) e).getBinding());
-      assertType(InvocationTargetException.class, e.getCause());
-      assertType(StringIndexOutOfBoundsException.class, e.getCause().getCause());
+      TestUtils.assertType(InvocationTargetException.class, e.getCause());
+      TestUtils.assertType(StringIndexOutOfBoundsException.class, e.getCause().getCause());
     }
   }
   
@@ -203,25 +203,8 @@ public class BindingTest {
     assertEquals(String.class, substring.getInstanceClass());
     assertEquals(String.class, valueOf.getInstanceClass());
     
-    final Method listEquals = extractMethod(List.class, "equals", Object.class);
+    final Method listEquals = TestUtils.extractMethod(List.class, "equals", Object.class);
     assertEquals(ArrayList.class, new Binding(new ArrayList<Object>(), listEquals).getInstanceClass());
     assertEquals(LinkedList.class, new Binding(new LinkedList<Object>(), listEquals).getInstanceClass());
-  }
-  
-  private void assertType(Class<?> cls, Object object) {
-    assertNotNull(object);
-    assertEquals(cls, object.getClass());
-  }
-  
-  private static Method extractMethod(Class<?> cls, String name,
-      Class<?>... parameterTypes) throws NoSuchMethodException,
-      SecurityException {
-    return cls.getMethod(name, parameterTypes);
-  }
-  
-  private static Method extractDeclaredMethod(Class<?> cls, String name,
-      Class<?>... parameterTypes) throws NoSuchMethodException,
-      SecurityException {
-    return cls.getDeclaredMethod(name, parameterTypes);
   }
 }
