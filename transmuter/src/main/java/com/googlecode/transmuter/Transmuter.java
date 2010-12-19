@@ -14,7 +14,7 @@ import java.util.Map.Entry;
 
 import com.googlecode.transmuter.converter.Converter;
 import com.googlecode.transmuter.converter.ConverterType;
-import com.googlecode.transmuter.converter.exception.BindingInvocationException;
+import com.googlecode.transmuter.converter.exception.InvocationException;
 import com.googlecode.transmuter.converter.exception.ConverterTypeIncompatibleWithConverterException;
 import com.googlecode.transmuter.converter.exception.ConverterTypeInstantiationException;
 import com.googlecode.transmuter.exception.ConverterCollisionException;
@@ -280,7 +280,7 @@ public class Transmuter {
    * @throws NoCompatibleConvertersFoundException if no converters for {@code from}'s type to {@code toType} were found.
    * @throws TooManyConvertersFoundException if more than one converter for {@code from}'s type to {@code toType} was found.
    * @throws IllegalArgumentException if {@code from} or {@code toType} is null (or {@code void} for {@code toType}). 
-   * @throws BindingInvocationException if there was an error during the converter's invocation.
+   * @throws InvocationException if there was an error during the converter's invocation.
    */
   public <From, To> To convert(From from, Class<To> toType) {
     return convert(from, TypeToken.get(toType));
@@ -297,7 +297,7 @@ public class Transmuter {
    * @throws NoCompatibleConvertersFoundException if no converters for {@code from}'s type to {@code toType} were found.
    * @throws TooManyConvertersFoundException if more than one converter for {@code from}'s type to {@code toType} was found.
    * @throws IllegalArgumentException if {@code from} or {@code toType} is null (or {@code void} for {@code toType}). 
-   * @throws BindingInvocationException if there was an error during the converter's invocation.
+   * @throws InvocationException if there was an error during the converter's invocation.
    */
   @SuppressWarnings("unchecked")
   public <From, To> To convert(From from, TypeToken<To> toType) {
@@ -319,7 +319,7 @@ public class Transmuter {
    * @throws NoCompatibleConvertersFoundException if no converters for {@code fromType} to {@code toType} were found.
    * @throws TooManyConvertersFoundException if more than one converter for {@code fromType} to {@code toType} was found.
    * @throws IllegalArgumentException if {@code fromType} or {@code toType} is null or void. 
-   * @throws BindingInvocationException if there was an error during the converter's invocation.
+   * @throws InvocationException if there was an error during the converter's invocation.
    */
   public <From, To, SubFrom extends From> To convert(SubFrom from, Class<From> fromType, Class<To> toType) {
     return convert(from, TypeToken.get(fromType), TypeToken.get(toType));
@@ -340,7 +340,7 @@ public class Transmuter {
    * @throws NoCompatibleConvertersFoundException if no converters for {@code fromType} to {@code toType} were found.
    * @throws TooManyConvertersFoundException if more than one converter for {@code fromType} to {@code toType} was found.
    * @throws IllegalArgumentException if {@code fromType} or {@code toType} is null or void. 
-   * @throws BindingInvocationException if there was an error during the converter's invocation.
+   * @throws InvocationException if there was an error during the converter's invocation.
    */
   @SuppressWarnings("unchecked")
   public <From, To, SubFrom extends From> To convert(SubFrom from, TypeToken<From> fromType, TypeToken<To> toType) {
@@ -352,7 +352,7 @@ public class Transmuter {
    * 
    * This method doesn't use generics for compile-time checking, returning the result as a raw {@link Object}. 
    * So, due to erasure-imposed limitations, {@code from}'s runtime class will be considered as the input type.
-   * For example, this means that both invocations below:
+   * This means that both invocations below:
    * 
    * <pre>
    * convertRaw(new ArrayList&lt;String&gt;(), TypeToken.STRING);
@@ -367,7 +367,7 @@ public class Transmuter {
    * @throws NoCompatibleConvertersFoundException if no converters for {@code from}'s type to {@code toType} were found.
    * @throws TooManyConvertersFoundException if more than one converter for {@code from}'s type to {@code toType} was found.
    * @throws IllegalArgumentException if {@code from} or {@code toType} is null (or {@code void} for {@code toType}). 
-   * @throws BindingInvocationException if there was an error during the converter's invocation.
+   * @throws InvocationException if there was an error during the converter's invocation.
    */
   protected Object convertRaw(Object from, TypeToken<?> toType) {
     return convertRaw(from, TypeToken.get(classOf(from)), toType);
@@ -386,11 +386,11 @@ public class Transmuter {
    * @throws NoCompatibleConvertersFoundException if no converters for {@code fromType} to {@code toType} were found.
    * @throws TooManyConvertersFoundException if more than one converter for {@code fromType} to {@code toType} was found.
    * @throws IllegalArgumentException if {@code fromType} or {@code toType} is null or void. 
-   * @throws BindingInvocationException if there was an error during the converter's invocation.
+   * @throws InvocationException if there was an error during the converter's invocation.
    */
   protected Object convertRaw(Object from, TypeToken<?> fromType, TypeToken<?> toType) 
   throws NoCompatibleConvertersFoundException, TooManyConvertersFoundException, IllegalArgumentException, 
-  BindingInvocationException {
+  InvocationException {
     return getConverterFor(new ConverterType(fromType, toType)).invoke(from);
   }
   

@@ -13,7 +13,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
-import com.googlecode.transmuter.converter.exception.BindingInvocationException;
+import com.googlecode.transmuter.converter.exception.InvocationException;
 import com.googlecode.transmuter.converter.exception.InaccessibleMethodException;
 import com.googlecode.transmuter.converter.exception.MethodInstanceIncompatibilityException;
 import com.googlecode.transmuter.converter.exception.NullInstanceWithNonStaticMethodException;
@@ -144,19 +144,19 @@ public class Binding {
    * 
    * @param args the arguments for the method call.
    * @return the result of this binding's method invoked on this binding's instance with the given arguments.
-   * @throws BindingInvocationException if an exception is thrown during the invocation.
+   * @throws InvocationException if an exception is thrown during the invocation.
    */
-  public Object invoke(Object... args) throws BindingInvocationException {
+  public Object invoke(Object... args) throws InvocationException {
     try {
       return getMethod().invoke(getInstance(), args);
     } catch(IllegalArgumentException e) {
-      throw new BindingInvocationException(this, e);
+      throw new InvocationException(this, e);
     } catch(IllegalAccessException e) { 
       // should never happen if the validator does its job properly, 
       // but we all know how that goes... 
-      throw new BindingInvocationException(this, e);
+      throw new InvocationException(this, e);
     } catch(InvocationTargetException e) {
-      throw new BindingInvocationException(this, e);
+      throw new InvocationException(this, e);
     }
   }
   
