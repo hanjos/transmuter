@@ -24,6 +24,8 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
 
   * Clean up the tests; it's getting filthy :P
 
+  * Put up the documentation!
+
 == For tomorrow ==
 
   * Exception instantiation is an expensive operation due to the stack trace filling, which isn't needed when we're just queueing 'em up for later throwage.
