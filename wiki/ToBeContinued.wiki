@@ -56,7 +56,7 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
   * Accept more than one converter for the same type? How to distinguish them? Yet another parameter (for Transmuter)?
     * Best left for later.
 
-  * Use something like Apache Commons instead of some homebrew util classes.
+  * Use something like Apache Commons instead of some homebrewed utility classes.
     * Will do if more utility methods show up.
   
   * If lots of optional parameters show up (got a few already!), a DSL would be cool.
