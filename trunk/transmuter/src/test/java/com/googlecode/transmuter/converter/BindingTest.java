@@ -18,7 +18,7 @@ import org.junit.Test;
 
 import com.googlecode.transmuter.Converts;
 import com.googlecode.transmuter.TestUtils;
-import com.googlecode.transmuter.converter.exception.BindingInvocationException;
+import com.googlecode.transmuter.converter.exception.InvocationException;
 import com.googlecode.transmuter.converter.exception.InaccessibleMethodException;
 import com.googlecode.transmuter.converter.exception.MethodInstanceIncompatibilityException;
 import com.googlecode.transmuter.converter.exception.NullInstanceWithNonStaticMethodException;
@@ -194,8 +194,8 @@ public class BindingTest {
       substring.invoke(false, 0.0);
       fail();
     } catch(Exception e) {
-      TestUtils.assertType(BindingInvocationException.class, e);
-      assertEquals(substring, ((BindingInvocationException) e).getBinding());
+      TestUtils.assertType(InvocationException.class, e);
+      assertEquals(substring, ((InvocationException) e).getBinding());
       TestUtils.assertType(IllegalArgumentException.class, e.getCause());
     }
   }
@@ -206,8 +206,8 @@ public class BindingTest {
       substring.invoke(-1, 9);
       fail();
     } catch(Exception e) {
-      TestUtils.assertType(BindingInvocationException.class, e);
-      assertEquals(substring, ((BindingInvocationException) e).getBinding());
+      TestUtils.assertType(InvocationException.class, e);
+      assertEquals(substring, ((InvocationException) e).getBinding());
       TestUtils.assertType(InvocationTargetException.class, e.getCause());
       TestUtils.assertType(StringIndexOutOfBoundsException.class, e.getCause().getCause());
     }

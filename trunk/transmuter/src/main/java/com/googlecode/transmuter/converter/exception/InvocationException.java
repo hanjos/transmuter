@@ -7,7 +7,7 @@ import com.googlecode.transmuter.converter.Binding;
  * 
  * @author Humberto S. N. dos Anjos
  */
-public class BindingInvocationException extends RuntimeException {
+public class InvocationException extends RuntimeException {
   private static final long serialVersionUID = 1L;
   
   private Binding binding;
@@ -17,7 +17,7 @@ public class BindingInvocationException extends RuntimeException {
    * 
    * @param binding the binding whose invocation failed.  
    */
-  public BindingInvocationException(Binding binding) {
+  public InvocationException(Binding binding) {
     this(binding, null);
   }
   
@@ -27,7 +27,7 @@ public class BindingInvocationException extends RuntimeException {
    * @param binding the binding whose invocation failed.
    * @param cause the cause of the failure.   
    */
-  public BindingInvocationException(Binding binding, Throwable cause) {
+  public InvocationException(Binding binding, Throwable cause) {
     super(cause != null ? cause.getMessage() : null, cause);
     
     this.binding = binding;
