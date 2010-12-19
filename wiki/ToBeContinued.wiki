@@ -11,6 +11,9 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
 
   * Generalize the `register` operation for the programmer to be able to say how to obtain the bindings. 
 
+  * Use a Binding subclass which ensures we have a Converter method.
+    * Working on it!
+
   * Exception instantiation is an expensive operation due to the stack trace filling, which isn't needed when we're just queueing 'em up for later throwage.
     * Filling the stack trace can be avoided only by overwriting the {{{fillInStackTrace}}} method.
 
@@ -47,8 +50,5 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
 
   * Use something like Apache Commons instead of some homebrew util classes.
     * Will do if more utility methods show up.
-
-  * A Converter interface. (A lot) Less checking needed, but not sure how a Converter implementation with @Converts methods will work. Does just marking the Converter method with @Converts do the trick (I think so)?
-    * Is this really necessary? It is less... "magical", so to speak, although annotations are getting popular enough so that "regular folk" won't get too confused...
   
   * If lots of optional parameters show up (got a few already!), a DSL would be cool.
