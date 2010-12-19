@@ -1,0 +1,7 @@
+com.googlecode.transmuter
+com.googlecode.transmuter.converter
+com.googlecode.transmuter.converter.exception
+com.googlecode.transmuter.exception
+com.googlecode.transmuter.type
+com.googlecode.transmuter.type.exception
+com.googlecode.transmuter.util
