@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.googlecode.transmuter.converter.exception.BindingInstantiationException;
+import com.googlecode.transmuter.util.exception.ObjectInstantiationException;
 
 public class ConverterTest {
   private String string;
@@ -47,8 +47,11 @@ public class ConverterTest {
     try {
       new Converter(string, substringMethod);
       fail();
-    } catch (BindingInstantiationException e) {
+    } catch (ObjectInstantiationException e) {
       // TODO proper inspection
+      assertEquals(Converter.class, e.getObjectType());
+      assertEquals(string, e.getArguments().get(0));
+      assertEquals(substringMethod, e.getArguments().get(1));
     }
   }
 }

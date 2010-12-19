@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.googlecode.transmuter.util.StringUtils;
+
 /**
  * The superclass of exceptions which wrap a list of exceptions. Meant to be used when an operation may fail for 
  * multiple reasons, and one wishes to report them all instead of only the first detected. 
@@ -13,19 +15,13 @@ import java.util.List;
 public class MultipleCausesException extends RuntimeException {
   private static final long serialVersionUID = 1L;
   
-  private static final List<Exception> EMPTY_EXCEPTION_LIST = Arrays.asList(new Exception[0]);
+  protected static final List<Exception> EMPTY_EXCEPTION_LIST = Arrays.asList(new Exception[0]);
   
   private static String buildMessage(List<? extends Exception> causes) {
     if(causes.isEmpty())
       return "";
     
-    StringBuilder sb = new StringBuilder("Multiple exceptions found:\n    ").append(causes.get(0));
-    
-    final int length = causes.size();
-    for(int i = 1; i < length; i++)
-      sb.append(";\n    ").append(causes.get(i));
-    
-    return sb.toString();
+    return "Multiple exceptions found:\n    " + StringUtils.concatenate(";\n    ", causes);
   }
 
   private List<? extends Exception> causes;
@@ -46,6 +42,18 @@ public class MultipleCausesException extends RuntimeException {
    */
   public MultipleCausesException(List<? extends Exception> causes) {
     super(buildMessage((causes != null) ? causes : EMPTY_EXCEPTION_LIST));
+    
+    this.causes = Collections.unmodifiableList((causes != null) ? causes : EMPTY_EXCEPTION_LIST);
+  }
+  
+  /**
+   * Builds a new instance.
+   * 
+   * @param message the message to be shown. 
+   * @param causes the exceptions to be bundled.
+   */
+  public MultipleCausesException(String message, List<? extends Exception> causes) {
+    super(message);
     
     this.causes = Collections.unmodifiableList((causes != null) ? causes : EMPTY_EXCEPTION_LIST);
   }

@@ -6,12 +6,13 @@ import static com.googlecode.transmuter.util.ObjectUtils.areEqual;
 import static com.googlecode.transmuter.util.ObjectUtils.hashCodeOf;
 import static com.googlecode.transmuter.util.ReflectionUtils.getTypeName;
 import static com.googlecode.transmuter.util.ReflectionUtils.getTypeNames;
+import static com.googlecode.transmuter.util.ReflectionUtils.isCompatible;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 
-import com.googlecode.transmuter.converter.exception.BindingInstantiationException;
 import com.googlecode.transmuter.converter.exception.BindingInvocationException;
 import com.googlecode.transmuter.converter.exception.InaccessibleMethodException;
 import com.googlecode.transmuter.converter.exception.MethodInstanceIncompatibilityException;
@@ -19,6 +20,7 @@ import com.googlecode.transmuter.converter.exception.NullInstanceWithNonStaticMe
 import com.googlecode.transmuter.util.Notification;
 import com.googlecode.transmuter.util.StringUtils;
 import com.googlecode.transmuter.util.exception.MultipleCausesException;
+import com.googlecode.transmuter.util.exception.ObjectInstantiationException;
 
 /**
  * Represents an immutable invokable object, made binding a method to an object (which may be {@code null} if the 
@@ -39,10 +41,10 @@ public class Binding {
    * Makes a new {@code Binding} object which holds a static method.
    * 
    * @param method a static method object.
-   * @throws BindingInstantiationException if the given method is not deemed valid.
+   * @throws ObjectInstantiationException if the given method is not deemed valid.
    * @see #initialize(Object, Method)
    */
-  public Binding(Method method) throws BindingInstantiationException {
+  public Binding(Method method) throws ObjectInstantiationException {
     this(null, method);
   }
 
@@ -51,22 +53,37 @@ public class Binding {
    * 
    * @param instance an object.
    * @param method a method object.
-   * @throws BindingInstantiationException if the given instance, method, or their combination is not deemed valid.
+   * @throws ObjectInstantiationException if the given instance, method, or their combination is not deemed valid.
    * @see #initialize(Object, Method)
    */
-  public Binding(Object instance, Method method) throws BindingInstantiationException {
+  public Binding(Object instance, Method method) throws ObjectInstantiationException {
     try {
       Notification notification = initialize(instance, method);
       
       if(notification.hasErrors())
-        throw new BindingInstantiationException(notification.getErrors());
+        throw new ObjectInstantiationException(
+            getClass(), 
+            Arrays.asList(instance, method), 
+            notification.getErrors());
       
-    } catch(BindingInstantiationException e) {
-      throw e;
+    } catch(ObjectInstantiationException e) {
+      if(e.getObjectType() == getClass())
+        throw e;
+      
+      throw new ObjectInstantiationException(
+          getClass(), 
+          Arrays.asList(instance, method), 
+          e.getCauses());
     } catch(MultipleCausesException e) {
-      throw new BindingInstantiationException(e.getCauses());
+      throw new ObjectInstantiationException(
+          getClass(), 
+          Arrays.asList(instance, method), 
+          e.getCauses());
     } catch(Exception e) {
-      throw new BindingInstantiationException(e);
+      throw new ObjectInstantiationException(
+          getClass(), 
+          Arrays.asList(instance, method), 
+          e);
     }
   }
 
@@ -102,8 +119,7 @@ public class Binding {
     if(instance == null && ! Modifier.isStatic(method.getModifiers())) // NullPointerException waiting to happen... 
       notification.report(new NullInstanceWithNonStaticMethodException(method));
     
-    // ??? why not use ReflectionUtils.isCompatible?
-    if(instance != null && ! method.getDeclaringClass().isAssignableFrom(instance.getClass()))
+    if(instance != null && ! isCompatible(method, instance.getClass()))
       notification.report(new MethodInstanceIncompatibilityException(instance, method));
     
     if(notification.hasErrors()) // errors were found, nothing more to do here

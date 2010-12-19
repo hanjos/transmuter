@@ -80,4 +80,16 @@ public final class ObjectUtils {
   public static <T> boolean isEmpty(T... objects) {
     return objects == null || objects.length == 0;
   }
+  
+  /**
+   * Checks if the iterable is empty.
+   * 
+   * @param objects an iterable object.
+   * @return {@code true} if {@code objects} is either {@code null} or has no elements; {@code false} otherwise.
+   */
+  public static boolean isEmpty(Iterable<?> objects) {
+    return objects == null 
+        || objects.iterator() == null
+        || ! objects.iterator().hasNext();
+  }
 }
