@@ -219,7 +219,8 @@ public class Transmuter {
   
   /**
    * A {@link ConverterMap} which 
-   * {@link #checkMapForCollision(ConverterType, Converter, Map) checks for collisions} against itself and a master map. 
+   * {@linkplain #checkMapForCollision(ConverterType, Converter, Map) checks for collisions} against itself and a 
+   * master map. 
    * 
    * @author Humberto S. N. dos Anjos
    */
@@ -394,13 +395,13 @@ public class Transmuter {
   }
   
   /**
-   * Scans the given object for converter methods, registering them as converters keyed by their 
+   * Scans the given object for converter methods, registering them as {@linkplain Converter converters} keyed by their 
    * {@linkplain ConverterType types}. Does nothing if the given object is {@code null}.
    * <p>
    * This method will iterate through all the given object's public methods and, for all methods marked with the 
    * {@link Converts} annotation, it will:
    * <ul>
-   * <li>make a {@linkplain Converter} by binding the method with the given object;</li>
+   * <li>{@linkplain Converter bind the method with the given object};</li>
    * <li>and {@linkplain DependentConverterMap check} if there is no registered converter with the same type,</li>
    * </ul>
    * registering all the converters in one fell swoop if no problem is found. Non-public methods, even if marked 

@@ -19,7 +19,7 @@ public final class ObjectUtils {
    * @throws IllegalArgumentException if the given object is null.
    */
   public static <T> T nonNull(T object) throws IllegalArgumentException {
-    return nonNull(object, "value not allowed");
+    return nonNull(object, "null value not allowed");
   }
 
   /**
