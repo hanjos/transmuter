@@ -9,21 +9,32 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
 = Stuff =
 == For today ==
 
+=== Already done ===
+  * Rethink the validation process (especially for `ConverterType` and `Binding`) to ease inheritance. Maybe the ability to register validators with some pre-implemented ones (could end up being a separate mini-project).
+    * Reworked the whole thing; instead of `validate`, there's `initialize`, which checks whatever it can, initializes the fields if valid and piles up whatever exceptions it finds in a `Notification` object which reports the success of the whole enterprise.
+
+=== Doing ===
+
+  * Create a `Binding` subclass (called `Converter`, apropriately) which ensures we have a well-formed converter binding.
+    * Mostly done, I think :)
+
+=== To Do ===
+
   * Generalize the `register` operation for the programmer to be able to say how to obtain the bindings. 
 
-  * Use a Binding subclass which ensures we have a Converter method.
-    * Working on it!
+  * Clean up the tests; it's getting filthy :P
+
+== For tomorrow ==
 
   * Exception instantiation is an expensive operation due to the stack trace filling, which isn't needed when we're just queueing 'em up for later throwage.
     * Filling the stack trace can be avoided only by overwriting the {{{fillInStackTrace}}} method.
-
-== For tomorrow ==
 
   * Implement some search algorithm for a most compatible converter if a perfect match isn't found. Parameterizing it seems good...
 
   * Transitive conversion, e.g. if I have a String -> Unit converter and a Unit -> int converter, I can translate a String to an int. This will affect the most compatible converter algorithm mentioned above (or will it _be_ an alternative algorithm?).
 
   * Parameterize what should happen when a non-public method is marked with @Converts. It could be ignored (silent bugs suck) or an exception can be thrown (extra effort needed just to signal errors). 
+     * `ConverterProvider` is on the way...
 
 === Current future parameters ===
 
@@ -35,13 +46,9 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
 
 == To think about ==
 
-  * Make the API more Spring-friendly (a setConverters method or something like that, so that a transmuter can be instantiated and set up from Spring).
+  * Make the API more Spring-friendly (a `setConverters` method or something like that, so that a transmuter can be instantiated and set up from Spring).
 
-  * Make ValueType a real enum. We lose the generics, but is it really all that useful?
-
-  * Rethink the validation process (especially for ConverterType and Binding) to ease inheritance. Maybe the ability to register validators with some pre-implemented ones (could end up being a separate mini-project).
-    * On registering validators: too much work, and too much code. Would be easier on the eyes with some AOP, but it doesn't seem worth the bother.
-    * Did some refactoring, it looks reasonable for now.
+  * Make `ValueType` a real enum. We lose the generics, but is it really all that useful?
 
   * Investigate a better workaround (is there any?) for [http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4819108 bug 4819108] in the JVM.
 
