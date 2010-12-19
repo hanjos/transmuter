@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Collects information about errors in a single object, so that multiple errors can be accounted for in a single pass 
+ * Collects information about errors, so that multiple errors can be accounted for in a single pass 
  * instead of failing on the first error.
  * 
  * @author Humberto S. N. dos Anjos
