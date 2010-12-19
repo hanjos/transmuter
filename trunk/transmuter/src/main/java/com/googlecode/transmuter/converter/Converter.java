@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 
 import com.googlecode.transmuter.Transmuter;
 import com.googlecode.transmuter.util.Notification;
+import com.googlecode.transmuter.util.exception.MultipleCausesException;
 import com.googlecode.transmuter.util.exception.ObjectInstantiationException;
 
 /**
@@ -43,18 +44,23 @@ public class Converter extends Binding {
   /**
    * On top of {@link Binding}'s validation, this class needs to see if the given method is a proper converter method,
    * i.e. it has a converter type.
+   * 
+   * @see Binding#tryInitialize(Object, Method)
    */
   @Override
-  protected Notification initialize(Object instance, Method method) {
+  protected Notification tryInitialize(Object instance, Method method) {
     // do all previous validation...
-    Notification notification = super.initialize(instance, method);
+    Notification notification = super.tryInitialize(instance, method);
     
     // ...and try to extract the type from the given arguments
     try {
       this.type = ConverterType.from(instance, method);
-    } catch (ObjectInstantiationException e) {
-      // problems found; snitch immediately 
+    } catch (MultipleCausesException e) {
+      // errors were found; snitch immediately 
       notification.report(e.getCauses());
+    } catch (Exception e) {
+      // unpredicted exception; report it!
+      notification.report(e);
     }
     
     return notification;
