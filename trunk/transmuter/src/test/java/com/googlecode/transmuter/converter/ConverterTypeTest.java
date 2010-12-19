@@ -12,15 +12,12 @@ import java.lang.reflect.Type;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.googlecode.transmuter.converter.Binding;
-import com.googlecode.transmuter.converter.ConverterType;
-import com.googlecode.transmuter.converter.exception.ConverterTypeInstantiationException;
 import com.googlecode.transmuter.converter.exception.InvalidReturnTypeException;
 import com.googlecode.transmuter.converter.exception.MethodOwnerTypeIncompatibilityException;
 import com.googlecode.transmuter.converter.exception.WrongParameterCountException;
 import com.googlecode.transmuter.fixture.GenericConverter;
 import com.googlecode.transmuter.type.TypeToken;
-
+import com.googlecode.transmuter.util.exception.ObjectInstantiationException;
 
 public class ConverterTypeTest {
   private ConverterType object2string;
@@ -34,11 +31,14 @@ public class ConverterTypeTest {
   
   @Test
   public void testFromMethod() throws SecurityException, NoSuchMethodException {
-    assertEquals(new ConverterType(int.class, String.class), ConverterType.from(String.class.getMethod("substring", int.class)));
+    Method substring = String.class.getMethod("substring", int.class);
+    assertEquals(new ConverterType(int.class, String.class), ConverterType.from(substring));
     
     try {
       ConverterType.from((Method) null);
-    } catch(ConverterTypeInstantiationException e) {
+    } catch(ObjectInstantiationException e) {
+      assertEquals(ConverterType.class, e.getObjectType());
+      
       assertEquals(1, e.getCauses().size());
       assertEquals(IllegalArgumentException.class, e.getCauses().get(0).getClass());
     }
@@ -46,15 +46,19 @@ public class ConverterTypeTest {
     try {
       ConverterType.from(null, Object.class);
       fail();
-    } catch(ConverterTypeInstantiationException e) {
+    } catch(ObjectInstantiationException e) {
+      assertEquals(ConverterType.class, e.getObjectType());
+      
       assertEquals(1, e.getCauses().size());
       assertEquals(IllegalArgumentException.class, e.getCauses().get(0).getClass());
     }
     
     try {
-      ConverterType.from(String.class.getMethod("substring", int.class), (Type) null);
+      ConverterType.from(substring, (Type) null);
       fail();
-    } catch(ConverterTypeInstantiationException e) {
+    } catch(ObjectInstantiationException e) {
+      assertEquals(ConverterType.class, e.getObjectType());
+      
       assertEquals(1, e.getCauses().size());
       assertEquals(IllegalArgumentException.class, e.getCauses().get(0).getClass());
     }
@@ -63,7 +67,9 @@ public class ConverterTypeTest {
     try {
       ConverterType.from(substring_2);
       fail();
-    } catch(ConverterTypeInstantiationException e) {
+    } catch(ObjectInstantiationException e) {
+      assertEquals(ConverterType.class, e.getObjectType());
+      
       assertEquals(1, e.getCauses().size());
       assertEquals(WrongParameterCountException.class, e.getCauses().get(0).getClass());
       
@@ -77,7 +83,9 @@ public class ConverterTypeTest {
     try {
       ConverterType.from(toString);
       fail();
-    } catch(ConverterTypeInstantiationException e) {
+    } catch(ObjectInstantiationException e) {
+      assertEquals(ConverterType.class, e.getObjectType());
+      
       assertEquals(1, e.getCauses().size());
       assertEquals(WrongParameterCountException.class, e.getCauses().get(0).getClass());
       
@@ -91,7 +99,9 @@ public class ConverterTypeTest {
     try {
       ConverterType.from(wait_timeout);
       fail();
-    } catch(ConverterTypeInstantiationException e) {
+    } catch(ObjectInstantiationException e) {
+      assertEquals(ConverterType.class, e.getObjectType());
+      
       assertEquals(1, e.getCauses().size());
       assertEquals(InvalidReturnTypeException.class, e.getCauses().get(0).getClass());
       
@@ -102,11 +112,13 @@ public class ConverterTypeTest {
   }
   
   @Test
-  public void testFromBinding() throws ConverterTypeInstantiationException, SecurityException, NoSuchMethodException {
+  public void testFromBinding() throws SecurityException, NoSuchMethodException {
     try {
       ConverterType.from((Binding) null);
       fail();
-    } catch(ConverterTypeInstantiationException e) {
+    } catch(ObjectInstantiationException e) {
+      assertEquals(ConverterType.class, e.getObjectType());
+      
       assertEquals(1, e.getCauses().size());
       assertEquals(IllegalArgumentException.class, e.getCauses().get(0).getClass());
     }
@@ -215,7 +227,9 @@ public class ConverterTypeTest {
     try {
       ConverterType.from(o, matches);
       fail();
-    } catch(ConverterTypeInstantiationException e) {
+    } catch(ObjectInstantiationException e) {
+      assertEquals(ConverterType.class, e.getObjectType());
+      
       assertEquals(1, e.getCauses().size());
       
       Exception exception = e.getCauses().get(0);
@@ -232,7 +246,9 @@ public class ConverterTypeTest {
     final Method valueOfBoolean = String.class.getMethod("valueOf", boolean.class);
     try {
       ConverterType.from(valueOfBoolean, Object.class);
-    } catch(ConverterTypeInstantiationException e) {
+    } catch(ObjectInstantiationException e) {
+      assertEquals(ConverterType.class, e.getObjectType());
+      
       assertEquals(1, e.getCauses().size());
       
       MethodOwnerTypeIncompatibilityException ex0 = (MethodOwnerTypeIncompatibilityException) e.getCauses().get(0);

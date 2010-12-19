@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.googlecode.gentyref.CaptureType;
-import com.googlecode.transmuter.converter.exception.ConverterTypeInstantiationException;
 import com.googlecode.transmuter.converter.exception.InvalidParameterTypeException;
 import com.googlecode.transmuter.converter.exception.InvalidReturnTypeException;
 import com.googlecode.transmuter.converter.exception.MethodOwnerTypeIncompatibilityException;
@@ -20,6 +19,7 @@ import com.googlecode.transmuter.converter.exception.WrongParameterCountExceptio
 import com.googlecode.transmuter.type.TypeToken;
 import com.googlecode.transmuter.type.TypeToken.ValueType;
 import com.googlecode.transmuter.util.ReflectionUtils;
+import com.googlecode.transmuter.util.exception.ObjectInstantiationException;
 
 /**
  * Represents a converter's "type": the input type (called {@code fromType}) paired with its output type 
@@ -73,18 +73,18 @@ public class ConverterType {
    * 
    * @param method a method object. Cannot be null.
    * @return a new {@code ConverterType} instance.
-   * @throws ConverterTypeInstantiationException if a converter type could not be made.
+   * @throws ObjectInstantiationException if a converter type could not be made.
    * @see #from(Method, Type)
    */
-  public static ConverterType from(Method method) throws ConverterTypeInstantiationException {
+  public static ConverterType from(Method method) throws ObjectInstantiationException {
     try {
       nonNull(method, "method");
       
       return from(method, method.getDeclaringClass());
-    } catch (ConverterTypeInstantiationException e) {
+    } catch (ObjectInstantiationException e) {
       throw e;
     } catch (Exception e) {
-      throw new ConverterTypeInstantiationException(e);
+      throw new ObjectInstantiationException(ConverterType.class, e);
     }
   }
   
@@ -96,18 +96,18 @@ public class ConverterType {
    * @param instance an object. May be null. 
    * @param method a method object. Cannot be null.
    * @return a new {@code ConverterType} instance.
-   * @throws ConverterTypeInstantiationException if a converter type could not be made.
+   * @throws ObjectInstantiationException if a converter type could not be made.
    * @see #from(Method, Type)
    */
-  public static ConverterType from(Object instance, Method method) throws ConverterTypeInstantiationException {
+  public static ConverterType from(Object instance, Method method) throws ObjectInstantiationException {
     try {
       nonNull(method, "method");
       
       return from(method, ReflectionUtils.getOwnerType(instance, method));
-    } catch (ConverterTypeInstantiationException e) {
+    } catch (ObjectInstantiationException e) {
       throw e;
     } catch (Exception e) {
-      throw new ConverterTypeInstantiationException(e);
+      throw new ObjectInstantiationException(ConverterType.class, e);
     }
   }
   
@@ -116,7 +116,7 @@ public class ConverterType {
    * is used to resolve generic types referenced or inherited by the method.
    * <p>
    * Several checks are made to see if the given method is a valid converter method, with each error associated to an 
-   * exception. All the exceptions, if any, are bundled up in a {@link ConverterTypeInstantiationException} for 
+   * exception. All the exceptions, if any, are bundled up in a {@link ObjectInstantiationException} for 
    * throwing. The checks made are:
    * 
    * <ul>
@@ -142,9 +142,9 @@ public class ConverterType {
    * @param method a method object.
    * @param ownerType the specific instance class to which the given method belongs.
    * @return a new {@link ConverterType} instance.
-   * @throws ConverterTypeInstantiationException if there are errors while extracting the information.
+   * @throws ObjectInstantiationException if there are errors while extracting the information.
    */
-  public static ConverterType from(Method method, Type ownerType) throws ConverterTypeInstantiationException {
+  public static ConverterType from(Method method, Type ownerType) throws ObjectInstantiationException {
     try {
       nonNull(method, "method");
       nonNull(ownerType, "ownerType");
@@ -163,13 +163,13 @@ public class ConverterType {
       TypeToken<?> returnToken = extractReturnToken(method, ownerType, exceptions);
       
       if(exceptions.size() > 0)
-        throw new ConverterTypeInstantiationException(exceptions);
+        throw new ObjectInstantiationException(ConverterType.class, exceptions);
       
       return new ConverterType(parameterToken, returnToken);
-    } catch (ConverterTypeInstantiationException e) {
+    } catch (ObjectInstantiationException e) {
       throw e;
     } catch (Exception e) {
-      throw new ConverterTypeInstantiationException(e);
+      throw new ObjectInstantiationException(ConverterType.class, e);
     }
   }
 
@@ -216,20 +216,20 @@ public class ConverterType {
    * 
    * @param binding a binding.
    * @return a {@code ConverterType} instance constructed from {@code binding}.
-   * @throws ConverterTypeInstantiationException if binding is null or cannot be used to create a converter type.
+   * @throws ObjectInstantiationException if binding is null or cannot be used to create a converter type.
    * @see #from(Method, Type)
    * @see Binding#getInstanceClass()
    * @see Binding#getMethod()
    */
-  public static ConverterType from(Binding binding) throws ConverterTypeInstantiationException {
+  public static ConverterType from(Binding binding) throws ObjectInstantiationException {
     try {
       nonNull(binding, "binding");
       
-      return ConverterType.from(binding.getInstance(), binding.getMethod());
-    } catch (ConverterTypeInstantiationException e) {
+      return from(binding.getInstance(), binding.getMethod());
+    } catch (ObjectInstantiationException e) {
       throw e;
     } catch (Exception e) {
-      throw new ConverterTypeInstantiationException(e);
+      throw new ObjectInstantiationException(ConverterType.class, e);
     }
   }
   

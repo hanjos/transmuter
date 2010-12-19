@@ -50,8 +50,6 @@ public class ConverterTest {
     } catch (ObjectInstantiationException e) {
       // TODO proper inspection
       assertEquals(Converter.class, e.getObjectType());
-      assertEquals(string, e.getArguments().get(0));
-      assertEquals(substringMethod, e.getArguments().get(1));
     }
   }
 }

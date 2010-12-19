@@ -70,8 +70,6 @@ public class BindingTest {
       fail();
     } catch(ObjectInstantiationException e) {
       assertEquals(Binding.class, e.getObjectType());
-      assertEquals(instance, e.getArguments().get(0));
-      assertNull(e.getArguments().get(1));
       
       assertEquals(1, e.getCauses().size());
       assertEquals(IllegalArgumentException.class, e.getCauses().get(0).getClass());
@@ -96,8 +94,6 @@ public class BindingTest {
       fail();
     } catch(ObjectInstantiationException e) {
       assertEquals(Binding.class, e.getObjectType());
-      assertEquals(instance, e.getArguments().get(0));
-      assertEquals(method, e.getArguments().get(1));
       
       assertEquals(1, e.getCauses().size());
       assertEquals(MethodInstanceIncompatibilityException.class, e.getCauses().get(0).getClass());
@@ -116,8 +112,6 @@ public class BindingTest {
       fail();
     } catch(ObjectInstantiationException e) {
       assertEquals(Binding.class, e.getObjectType());
-      assertNull(e.getArguments().get(0));
-      assertEquals(method, e.getArguments().get(1));
       
       assertEquals(1, e.getCauses().size());
       assertEquals(NullInstanceWithNonStaticMethodException.class, e.getCauses().get(0).getClass());
@@ -136,8 +130,6 @@ public class BindingTest {
       fail();
     } catch(ObjectInstantiationException e) {
       assertEquals(Binding.class, e.getObjectType());
-      assertNull(e.getArguments().get(0));
-      assertEquals(getRawType, e.getArguments().get(1));
       
       InaccessibleMethodException ex = (InaccessibleMethodException) e.getCauses().get(0);
       assertEquals(getRawType, ex.getMethod());
