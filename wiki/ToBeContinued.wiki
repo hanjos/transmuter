@@ -20,9 +20,9 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
 
 === Doing ===
 
-=== To Do ===
-
   * Generalize the `register` operation for the programmer to be able to say how to obtain the bindings. 
+
+=== To Do ===
 
   * Clean up the tests while I still can, it's getting filthy :P
 
