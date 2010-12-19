@@ -22,9 +22,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.googlecode.transmuter.Converts;
-import com.googlecode.transmuter.Transmuter;
-import com.googlecode.transmuter.converter.Binding;
+import com.googlecode.transmuter.converter.Converter;
 import com.googlecode.transmuter.converter.ConverterType;
 import com.googlecode.transmuter.converter.exception.InvalidParameterTypeException;
 import com.googlecode.transmuter.converter.exception.InvalidReturnTypeException;
@@ -49,7 +47,7 @@ public class TransmuterTest {
   private static final TypeToken<ArrayList<String>> ARRAYLIST_OF_STRING = new TypeToken<ArrayList<String>>() { /**/ };
   private static final TypeToken<List<String>> LIST_OF_STRING = new TypeToken<List<String>>() { /**/ };
   private Transmuter t;
-  private Map<ConverterType, Binding> map;
+  private Map<ConverterType, Converter> map;
 
   @Before
   public void setUp() {
@@ -118,14 +116,14 @@ public class TransmuterTest {
       assertConverterCollision(causes, 
           new ConverterType(int.class, boolean.class), 
           Arrays.asList(
-              new Binding(flawed, extractMethod(flawedClass, "intraClassCollision1", int.class)),
-              new Binding(flawed, extractMethod(flawedClass, "intraClassCollision2", int.class))),
+              new Converter(flawed, extractMethod(flawedClass, "intraClassCollision1", int.class)),
+              new Converter(flawed, extractMethod(flawedClass, "intraClassCollision2", int.class))),
           1);
       assertConverterCollision(causes, 
           new ConverterType(double.class, String.class), 
           Arrays.asList(
-              new Binding(flawed, extractMethod(flawedClass, "extraClassCollision", double.class)),
-              new Binding(working, extractMethod(working.getClass(), "converter", double.class))),
+              new Converter(flawed, extractMethod(flawedClass, "extraClassCollision", double.class)),
+              new Converter(working, extractMethod(working.getClass(), "converter", double.class))),
           1);
     }
     
@@ -173,7 +171,7 @@ public class TransmuterTest {
   }
   
   private void assertConverterCollision(final List<? extends Exception> causes, 
-      ConverterType converterType, List<Binding> bindings, int expectedCount) {
+      ConverterType converterType, List<Converter> converters, int expectedCount) {
     int count = 0;
     for(Exception cause : causes) {
       if(cause.getClass() != ConverterCollisionException.class)
@@ -181,7 +179,7 @@ public class TransmuterTest {
       
       ConverterCollisionException cause2 = (ConverterCollisionException) cause;
       if(areEqual(cause2.getConverterType(), converterType)
-      && (cause2.getBindings().containsAll(bindings) && bindings.containsAll(cause2.getBindings())))
+      && (cause2.getConverters().containsAll(converters) && converters.containsAll(cause2.getConverters())))
         count++;
     }
     
@@ -503,19 +501,19 @@ public class TransmuterTest {
       
       @SuppressWarnings("unused") // just to make Eclipse happy
       @Converts
-      public int size2(Map<ConverterType, Binding> map) {
+      public int size2(Map<ConverterType, Converter> map) {
         return map.size();
       }
     };
     t.register(parameterized);
     
     final TypeToken<Map<String, String>> MAP_STRING_TO_STRING = new TypeToken<Map<String, String>>() { /**/ };
-    final TypeToken<Map<ConverterType, Binding>> MAP_CONVERTERTYPE_TO_BINDING = 
-      new TypeToken<Map<ConverterType, Binding>>() { /**/ };
+    final TypeToken<Map<ConverterType, Converter>> MAP_CONVERTERTYPE_TO_CONVERTER = 
+      new TypeToken<Map<ConverterType, Converter>>() { /**/ };
     final TypeToken<Integer> INT = TypeToken.get(int.class);
     
     assertTrue(0 == t.convert(new HashMap<String, String>(), MAP_STRING_TO_STRING, INT));
-    assertTrue(2 == t.convert(t.getConverterMap(), MAP_CONVERTERTYPE_TO_BINDING, INT));
+    assertTrue(2 == t.convert(t.getConverterMap(), MAP_CONVERTERTYPE_TO_CONVERTER, INT));
     
     try {
       t.convert(new HashMap<String, String>(), INT);
@@ -525,7 +523,7 @@ public class TransmuterTest {
     }
     
     try {
-      t.convert(new HashMap<ConverterType, Binding>(), INT);
+      t.convert(new HashMap<ConverterType, Converter>(), INT);
       fail();
     } catch(NoCompatibleConvertersFoundException e) {
       assertEquals(new ConverterType(HashMap.class, int.class), e.getConverterType());
@@ -548,10 +546,10 @@ public class TransmuterTest {
     } catch(TooManyConvertersFoundException e) {
       assertEquals(new ConverterType(t.getConverterMap().getClass(), int.class), e.getConverterType());
       TestUtils.assertMatchingCollections(
-          e.getBindings(),
+          e.getConverters(),
           Arrays.asList(
-              new Binding(parameterized, parameterized.getClass().getDeclaredMethod("size2", Map.class)),
-              new Binding(raw, raw.getClass().getDeclaredMethod("size", Map.class))));
+              new Converter(parameterized, parameterized.getClass().getDeclaredMethod("size2", Map.class)),
+              new Converter(raw, raw.getClass().getDeclaredMethod("size", Map.class))));
     }
   }
 
@@ -574,14 +572,14 @@ public class TransmuterTest {
       fail();
     } catch(TooManyConvertersFoundException e) {
       assertEquals(new ConverterType(ARRAYLIST_OF_STRING, TypeToken.STRING), e.getConverterType());
-      assertEquals(2, e.getBindings().size());
+      assertEquals(2, e.getConverters().size());
     
-      assertTrue(e.getBindings().contains(
-          new Binding(
+      assertTrue(e.getConverters().contains(
+          new Converter(
               converter, 
               extractMethod(converter.getClass(), "toString", List.class))));
-      assertTrue(e.getBindings().contains(
-          new Binding(
+      assertTrue(e.getConverters().contains(
+          new Converter(
               converter, 
               extractMethod(converter.getClass(), "toString", Serializable.class))));
     }
@@ -595,10 +593,10 @@ public class TransmuterTest {
     TestUtils.assertMatchingCollections(
         t.getCompatibleConvertersFor(new ConverterType(ARRAYLIST_OF_STRING, TypeToken.STRING)),
         Arrays.asList(
-            new Binding(
+            new Converter(
                 converter, 
                 extractMethod(converter.getClass(), "toString", List.class)),
-            new Binding(
+            new Converter(
                 converter, 
                 extractMethod(converter.getClass(), "toString", Serializable.class))));
     
@@ -618,12 +616,12 @@ public class TransmuterTest {
     
     assertEquals(
         t.getConverterFor(new ConverterType(Serializable.class, String.class)),
-        new Binding(
+        new Converter(
           converter, 
           extractMethod(converter.getClass(), "toString", Serializable.class)));
     assertEquals(
         t.getConverterFor(new ConverterType(LIST_OF_STRING, TypeToken.STRING)),
-        new Binding(
+        new Converter(
           converter, 
           extractMethod(converter.getClass(), "toString", List.class)));
     
@@ -646,15 +644,15 @@ public class TransmuterTest {
       fail();
     } catch(TooManyConvertersFoundException e) {
       assertEquals(new ConverterType(ARRAYLIST_OF_STRING, TypeToken.STRING), e.getConverterType());
-      assertEquals(2, e.getBindings().size());
+      assertEquals(2, e.getConverters().size());
     
       TestUtils.assertMatchingCollections(
-          e.getBindings(),
+          e.getConverters(),
           Arrays.asList(
-            new Binding(
+            new Converter(
                 converter, 
                 extractMethod(converter.getClass(), "toString", List.class)),
-            new Binding(
+            new Converter(
                 converter, 
                 extractMethod(converter.getClass(), "toString", Serializable.class))));
     }
