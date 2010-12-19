@@ -19,10 +19,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.googlecode.transmuter.Transmuter.ConverterMap;
-import com.googlecode.transmuter.converter.Binding;
+import com.googlecode.transmuter.converter.Converter;
 import com.googlecode.transmuter.converter.ConverterType;
-import com.googlecode.transmuter.converter.exception.ConverterTypeIncompatibleWithBindingException;
-import com.googlecode.transmuter.converter.exception.ConverterTypeInstantiationException;
+import com.googlecode.transmuter.converter.exception.BindingInstantiationException;
+import com.googlecode.transmuter.converter.exception.ConverterTypeIncompatibleWithConverterException;
 import com.googlecode.transmuter.exception.ConverterCollisionException;
 import com.googlecode.transmuter.fixture.MultipleConverter;
 import com.googlecode.transmuter.fixture.MultipleValidConverter;
@@ -34,7 +34,7 @@ public class ConverterMapTest {
   private static final TypeToken<ArrayList<String>> ARRAYLIST_OF_STRING = new TypeToken<ArrayList<String>>() { /**/ };
   
   private Transmuter t;
-  private Map<ConverterType, Binding> map;
+  private Map<ConverterType, Converter> map;
 
   @Before
   public void setUp() {
@@ -58,7 +58,7 @@ public class ConverterMapTest {
     try {
       map.put(
           new ConverterType(double.class, String.class), 
-          new Binding(
+          new Converter(
               multiple, 
               multiple.getClass().getMethod("converter", double.class)));
       fail();
@@ -79,20 +79,20 @@ public class ConverterMapTest {
     
     Object multiple = new MultipleConverter();
     
-    Map<ConverterType, Binding> temp = new HashMap<ConverterType, Binding>();
+    Map<ConverterType, Converter> temp = new HashMap<ConverterType, Converter>();
     temp.put(
         new ConverterType(TypeToken.OBJECT, TypeToken.STRING),
-        new Binding(
+        new Converter(
             new StringConverter(),
             StringConverter.class.getMethod("stringify", Object.class)));
     temp.put(
         new ConverterType(double.class, String.class), 
-        new Binding(
+        new Converter(
             multiple, 
             multiple.getClass().getMethod("converter", double.class)));
     temp.put(
         new ConverterType(TypeToken.STRING, LIST_OF_STRING), 
-        new Binding(
+        new Converter(
             multiple, 
             multiple.getClass().getMethod("convert", String.class)));
     
@@ -115,7 +115,7 @@ public class ConverterMapTest {
     Object o = new MultipleConverter();
     
     try {
-      map.put(null, new Binding(o, o.getClass().getMethod("converter", double.class)));
+      map.put(null, new Converter(o, o.getClass().getMethod("converter", double.class)));
       fail();
     } catch(IllegalArgumentException e) {
       // empty block
@@ -136,7 +136,7 @@ public class ConverterMapTest {
     
     assertTrue(map.isEmpty());
     
-    map.putAll(new HashMap<ConverterType, Binding>());
+    map.putAll(new HashMap<ConverterType, Converter>());
     
     assertTrue(map.isEmpty());
   }
@@ -148,29 +148,29 @@ public class ConverterMapTest {
     
     final StringConverter a = new StringConverter();
     final Method stringify = StringConverter.class.getMethod("stringify", Object.class);
-    assertNull(map.put(new ConverterType(Object.class, String.class), new Binding(a, stringify)));
+    assertNull(map.put(new ConverterType(Object.class, String.class), new Converter(a, stringify)));
     
     assertTrue(t.isRegistered(Object.class, String.class));
     assertEquals(1, map.size());
     
-    assertEquals(new Binding(a, stringify), map.put(new ConverterType(Object.class, String.class), new Binding(a, stringify)));
+    assertEquals(new Converter(a, stringify), map.put(new ConverterType(Object.class, String.class), new Converter(a, stringify)));
     
     assertTrue(t.isRegistered(Object.class, String.class));
     assertEquals(1, map.size());
   }
   
-  @Test(expected = ConverterTypeIncompatibleWithBindingException.class)
-  public void incompatibleConverterTypeAndBinding() throws SecurityException, NoSuchMethodException {
+  @Test(expected = ConverterTypeIncompatibleWithConverterException.class)
+  public void incompatibleConverterTypeAndConverter() throws SecurityException, NoSuchMethodException {
     map.put(
         new ConverterType(String.class, double.class), 
-        new Binding(new StringConverter(), StringConverter.class.getMethod("stringify", Object.class)));
+        new Converter(new StringConverter(), StringConverter.class.getMethod("stringify", Object.class)));
   }
   
-  @Test(expected = ConverterTypeInstantiationException.class)
-  public void bindingWithNoConverterType() throws SecurityException, NoSuchMethodException {
+  @Test(expected = BindingInstantiationException.class)
+  public void converterWithNoConverterType() throws SecurityException, NoSuchMethodException {
     map.put(
         new ConverterType(String.class, double.class), 
-        new Binding("alksjdklajs", String.class.getMethod("codePointCount", int.class, int.class)));
+        new Converter("alksjdklajs", String.class.getMethod("codePointCount", int.class, int.class)));
   }
   
   @Test
@@ -192,25 +192,30 @@ public class ConverterMapTest {
     
     StringConverter converter = new StringConverter();
     ConverterType converterType = new ConverterType(Object.class, String.class);
-    Binding stringify = new Binding(converter, StringConverter.class.getMethod("stringify", Object.class));
-    Binding toString = new Binding(converter, StringConverter.class.getMethod("toString"));
+    Converter stringify = new Converter(converter, StringConverter.class.getMethod("stringify", Object.class));
+    Converter equals = new Converter(converter, StringConverter.class.getMethod("equals", Object.class));
     
+    // ensuring there's no previous mapping...
     assertFalse(pbm.checkForCollision(converterType, stringify));
-    assertFalse(pbm.checkForCollision(converterType, toString));
+    assertFalse(pbm.checkForCollision(converterType, equals));
     
+    // putting stringify
     pbm.put(converterType, stringify);
     
+    // showing that stringify is now in
     assertTrue(pbm.checkForCollision(converterType, stringify));
     
+    // checking equals will now explode
     try {
-      pbm.checkForCollision(converterType, toString);
+      pbm.checkForCollision(converterType, equals);
       fail();
     } catch(ConverterCollisionException e) {
       assertEquals(converterType, e.getConverterType());
-      assertTrue(e.getBindings().containsAll(Arrays.asList(stringify, toString)));
-      assertTrue(Arrays.asList(stringify, toString).containsAll(e.getBindings()));
+      assertTrue(e.getConverters().containsAll(Arrays.asList(stringify, equals)));
+      assertTrue(Arrays.asList(stringify, equals).containsAll(e.getConverters()));
     }
     
+    // nobody likes null
     try {
       pbm.checkForCollision(null, stringify);
       fail();
@@ -232,16 +237,18 @@ public class ConverterMapTest {
       // empty block
     }
     
+    // cleaning up the house
     pbm.clear();
     
     assertFalse(pbm.checkForCollision(converterType, stringify));
-    assertFalse(pbm.checkForCollision(converterType, toString));
+    assertFalse(pbm.checkForCollision(converterType, equals));
     
-    Map<ConverterType, Binding> noChecking = new HashMap<ConverterType, Binding>();
-    noChecking.put(converterType, toString);
+    // putting equals in a competitor
+    Map<ConverterType, Converter> noChecking = new HashMap<ConverterType, Converter>();
+    noChecking.put(converterType, equals);
     
-    assertFalse(ConverterMap.checkMapForCollision(converterType, toString, pbm));
-    assertTrue(ConverterMap.checkMapForCollision(converterType, toString, noChecking));
+    assertFalse(ConverterMap.checkMapForCollision(converterType, equals, pbm));
+    assertTrue(ConverterMap.checkMapForCollision(converterType, equals, noChecking));
     
     assertFalse(pbm.checkForCollision(converterType, stringify));
     
@@ -250,12 +257,10 @@ public class ConverterMapTest {
       fail();
     } catch(ConverterCollisionException e) {
       assertEquals(converterType, e.getConverterType());
-      assertTrue(Arrays.asList(stringify, toString).containsAll(e.getBindings()));
-      assertTrue(e.getBindings().containsAll(Arrays.asList(stringify, toString)));
+      assertTrue(Arrays.asList(stringify, equals).containsAll(e.getConverters()));
+      assertTrue(e.getConverters().containsAll(Arrays.asList(stringify, equals)));
     }
   }
-  
-
   
   @Test
   public void getMostCompatibleConverterFor() throws SecurityException, NoSuchMethodException {
@@ -264,12 +269,12 @@ public class ConverterMapTest {
     
     assertEquals(
         map.get(new ConverterType(Serializable.class, String.class)),
-        new Binding(
+        new Converter(
             converter, 
             extractMethod(converter.getClass(), "toString", Serializable.class)));
     assertEquals(
         map.get(new ConverterType(LIST_OF_STRING, TypeToken.STRING)),
-        new Binding(
+        new Converter(
             converter, 
             extractMethod(converter.getClass(), "toString", List.class)));
     

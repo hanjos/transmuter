@@ -3,7 +3,7 @@ package com.googlecode.transmuter.exception;
 import java.util.Collections;
 import java.util.List;
 
-import com.googlecode.transmuter.converter.Binding;
+import com.googlecode.transmuter.converter.Converter;
 import com.googlecode.transmuter.converter.ConverterType;
 
 
@@ -17,20 +17,20 @@ public class TooManyConvertersFoundException extends RuntimeException {
   private static final long serialVersionUID = 1L;
   
   private ConverterType converterType;
-  private List<Binding> bindings;
+  private List<? extends Converter> converters;
   
   /**
    * Builds a new instance.
    * 
    * @param converterType the converter type.
-   * @param bindings the compatible bindings found.
+   * @param converters the compatible converters found.
    */
   @SuppressWarnings("unchecked")
-  public TooManyConvertersFoundException(ConverterType converterType, List<Binding> bindings) {
-    super("too many converters found for " + converterType + ": " + bindings);
+  public TooManyConvertersFoundException(ConverterType converterType, List<? extends Converter> converters) {
+    super("too many converters found for " + converterType + ": " + converters);
     
     this.converterType = converterType;
-    this.bindings = bindings != null ? Collections.unmodifiableList(bindings) : Collections.EMPTY_LIST;
+    this.converters = converters != null ? Collections.unmodifiableList(converters) : Collections.EMPTY_LIST;
   }
 
   /**
@@ -43,11 +43,11 @@ public class TooManyConvertersFoundException extends RuntimeException {
   }
 
   /**
-   * Returns the compatible bindings found.
+   * Returns the compatible converters found.
    * 
-   * @return the compatible bindings found.
+   * @return the compatible converters found.
    */
-  public List<Binding> getBindings() {
-    return bindings;
+  public List<? extends Converter> getConverters() {
+    return converters;
   }
 }
