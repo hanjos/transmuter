@@ -3,9 +3,9 @@ package com.googlecode.transmuter.converter;
 import java.lang.reflect.Method;
 
 import com.googlecode.transmuter.Transmuter;
-import com.googlecode.transmuter.converter.exception.BindingInstantiationException;
 import com.googlecode.transmuter.converter.exception.ConverterTypeInstantiationException;
 import com.googlecode.transmuter.util.Notification;
+import com.googlecode.transmuter.util.exception.ObjectInstantiationException;
 
 /**
  * A {@link Binding binding} which has a {@link ConverterType converter type}, and so can safely be used with a 
@@ -22,10 +22,10 @@ public class Converter extends Binding {
    * Makes a new {@code Converter} object holding a static method.
    * 
    * @param method a static method object. 
-   * @throws BindingInstantiationException if the given method is not deemed valid.
+   * @throws ObjectInstantiationException if the given method is not deemed valid.
    * @see #initialize(Object, Method) 
    */
-  public Converter(Method method) throws BindingInstantiationException {
+  public Converter(Method method) throws ObjectInstantiationException {
     super(method);
   }
 
@@ -34,10 +34,10 @@ public class Converter extends Binding {
    * 
    * @param instance an object.
    * @param method a method object.
-   * @throws BindingInstantiationException if the given instance, method, or their combination is not deemed valid.
+   * @throws ObjectInstantiationException if the given instance, method, or their combination is not deemed valid.
    * @see #initialize(Object, Method)
    */
-  public Converter(Object instance, Method method) throws BindingInstantiationException {
+  public Converter(Object instance, Method method) throws ObjectInstantiationException {
     super(instance, method);
   }
 

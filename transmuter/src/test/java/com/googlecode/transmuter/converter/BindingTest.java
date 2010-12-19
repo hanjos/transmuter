@@ -18,14 +18,12 @@ import org.junit.Test;
 
 import com.googlecode.transmuter.Converts;
 import com.googlecode.transmuter.TestUtils;
-import com.googlecode.transmuter.converter.Binding;
-import com.googlecode.transmuter.converter.ConverterType;
-import com.googlecode.transmuter.converter.exception.BindingInstantiationException;
 import com.googlecode.transmuter.converter.exception.BindingInvocationException;
 import com.googlecode.transmuter.converter.exception.InaccessibleMethodException;
 import com.googlecode.transmuter.converter.exception.MethodInstanceIncompatibilityException;
 import com.googlecode.transmuter.converter.exception.NullInstanceWithNonStaticMethodException;
 import com.googlecode.transmuter.type.TypeToken;
+import com.googlecode.transmuter.util.exception.ObjectInstantiationException;
 
 public class BindingTest {
   private String string;
@@ -66,10 +64,15 @@ public class BindingTest {
   
   @Test
   public void constructorWithNullMethod() {
+    Object instance = new Object();
     try {
-      new Binding(new Object(), null);
+      new Binding(instance, null);
       fail();
-    } catch(BindingInstantiationException e) {
+    } catch(ObjectInstantiationException e) {
+      assertEquals(Binding.class, e.getObjectType());
+      assertEquals(instance, e.getArguments().get(0));
+      assertNull(e.getArguments().get(1));
+      
       assertEquals(1, e.getCauses().size());
       assertEquals(IllegalArgumentException.class, e.getCauses().get(0).getClass());
     }
@@ -86,30 +89,41 @@ public class BindingTest {
   
   @Test
   public void constructorWithIncompatibleInstanceAndMethod() throws SecurityException, NoSuchMethodException {
+    String instance = "0123456789";
+    Method method = TestUtils.extractMethod(ConverterType.class, "getFromType");
     try {
-      new Binding("0123456789", TestUtils.extractMethod(ConverterType.class, "getFromType"));
+      new Binding(instance, method);
       fail();
-    } catch(BindingInstantiationException e) {
+    } catch(ObjectInstantiationException e) {
+      assertEquals(Binding.class, e.getObjectType());
+      assertEquals(instance, e.getArguments().get(0));
+      assertEquals(method, e.getArguments().get(1));
+      
       assertEquals(1, e.getCauses().size());
       assertEquals(MethodInstanceIncompatibilityException.class, e.getCauses().get(0).getClass());
       
       MethodInstanceIncompatibilityException ex = (MethodInstanceIncompatibilityException) e.getCauses().get(0);
-      assertEquals("0123456789", ex.getInstance());
-      assertEquals(TestUtils.extractMethod(ConverterType.class, "getFromType"), ex.getMethod());
+      assertEquals(instance, ex.getInstance());
+      assertEquals(method, ex.getMethod());
     }
   }
   
   @Test
   public void constructorWithNullInstanceAndNonStaticMethod() throws SecurityException, NoSuchMethodException {
+    Method method = TestUtils.extractMethod(ConverterType.class, "getFromType");
     try {
-      new Binding(null, TestUtils.extractMethod(ConverterType.class, "getFromType"));
+      new Binding(null, method);
       fail();
-    } catch(BindingInstantiationException e) {
+    } catch(ObjectInstantiationException e) {
+      assertEquals(Binding.class, e.getObjectType());
+      assertNull(e.getArguments().get(0));
+      assertEquals(method, e.getArguments().get(1));
+      
       assertEquals(1, e.getCauses().size());
       assertEquals(NullInstanceWithNonStaticMethodException.class, e.getCauses().get(0).getClass());
       
       NullInstanceWithNonStaticMethodException ex = (NullInstanceWithNonStaticMethodException) e.getCauses().get(0);
-      assertEquals(TestUtils.extractMethod(ConverterType.class, "getFromType"), ex.getMethod());
+      assertEquals(method, ex.getMethod());
     }
   }
   
@@ -120,9 +134,10 @@ public class BindingTest {
     try {
       new Binding(null, getRawType);
       fail();
-    } catch(BindingInstantiationException e) {
-      assertEquals(1, e.getCauses().size());
-      assertEquals(InaccessibleMethodException.class, e.getCauses().get(0).getClass());
+    } catch(ObjectInstantiationException e) {
+      assertEquals(Binding.class, e.getObjectType());
+      assertNull(e.getArguments().get(0));
+      assertEquals(getRawType, e.getArguments().get(1));
       
       InaccessibleMethodException ex = (InaccessibleMethodException) e.getCauses().get(0);
       assertEquals(getRawType, ex.getMethod());

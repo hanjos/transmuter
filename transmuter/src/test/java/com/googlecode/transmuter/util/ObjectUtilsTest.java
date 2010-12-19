@@ -12,6 +12,10 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import org.junit.Test;
 
@@ -80,7 +84,7 @@ public class ObjectUtilsTest {
   }
   
   @Test
-  public void testIsEmpty() {
+  public void testIsEmptyWithArray() {
     assertTrue(isEmpty());
     assertTrue(isEmpty((Object[]) null));
     assertTrue(isEmpty(new String[0]));
@@ -92,5 +96,17 @@ public class ObjectUtilsTest {
     assertFalse(isEmpty(""));
     assertFalse(isEmpty(0));
     assertFalse(isEmpty(false));
+  }
+  
+  @SuppressWarnings("serial")
+  @Test
+  public void testIsIterableEmpty() {
+    assertTrue(isEmpty((Iterable<?>) null));
+    assertTrue(isEmpty(new HashSet<Object>()));
+    assertTrue(isEmpty(Collections.emptyList()));
+    assertTrue(isEmpty(Collections.emptyMap().keySet()));
+    
+    assertFalse(isEmpty(Arrays.asList((Object) null)));
+    assertFalse(isEmpty(new HashMap<String, String>() {{ put("", ""); }}));
   }
 }

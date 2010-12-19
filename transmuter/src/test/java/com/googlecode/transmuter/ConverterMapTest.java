@@ -21,13 +21,13 @@ import org.junit.Test;
 import com.googlecode.transmuter.Transmuter.ConverterMap;
 import com.googlecode.transmuter.converter.Converter;
 import com.googlecode.transmuter.converter.ConverterType;
-import com.googlecode.transmuter.converter.exception.BindingInstantiationException;
 import com.googlecode.transmuter.converter.exception.ConverterTypeIncompatibleWithConverterException;
 import com.googlecode.transmuter.exception.ConverterCollisionException;
 import com.googlecode.transmuter.fixture.MultipleConverter;
 import com.googlecode.transmuter.fixture.MultipleValidConverter;
 import com.googlecode.transmuter.fixture.StringConverter;
 import com.googlecode.transmuter.type.TypeToken;
+import com.googlecode.transmuter.util.exception.ObjectInstantiationException;
 
 public class ConverterMapTest {
   private static final TypeToken<List<String>> LIST_OF_STRING = new TypeToken<List<String>>() { /**/ };
@@ -166,11 +166,23 @@ public class ConverterMapTest {
         new Converter(new StringConverter(), StringConverter.class.getMethod("stringify", Object.class)));
   }
   
-  @Test(expected = BindingInstantiationException.class)
+  @Test
   public void converterWithNoConverterType() throws SecurityException, NoSuchMethodException {
-    map.put(
-        new ConverterType(String.class, double.class), 
-        new Converter("alksjdklajs", String.class.getMethod("codePointCount", int.class, int.class)));
+    String instance = "alksjdklajs";
+    Method method = String.class.getMethod("codePointCount", int.class, int.class);
+    
+    try {
+      map.put(
+          new ConverterType(String.class, double.class), 
+          new Converter(instance, method));
+      fail();
+    } catch (ObjectInstantiationException e) {
+      assertEquals(Converter.class, e.getObjectType());
+      assertEquals(instance, e.getArguments().get(0));
+      assertEquals(method, e.getArguments().get(1));
+      
+      // TODO proper causes analysis
+    }
   }
   
   @Test
