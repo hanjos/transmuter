@@ -60,9 +60,7 @@ public class Binding {
       Notification notification = initialize(instance, method);
       
       if(notification.hasErrors())
-        throw new ObjectInstantiationException(
-            getClass(), 
-            notification.getErrors());
+        throw new ObjectInstantiationException(getClass(), notification.getErrors());
       
     } catch(ObjectInstantiationException e) {
       throw e;
