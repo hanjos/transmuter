@@ -16,7 +16,7 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
   * Create a `Binding` subclass (called `Converter`, apropriately) which ensures we have a well-formed converter binding.
 
   * Put up the documentation!
-    * I would've expected svn:mime-type was already configured to the most common types...
+    * I would've expected `svn:mime-type` was already configured to the most common types...
 
 === Doing ===
 
