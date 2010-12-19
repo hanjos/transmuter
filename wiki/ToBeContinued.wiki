@@ -11,25 +11,24 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
 
 === Already done ===
   * Rethink the validation process (especially for `ConverterType` and `Binding`) to ease inheritance. Maybe the ability to register validators with some pre-implemented ones (could end up being a separate mini-project).
-    * Reworked the whole thing; instead of `validate`, there's `initialize`, which checks whatever it can, initializes the fields if valid and piles up whatever exceptions it finds in a `Notification` object which reports the success of the whole enterprise.
+    * Reworked the whole thing; instead of `validate`, there's `initialize`, which checks whatever it can, initializes the fields if valid and piles up whatever exceptions it finds in a `Notification` object which reports the success of the whole enterprise. Well, kind of... Read the documentation for the details (which will be online someday...)
+  
+  * Create a `Binding` subclass (called `Converter`, apropriately) which ensures we have a well-formed converter binding.
 
 === Doing ===
-
-  * Create a `Binding` subclass (called `Converter`, apropriately) which ensures we have a well-formed converter binding.
-    * Mostly done, I think :)
 
 === To Do ===
 
   * Generalize the `register` operation for the programmer to be able to say how to obtain the bindings. 
 
-  * Clean up the tests; it's getting filthy :P
+  * Clean up the tests while I still can, it's getting filthy :P
 
   * Put up the documentation!
 
 == For tomorrow ==
 
   * Exception instantiation is an expensive operation due to the stack trace filling, which isn't needed when we're just queueing 'em up for later throwage.
-    * Filling the stack trace can be avoided only by overwriting the {{{fillInStackTrace}}} method.
+    * Filling the stack trace can be avoided only by overwriting the {{{fillInStackTrace}}} method. That sucks a little... Use error objects instead?
 
   * Implement some search algorithm for a most compatible converter if a perfect match isn't found. Parameterizing it seems good...
 
