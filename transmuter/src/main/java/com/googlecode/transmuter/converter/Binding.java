@@ -56,8 +56,27 @@ public class Binding {
    * @see #initialize(Object, Method)
    */
   public Binding(Object instance, Method method) throws ObjectInstantiationException {
+    initialize(instance, method);
+  }
+
+  /**
+   * Called only in the constructors, this method attempts to validate the given arguments and populate this 
+   * instance's fields, throwing an exception if the arguments are not deemed valid.
+   * <p>
+   * Delegates to {@link #tryInitialize(Object, Method) tryInitialize} for the actual legwork, so subclasses which 
+   * wish to alter the initialization sequence should override it instead of this method.
+   * <p> 
+   * This method simply checks {@code tryInitialize}'s final report to determine if an exception must be thrown. 
+   * The exception will hold all the problems found with the given arguments.
+   * 
+   * @param instance an object.
+   * @param method a method object.
+   * @throws ObjectInstantiationException if any problems were found during initialization.
+   * @see #tryInitialize(Object, Method)
+   */
+  protected void initialize(Object instance, Method method) throws ObjectInstantiationException {
     try {
-      Notification notification = initialize(instance, method);
+      Notification notification = tryInitialize(instance, method);
       
       if(notification.hasErrors())
         throw new ObjectInstantiationException(getClass(), notification.getErrors());
@@ -65,8 +84,10 @@ public class Binding {
     } catch(ObjectInstantiationException e) {
       throw e;
     } catch(MultipleCausesException e) {
+      // shouldn't happen (yeah, right :P), but in case it does...
       throw new ObjectInstantiationException(getClass(), e.getCauses());
     } catch(Exception e) {
+      // dunno how we got here...
       throw new ObjectInstantiationException(getClass(), e);
     }
   }
@@ -91,7 +112,7 @@ public class Binding {
    * @param method a method object. 
    * @return a {@link Notification} with all errors found during validation e initialization. Cannot be null.
    */
-  protected Notification initialize(Object instance, Method method) {
+  protected Notification tryInitialize(Object instance, Method method) {
     Notification notification = new Notification();
     
     if(method == null) // no point or way to check any further
