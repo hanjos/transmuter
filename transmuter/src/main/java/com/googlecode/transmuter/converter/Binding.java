@@ -11,10 +11,9 @@ import static com.googlecode.transmuter.util.ReflectionUtils.isCompatible;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
 
-import com.googlecode.transmuter.converter.exception.InvocationException;
 import com.googlecode.transmuter.converter.exception.InaccessibleMethodException;
+import com.googlecode.transmuter.converter.exception.InvocationException;
 import com.googlecode.transmuter.converter.exception.MethodInstanceIncompatibilityException;
 import com.googlecode.transmuter.converter.exception.NullInstanceWithNonStaticMethodException;
 import com.googlecode.transmuter.util.Notification;
@@ -63,27 +62,14 @@ public class Binding {
       if(notification.hasErrors())
         throw new ObjectInstantiationException(
             getClass(), 
-            Arrays.asList(instance, method), 
             notification.getErrors());
       
     } catch(ObjectInstantiationException e) {
-      if(e.getObjectType() == getClass())
-        throw e;
-      
-      throw new ObjectInstantiationException(
-          getClass(), 
-          Arrays.asList(instance, method), 
-          e.getCauses());
+      throw e;
     } catch(MultipleCausesException e) {
-      throw new ObjectInstantiationException(
-          getClass(), 
-          Arrays.asList(instance, method), 
-          e.getCauses());
+      throw new ObjectInstantiationException(getClass(), e.getCauses());
     } catch(Exception e) {
-      throw new ObjectInstantiationException(
-          getClass(), 
-          Arrays.asList(instance, method), 
-          e);
+      throw new ObjectInstantiationException(getClass(), e);
     }
   }
 

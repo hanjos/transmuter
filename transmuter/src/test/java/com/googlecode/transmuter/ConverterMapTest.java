@@ -178,8 +178,6 @@ public class ConverterMapTest {
       fail();
     } catch (ObjectInstantiationException e) {
       assertEquals(Converter.class, e.getObjectType());
-      assertEquals(instance, e.getArguments().get(0));
-      assertEquals(method, e.getArguments().get(1));
       
       // TODO proper causes analysis
     }

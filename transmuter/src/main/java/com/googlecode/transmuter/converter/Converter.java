@@ -3,7 +3,6 @@ package com.googlecode.transmuter.converter;
 import java.lang.reflect.Method;
 
 import com.googlecode.transmuter.Transmuter;
-import com.googlecode.transmuter.converter.exception.ConverterTypeInstantiationException;
 import com.googlecode.transmuter.util.Notification;
 import com.googlecode.transmuter.util.exception.ObjectInstantiationException;
 
@@ -53,7 +52,7 @@ public class Converter extends Binding {
     // ...and try to extract the type from the given arguments
     try {
       this.type = ConverterType.from(instance, method);
-    } catch (ConverterTypeInstantiationException e) {
+    } catch (ObjectInstantiationException e) {
       // problems found; snitch immediately 
       notification.report(e.getCauses());
     }

@@ -14,15 +14,15 @@ import java.util.Map.Entry;
 
 import com.googlecode.transmuter.converter.Converter;
 import com.googlecode.transmuter.converter.ConverterType;
-import com.googlecode.transmuter.converter.exception.InvocationException;
 import com.googlecode.transmuter.converter.exception.ConverterTypeIncompatibleWithConverterException;
-import com.googlecode.transmuter.converter.exception.ConverterTypeInstantiationException;
+import com.googlecode.transmuter.converter.exception.InvocationException;
 import com.googlecode.transmuter.exception.ConverterCollisionException;
 import com.googlecode.transmuter.exception.ConverterRegistrationException;
 import com.googlecode.transmuter.exception.NoCompatibleConvertersFoundException;
 import com.googlecode.transmuter.exception.TooManyConvertersFoundException;
 import com.googlecode.transmuter.type.TypeToken;
 import com.googlecode.transmuter.util.exception.MultipleCausesException;
+import com.googlecode.transmuter.util.exception.ObjectInstantiationException;
 
 /**
  * The main object in the library. A transmuter provides a centralized type conversion operation, using previously 
@@ -83,7 +83,7 @@ public class Transmuter {
      * @throws IllegalArgumentException if either {@code converterType} or {@code converter} are {@code null}.
      * @throws ConverterTypeIncompatibleWithConverterException if {@code converterType} and {@code converter} are not 
      * compatible.
-     * @throws ConverterTypeInstantiationException if a converter type cannot be obtained from {@code converter}.
+     * @throws ObjectInstantiationException if a converter type cannot be obtained from {@code converter}.
      * @throws ConverterCollisionException if this map already has a different converter associated to 
      * {@code converterType}.
      * @see #checkForCompatibility(ConverterType, Converter)
