@@ -116,16 +116,16 @@ public class Binding {
     Notification notification = new Notification();
     
     if(method == null) // no point or way to check any further
-      return notification.report(new IllegalArgumentException("method cannot be null!"));
+      return notification.add(new IllegalArgumentException("method cannot be null!"));
     
     if(! Modifier.isPublic(method.getModifiers())) // why so antisocial?
-      notification.report(new InaccessibleMethodException(method));
+      notification.add(new InaccessibleMethodException(method));
     
     if(instance == null && ! Modifier.isStatic(method.getModifiers())) // NullPointerException waiting to happen... 
-      notification.report(new NullInstanceWithNonStaticMethodException(method));
+      notification.add(new NullInstanceWithNonStaticMethodException(method));
     
     if(instance != null && ! isCompatible(method, instance.getClass()))
-      notification.report(new MethodInstanceIncompatibilityException(instance, method));
+      notification.add(new MethodInstanceIncompatibilityException(instance, method));
     
     if(notification.hasErrors()) // errors were found, nothing more to do here
       return notification;

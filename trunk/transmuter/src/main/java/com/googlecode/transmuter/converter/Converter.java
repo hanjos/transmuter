@@ -57,10 +57,10 @@ public class Converter extends Binding {
       this.type = ConverterType.from(instance, method);
     } catch (MultipleCausesException e) {
       // errors were found; snitch immediately 
-      notification.report(e.getCauses());
+      notification.add(e.getCauses());
     } catch (Exception e) {
       // unpredicted exception; report it!
-      notification.report(e);
+      notification.add(e);
     }
     
     return notification;
