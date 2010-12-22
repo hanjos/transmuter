@@ -24,6 +24,9 @@ public class TestUtils {
   }
 
   public static void assertMatchingCollections(final Collection<?> a, final Collection<?> b) {
+    if(a == b)
+      return;
+    
     assertNotNull(a);
     assertNotNull(b);
     

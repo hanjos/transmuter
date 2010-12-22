@@ -1,5 +1,6 @@
 package com.googlecode.transmuter;
 
+import static com.googlecode.transmuter.TestUtils.extractMethod;
 import static com.googlecode.transmuter.type.TypeToken.ValueType.DOUBLE;
 import static com.googlecode.transmuter.util.ObjectUtils.areEqual;
 import static org.junit.Assert.assertArrayEquals;
@@ -130,11 +131,6 @@ public class TransmuterTest {
     assertEquals(2, t.getConverterMap().size());
     assertTrue(t.isRegistered(double.class, String.class));
     assertTrue(t.isRegistered(TypeToken.STRING, LIST_OF_STRING));
-  }
-  
-  private Method extractMethod(Class<?> cls, String name, Class<?>... parameterTypes) 
-  throws SecurityException, NoSuchMethodException {
-    return cls.getMethod(name, parameterTypes);
   }
   
   private void assertWrongParameterCount(final List<? extends Exception> causes, 
@@ -299,6 +295,7 @@ public class TransmuterTest {
     
     try {
       t.register(new GenericMethodConverter());
+      fail();
     } catch(ConverterRegistrationException e) {
       assertEquals(2, e.getCauses().size());
       
