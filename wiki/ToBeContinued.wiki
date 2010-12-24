@@ -10,8 +10,8 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
 == For today ==
 
 === Already done ===
-  * Rethink the validation process (especially for `ConverterType` and `Binding`) to ease inheritance. Maybe the ability to register validators with some pre-implemented ones (could end up being a separate mini-project).
-    * Reworked the whole thing; instead of `validate`, there's `initialize`, which checks whatever it can, initializes the fields if valid and piles up whatever exceptions it finds in a `Notification` object which reports the success of the whole enterprise. Well, kind of... Read the documentation for the details (which will be online someday...)
+  * Rethink the validation process (especially for `ConverterType` and `Binding`) to facilitate inheritance. Maybe the ability to register validators with some pre-implemented ones (could end up being a separate mini-project).
+    * Reworked the whole thing; instead of `validate`, there's `initialize`, which checks whatever it can, initializes the fields if valid and piles up whatever exceptions it finds in a `Notification` object which reports the success of the whole enterprise. Well, kind of... Read the documentation for the details (which will be online whenever the new version comes out).
   
   * Create a `Binding` subclass (called `Converter`, apropriately) which ensures we have a well-formed converter binding.
 
@@ -22,9 +22,15 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
 
   * Generalize the `register` operation for the programmer to be able to say how to obtain the bindings. 
 
+
 === To Do ===
 
   * Clean up the tests while I still can, it's getting filthy :P
+
+  * Fix `Converts.Provider`'s iterator to block `remove` operations (`Collections.unmodifiableList` should do the trick).
+
+  * Add another provider which, instead of ignoring non-public @Converts methods (silent bugs suck), throws an exception can be thrown (extra effort needed just to signal errors). 
+
 
 == For tomorrow ==
 
@@ -35,18 +41,22 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
 
   * Transitive conversion, e.g. if I have a String -> Unit converter and a Unit -> int converter, I can translate a String to an int. This will affect the most compatible converter algorithm mentioned above (or will it _be_ an alternative algorithm?).
 
-  * Parameterize what should happen when a non-public method is marked with @Converts. It could be ignored (silent bugs suck) or an exception can be thrown (extra effort needed just to signal errors). 
-     * `ConverterProvider` is on the way...
 
 === Current future parameters ===
 
   * Compatible converter search algorithm injection.
 
   * Give `register` a binding provider (`ConverterProvider`? Sounds so... enterprise-y :)
+    * On the way...
 
   * Invalid converter detection.
 
 == To think about ==
+
+  * Expand Notification use throughout the API. 
+
+  * Add a result type to Notification?
+    * [http://en.wikipedia.org/wiki/Monad_(functional_programming)#Maybe_monad Maybe] monad/[http://en.wikipedia.org/wiki/Option_type Option] type?
 
   * Make the API more Spring-friendly (a `setConverters` method or something like that, so that a transmuter can be instantiated and set up from Spring).
 
