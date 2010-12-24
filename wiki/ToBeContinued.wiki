@@ -57,6 +57,8 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
 
   * Add a result type to Notification?
     * [http://en.wikipedia.org/wiki/Monad_(functional_programming)#Maybe_monad Maybe] monad/[http://en.wikipedia.org/wiki/Option_type Option] type?
+      * Links: 
+        * [http://www.codecommit.com/blog/scala/the-option-pattern]
 
   * Make the API more Spring-friendly (a `setConverters` method or something like that, so that a transmuter can be instantiated and set up from Spring).
 
