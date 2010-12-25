@@ -11,11 +11,11 @@ The act of taking an object of a specific type and using the information within 
 
 === Converter ===
 
-A [#Binding binding] which holds a [#Converter_method converter method]. [#Converter Converters] are registered in a [#Transmuter transmuter], which, on performing a [#Conversion conversion], will attempt to find the converter of the most appropriate [#Converter_type type] to do it.
+A [#Binding binding] which demonstrably holds a [#Converter_method converter method]. [#Converter Converters] can be registered in a [#Transmuter transmuter], which, on performing a [#Conversion conversion], will attempt to find the converter of the most appropriate [#Converter_type type] to do it.
 
 === Converter method ===
 
-A method which can be used by the [#Transmuter transmuter] to perform a [#Conversion conversion]. This method must be invokable using reflection. Converter methods must:
+A method which can be used by the [#Transmuter transmuter] to perform a [#Conversion conversion]. This method must be invokable using reflection, and must have an extractable [#Converter_type converter type], so converter methods must:
 
   * be public
   * take a single parameter
@@ -27,18 +27,18 @@ A pair of [#Type_token type tokens] representing the input type and the output t
 
 === Transmuter ===
 
-The main object in the library. Registers [#Converter converters] (using their [#Converter_type type] as a key) and offers a `convert` operation, which attempts to perform the [#Conversion conversion] of a given object to a given type using the registered [#Converter converters].
+The main object in the library. Registers [#Converter converters] (using their [#Converter_type type] as a key) and offers a `convert` operation, which attempts to perform the [#Conversion conversion] of a given object to a given type using the most appropriate [#Converter converter] registered.
 
 === Type token ===
 
-An object used to represent Java types which is also usable with generics. Java's native reflection mechanisms are clumsy when representing generic types such as `List<? extends String>[]` and `Map<Long, Object>`, and don't take advantage of the compiler's generic inference. In principle type tokens are needed only to obtain the complex types above, e.g.
+An object used to represent Java types which is also usable with generics. Java's native reflection mechanisms are clumsy when representing generic types such as `List<? extends String>[]` and `Map<Long, Object>`, and don't take advantage of the compiler's generic inference. To obtain the complex types above, a common technique is to use type tokens, e.g.
 
 {{{
 // note the anonymous subclass creation: it's necessary!
 Type arrayOflistOfSomethingThatExtendsString = new TypeToken<List<? extends String>[]>() {}.getType();
 }}}
 
-But then one could not use the type created as such for a generic method such as
+The problem with the raw `Type` instance above is that there are no compile-time generic information for it; one could not use the created type with a generic method such as
 
 {{{
 // it works, but casting is needed for the result
@@ -60,3 +60,5 @@ public <T> T method(TypeToken<T> cls) {
   //...
 }
 }}}
+
+which is done in this library.
