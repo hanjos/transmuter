@@ -6,7 +6,7 @@ import com.googlecode.transmuter.Converts;
 import com.googlecode.transmuter.util.exception.MultipleCausesException;
 
 /**
- * Intended to be thrown on errors from converter providers, such as {@link Converts.Provider}, which will be bundled 
+ * Intended to be thrown on errors from converter providers, such as {@link Converts.EagerProvider}, which will be bundled 
  * up in this exception.
  * 
  * @author Humberto S. N. dos Anjos

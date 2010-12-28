@@ -46,7 +46,7 @@ public class ConverterMapTest {
   public void converterMap() throws SecurityException, NoSuchMethodException {
     assertTrue(map.isEmpty());
     
-    t.register(new MultipleConverter());
+    t.register(new Converts.EagerProvider(new MultipleConverter()));
     
     assertEquals(2, map.size());
     assertTrue(map.containsKey(new ConverterType(double.class, String.class)));
@@ -71,7 +71,7 @@ public class ConverterMapTest {
   
   @Test
   public void putAll() throws SecurityException, NoSuchMethodException {
-    t.register(new MultipleConverter());
+    t.register(new Converts.EagerProvider(new MultipleConverter()));
     
     assertTrue(map.containsKey(new ConverterType(double.class, String.class)));
     assertTrue(map.containsKey(new ConverterType(TypeToken.STRING, LIST_OF_STRING)));
@@ -190,7 +190,7 @@ public class ConverterMapTest {
   
   @Test
   public void containsKeyWithPrimitives() {
-    t.register(new MultipleConverter());
+    t.register(new Converts.EagerProvider(new MultipleConverter()));
     
     assertTrue(map.containsKey(new ConverterType(double.class, String.class)));
     assertTrue(map.containsKey(new ConverterType(Double.class, String.class)));
@@ -275,7 +275,7 @@ public class ConverterMapTest {
   @Test
   public void getMostCompatibleConverterFor() throws SecurityException, NoSuchMethodException {
     final MultipleValidConverter converter = new MultipleValidConverter();
-    t.register(converter);
+    t.register(new Converts.EagerProvider(converter));
     
     assertEquals(
         map.get(new ConverterType(Serializable.class, String.class)),

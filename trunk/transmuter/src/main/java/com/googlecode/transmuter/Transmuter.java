@@ -4,7 +4,6 @@ import static com.googlecode.transmuter.util.ObjectUtils.areEqual;
 import static com.googlecode.transmuter.util.ObjectUtils.classOf;
 import static com.googlecode.transmuter.util.ObjectUtils.nonNull;
 
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -395,39 +394,28 @@ public class Transmuter {
   }
   
   /**
-   * Scans the given object for converter methods, registering them as {@linkplain Converter converters} keyed by their 
-   * {@linkplain ConverterType types}. Does nothing if the given object is {@code null}.
+   * Registers all given {@linkplain Converter converters} in this instance, keyed by their 
+   * {@linkplain ConverterType types}. Does nothing if the given iterable is {@code null}.
    * <p>
-   * This method will iterate through all the given object's public methods and, for all methods marked with the 
-   * {@link Converts} annotation, it will:
-   * <ul>
-   * <li>{@linkplain Converter bind the method with the given object};</li>
-   * <li>and {@linkplain DependentConverterMap check} if there is no registered converter with the same type,</li>
-   * </ul>
-   * registering all the converters in one fell swoop if no problem is found. Non-public methods, even if marked 
-   * with {@link Converts}, will be ignored.
+   * This method will iterate through all the converters and {@linkplain DependentConverterMap check} if there is no 
+   * registered converter with the same type, registering all the converters in one fell swoop if no problem is found. 
    * <p>
    * Errors encountered during the process will be bundled together and thrown as a single exception. In that case, 
-   * no converters from {@code object} will be registered, even if they're valid.
+   * no converters from {@code converters} will be registered, even if they're valid.
    * 
-   * @param object an object, hopefully with converter methods.
+   * @param converters a bundle of converters
    * @throws ConverterRegistrationException if there is some error during the operation.
-   * @see Converter#Converter(Object, Method)
    * @see DependentConverterMap
    */
-  public void register(Object object) throws ConverterRegistrationException {
-    if(object == null)
+  public void register(Iterable<? extends Converter> converters) throws ConverterRegistrationException {
+    if(converters == null)
       return;
     
     Map<ConverterType, Converter> temp = new DependentConverterMap(getConverterMap());
     List<Exception> exceptions = new ArrayList<Exception>();
     
-    for(Method method : object.getClass().getMethods()) {
-      if(! method.isAnnotationPresent(Converts.class))
-        continue;
-      
+    for(Converter converter : converters) {
       try {
-        Converter converter = new Converter(object, method);
         temp.put(converter.getType(), converter);
       } catch (MultipleCausesException e) {
         exceptions.addAll(e.getCauses());

@@ -8,6 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -19,10 +20,10 @@ import com.googlecode.transmuter.util.exception.MultipleCausesException;
  * Marks a method as a prospective converter method. 
  * <p>
  * Not all methods can be converter methods. This annotation should be used only on methods which can be successfully
- * {@linkplain Provider provided}. 
+ * {@linkplain EagerProvider provided}. 
  * 
  * @author Humberto S. N. dos Anjos
- * @see Provider
+ * @see EagerProvider
  */
 @Documented
 @Inherited
@@ -30,17 +31,19 @@ import com.googlecode.transmuter.util.exception.MultipleCausesException;
 @Target(ElementType.METHOD)
 public @interface Converts {
   /**
-   * This provider scans a given object for all public methods marked with the {@link Converts} annotation, 
+   * Scans a given object for all public methods marked with the {@link Converts} annotation, 
    * {@linkplain Converter binding} them with the given object and making {@linkplain Iterator iterators} available  
    * as per {@link Iterable} protocol.
    * <p>
    * Any errors encountered during the extraction process will be bundled together and thrown as a single 
    * {@link ConverterProviderException} exception. In that case, no converters from the given object will be available, 
    * even if they're valid.
+   * <p>
+   * This provider scans the entire object upon construction, storing all converters for later iteration.
    * 
    * @author Humberto S. N. dos Anjos
    */
-  public static class Provider implements Iterable<Converter> {
+  public static class EagerProvider implements Iterable<Converter> {
     private List<Converter> converters;
     
     /**
@@ -53,15 +56,15 @@ public @interface Converts {
      * @param object an object with presumed converter methods.
      * @throws ConverterProviderException thrown if any errors are found during the scan and extraction process.
      */
-    public Provider(Object object) throws ConverterProviderException {
-      this.converters = new ArrayList<Converter>();
-      
-      extractConvertersFrom(object);
+    public EagerProvider(Object object) throws ConverterProviderException {
+      this.converters = Collections.unmodifiableList(extractConvertersFrom(object));
     }
 
-    private void extractConvertersFrom(Object object) throws ConverterProviderException {
+    private List<Converter> extractConvertersFrom(Object object) throws ConverterProviderException {
+      List<Converter> converters = new ArrayList<Converter>();
+      
       if(object == null)
-        return; // nothing to do here
+        return converters; // nothing to do here
       
       List<Exception> exceptions = new ArrayList<Exception>();
       
@@ -81,6 +84,9 @@ public @interface Converts {
       
       if(! exceptions.isEmpty())
         throw new ConverterProviderException(exceptions);
+      
+      // if we're here, then it's safe
+      return converters;
     }
     
     @Override
