@@ -1,6 +1,8 @@
 package com.googlecode.transmuter;
 
+import static com.googlecode.transmuter.TestUtils.assertInvalidReturnType;
 import static com.googlecode.transmuter.TestUtils.assertMatchingCollections;
+import static com.googlecode.transmuter.TestUtils.assertWrongParameterCount;
 import static com.googlecode.transmuter.TestUtils.extractMethod;
 import static com.googlecode.transmuter.util.CollectionUtils.toList;
 import static org.junit.Assert.assertEquals;
@@ -11,6 +13,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
@@ -19,6 +22,7 @@ import com.googlecode.transmuter.converter.Converter;
 import com.googlecode.transmuter.converter.exception.InvalidParameterTypeException;
 import com.googlecode.transmuter.converter.exception.InvalidReturnTypeException;
 import com.googlecode.transmuter.exception.ConverterProviderException;
+import com.googlecode.transmuter.fixture.FlawedConverter;
 import com.googlecode.transmuter.fixture.GenericConverter;
 import com.googlecode.transmuter.fixture.GenericMethodConverter;
 import com.googlecode.transmuter.fixture.MultipleConverter;
@@ -29,7 +33,7 @@ public class ConvertsProviderTest {
   @Test
   public void simpleProvider() throws SecurityException, NoSuchMethodException {
     MultipleConverter object = new MultipleConverter();
-    Converts.Provider provider = new Converts.Provider(object);
+    Converts.EagerProvider provider = new Converts.EagerProvider(object);
     
     Converter converter = new Converter(object, extractMethod(MultipleConverter.class, "converter", double.class));
     Converter convert = new Converter(object, extractMethod(MultipleConverter.class, "convert", String.class));
@@ -39,21 +43,21 @@ public class ConvertsProviderTest {
   
   @Test
   public void nullProvider() {
-    Converts.Provider provider = new Converts.Provider(null);
+    Converts.EagerProvider provider = new Converts.EagerProvider(null);
     
     assertMatchingCollections(Collections.emptyList(), toList(provider));
   }
   
   @Test
   public void noConvertsProvider() {
-    Converts.Provider provider = new Converts.Provider(new Object());
+    Converts.EagerProvider provider = new Converts.EagerProvider(new Object());
     
     assertMatchingCollections(Collections.emptyList(), toList(provider));
   }
   
   @Test
   public void privateProvider() {
-    Converts.Provider provider = new Converts.Provider(new Object() {
+    Converts.EagerProvider provider = new Converts.EagerProvider(new Object() {
       @SuppressWarnings("unused") // just to shut up Eclipse's warnings
       @Converts
       private String stringify(Object o) {
@@ -66,7 +70,7 @@ public class ConvertsProviderTest {
   
   @Test
   public void packagePrivateProvider() {
-    Converts.Provider provider = new Converts.Provider(new Object() {
+    Converts.EagerProvider provider = new Converts.EagerProvider(new Object() {
       @SuppressWarnings("unused") // just to shut up Eclipse's warnings
       @Converts
       String stringify(Object o) {
@@ -79,7 +83,7 @@ public class ConvertsProviderTest {
   
   @Test
   public void protectedProvider() {
-    Converts.Provider provider = new Converts.Provider(new Object() {
+    Converts.EagerProvider provider = new Converts.EagerProvider(new Object() {
       @SuppressWarnings("unused") // just to shut up Eclipse's warnings
       @Converts
       protected String stringify(Object o) {
@@ -93,7 +97,7 @@ public class ConvertsProviderTest {
   @Test
   public void varargProvider() throws SecurityException, NoSuchMethodException {
     VarargConverter object = new VarargConverter();
-    Converts.Provider provider = new Converts.Provider(object);
+    Converts.EagerProvider provider = new Converts.EagerProvider(object);
     
     Converter stringifyArray = new Converter(object, VarargConverter.class.getMethod("stringifyArray", Object[].class));
     
@@ -103,7 +107,7 @@ public class ConvertsProviderTest {
   @Test
   public void genericMethodProvider() {
     try {
-      new Converts.Provider(new GenericMethodConverter());
+      new Converts.EagerProvider(new GenericMethodConverter());
       fail();
     } catch(ConverterProviderException e) {
       assertEquals(2, e.getCauses().size());
@@ -119,7 +123,7 @@ public class ConvertsProviderTest {
   @Test
   public void partialGenericClassProvider() throws SecurityException, NoSuchMethodException {
     try {
-      new Converts.Provider(new PartialGenericConverter<List<String>>()); // no way of getting this info with Java
+      new Converts.EagerProvider(new PartialGenericConverter<List<String>>()); // no way of getting this info with Java
       fail();
     } catch(ConverterProviderException e) {
       assertEquals(1, e.getCauses().size());
@@ -132,7 +136,7 @@ public class ConvertsProviderTest {
     }
     
     try {
-      new Converts.Provider(new PartialGenericConverter<Object>()); // raw
+      new Converts.EagerProvider(new PartialGenericConverter<Object>()); // raw
       fail();
     } catch(ConverterProviderException e) {
       assertEquals(1, e.getCauses().size());
@@ -147,9 +151,9 @@ public class ConvertsProviderTest {
   }
   
   @Test
-  public void registerMethodFromGenericClass() throws SecurityException, NoSuchMethodException {
+  public void methodFromGenericClass() throws SecurityException, NoSuchMethodException {
     try {
-      new Converts.Provider(new GenericConverter<List<String>, String>()); // no way of getting this info with Java
+      new Converts.EagerProvider(new GenericConverter<List<String>, String>()); // no way of getting this info with Java
       fail();
     } catch(ConverterProviderException e) {
       assertEquals(2, e.getCauses().size());
@@ -168,7 +172,7 @@ public class ConvertsProviderTest {
     }
     
     try {
-      new Converts.Provider(new GenericConverter<Object, Object>()); // raw
+      new Converts.EagerProvider(new GenericConverter<Object, Object>()); // raw
       fail();
     } catch(ConverterProviderException e) {
       assertEquals(2, e.getCauses().size());
@@ -185,5 +189,63 @@ public class ConvertsProviderTest {
       assertTrue(ex1.getType() instanceof TypeVariable<?>);
       assertEquals("To", ((TypeVariable<?>) ex1.getType()).getName());
     }
+  }
+  
+  @Test
+  public void flawedProvider() throws SecurityException, NoSuchMethodException {
+    Object flawed = new FlawedConverter();
+    
+    try {
+      new Converts.EagerProvider(flawed);
+      fail();
+    } catch(ConverterProviderException e) {
+      final List<? extends Exception> causes = e.getCauses();
+      final Class<?> flawedClass = flawed.getClass();
+      
+      assertWrongParameterCount(causes,
+          extractMethod(flawedClass, "tooManyParameters", Object.class, Object.class),
+          1, 1);
+      assertWrongParameterCount(causes, 
+          extractMethod(flawedClass, "tooFewParameters"),
+          1, 1);
+      assertWrongParameterCount(causes, 
+          extractMethod(flawedClass, "voidAndTooManyParameters", int.class, int.class, int.class, int.class),
+          1, 1);
+      assertInvalidReturnType(causes, 
+          extractMethod(flawedClass, "voidAsReturnType", Object.class), 
+          void.class, 1);
+      assertInvalidReturnType(causes, 
+          extractMethod(flawedClass, "voidAndTooManyParameters", int.class, int.class, int.class, int.class), 
+          void.class, 1);
+      
+      assertEquals(5, causes.size());
+    }
+  }
+  
+  @Test
+  public void immutableProvider() throws SecurityException, NoSuchMethodException {
+    VarargConverter object = new VarargConverter();
+    Converts.EagerProvider provider = new Converts.EagerProvider(object);
+    
+    Converter stringifyArray = new Converter(object, VarargConverter.class.getMethod("stringifyArray", Object[].class));
+    
+    Iterator<Converter> iterator = provider.iterator();
+    int count = 0;
+    while(iterator.hasNext()) {
+      Converter c = iterator.next();
+      count++;
+      
+      assertEquals(stringifyArray, c);
+      
+      try {
+        iterator.remove();  // potential modification of the underlying collection
+        fail();
+      } catch (UnsupportedOperationException ignored) {
+        // expected
+      }
+    }
+    
+    assertEquals(1, count);
+    assertMatchingCollections(Arrays.asList(stringifyArray), toList(provider));
   }
 }

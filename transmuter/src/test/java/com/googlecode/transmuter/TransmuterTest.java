@@ -2,7 +2,6 @@ package com.googlecode.transmuter;
 
 import static com.googlecode.transmuter.TestUtils.extractMethod;
 import static com.googlecode.transmuter.type.TypeToken.ValueType.DOUBLE;
-import static com.googlecode.transmuter.util.ObjectUtils.areEqual;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -11,9 +10,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.Serializable;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -25,19 +21,10 @@ import org.junit.Test;
 
 import com.googlecode.transmuter.converter.Converter;
 import com.googlecode.transmuter.converter.ConverterType;
-import com.googlecode.transmuter.converter.exception.InvalidParameterTypeException;
-import com.googlecode.transmuter.converter.exception.InvalidReturnTypeException;
-import com.googlecode.transmuter.converter.exception.WrongParameterCountException;
-import com.googlecode.transmuter.exception.ConverterCollisionException;
-import com.googlecode.transmuter.exception.ConverterRegistrationException;
 import com.googlecode.transmuter.exception.NoCompatibleConvertersFoundException;
 import com.googlecode.transmuter.exception.TooManyConvertersFoundException;
-import com.googlecode.transmuter.fixture.FlawedConverter;
-import com.googlecode.transmuter.fixture.GenericConverter;
-import com.googlecode.transmuter.fixture.GenericMethodConverter;
 import com.googlecode.transmuter.fixture.MultipleConverter;
 import com.googlecode.transmuter.fixture.MultipleValidConverter;
-import com.googlecode.transmuter.fixture.PartialGenericConverter;
 import com.googlecode.transmuter.fixture.StringArrayToListStringConverter;
 import com.googlecode.transmuter.fixture.StringConverter;
 import com.googlecode.transmuter.fixture.VarargConverter;
@@ -62,7 +49,7 @@ public class TransmuterTest {
     assertFalse(t.isRegistered(double.class, String.class));
     assertFalse(t.isRegistered(TypeToken.STRING, LIST_OF_STRING));
     
-    t.register(new MultipleConverter());
+    t.register(new Converts.EagerProvider(new MultipleConverter()));
     
     assertEquals(2, t.getConverterMap().size());
     assertTrue(t.isRegistered(double.class, String.class));
@@ -76,112 +63,25 @@ public class TransmuterTest {
   }
   
   @Test
-  public void registerFlawedConverter() throws SecurityException, NoSuchMethodException {
-    Object flawed = new FlawedConverter();
-    
+  public void registerFlawedConverter() throws SecurityException {
     assertTrue(t.getConverterMap().isEmpty());
     assertFalse(t.isRegistered(double.class, String.class));
     assertFalse(t.isRegistered(TypeToken.STRING, LIST_OF_STRING));
     
     final Object working = new MultipleConverter();
-    t.register(working);
+    t.register(new Converts.EagerProvider(working));
     
     assertEquals(2, t.getConverterMap().size());
     assertTrue(t.isRegistered(double.class, String.class));
     assertTrue(t.isRegistered(TypeToken.STRING, LIST_OF_STRING));
     
-    try {
-      t.register(flawed);
-      fail();
-    } catch(ConverterRegistrationException e) {
-      final List<? extends Exception> causes = e.getCauses();
-      final Class<?> flawedClass = flawed.getClass();
-      
-      assertEquals(7, causes.size());
-      
-      assertWrongParameterCount(causes,
-          extractMethod(flawedClass, "tooManyParameters", Object.class, Object.class),
-          1, 1);
-      assertWrongParameterCount(causes, 
-          extractMethod(flawedClass, "tooFewParameters"),
-          1, 1);
-      assertWrongParameterCount(causes, 
-          extractMethod(flawedClass, "voidAndTooManyParameters", int.class, int.class, int.class, int.class),
-          1, 1);
-      assertInvalidReturnType(causes, 
-          extractMethod(flawedClass, "voidAsReturnType", Object.class), 
-          void.class, 1);
-      assertInvalidReturnType(causes, 
-          extractMethod(flawedClass, "voidAndTooManyParameters", int.class, int.class, int.class, int.class), 
-          void.class, 1);
-      assertConverterCollision(causes, 
-          new ConverterType(int.class, boolean.class), 
-          Arrays.asList(
-              new Converter(flawed, extractMethod(flawedClass, "intraClassCollision1", int.class)),
-              new Converter(flawed, extractMethod(flawedClass, "intraClassCollision2", int.class))),
-          1);
-      assertConverterCollision(causes, 
-          new ConverterType(double.class, String.class), 
-          Arrays.asList(
-              new Converter(flawed, extractMethod(flawedClass, "extraClassCollision", double.class)),
-              new Converter(working, extractMethod(working.getClass(), "converter", double.class))),
-          1);
-    }
+    // TODO implement a lazy provider to generate an error during iteration
     
     assertEquals(2, t.getConverterMap().size());
     assertTrue(t.isRegistered(double.class, String.class));
     assertTrue(t.isRegistered(TypeToken.STRING, LIST_OF_STRING));
   }
   
-  private void assertWrongParameterCount(final List<? extends Exception> causes, 
-      Method method, int expected, int expectedCount) {
-    int count = 0;
-    for(Exception cause : causes) {
-      if(cause.getClass() != WrongParameterCountException.class)
-        continue;
-      
-      WrongParameterCountException cause2 = (WrongParameterCountException) cause;
-      if(areEqual(cause2.getMethod(), method)
-      && cause2.getActual() == method.getParameterTypes().length
-      && cause2.getExpected() == expected)
-        count++;
-    }
-    
-    assertEquals(expectedCount, count);
-  }
-  
-  private void assertInvalidReturnType(final List<? extends Exception> causes, 
-      Method method, Type returnType, int expectedCount) {
-    int count = 0;
-    for(Exception cause : causes) {
-      if(cause.getClass() != InvalidReturnTypeException.class)
-        continue;
-      
-      InvalidReturnTypeException cause2 = (InvalidReturnTypeException) cause;
-      if(areEqual(cause2.getMethod(), method)
-      && areEqual(cause2.getType(), returnType))
-        count++;
-    }
-    
-    assertEquals(expectedCount, count);
-  }
-  
-  private void assertConverterCollision(final List<? extends Exception> causes, 
-      ConverterType converterType, List<Converter> converters, int expectedCount) {
-    int count = 0;
-    for(Exception cause : causes) {
-      if(cause.getClass() != ConverterCollisionException.class)
-        continue;
-      
-      ConverterCollisionException cause2 = (ConverterCollisionException) cause;
-      if(areEqual(cause2.getConverterType(), converterType)
-      && (cause2.getConverters().containsAll(converters) && converters.containsAll(cause2.getConverters())))
-        count++;
-    }
-    
-    assertEquals(expectedCount, count);
-  }
-
   @Test
   public void registerNullAndEmptyObject() {
     assertTrue(t.getConverterMap().isEmpty());
@@ -190,7 +90,7 @@ public class TransmuterTest {
     
     assertTrue(t.getConverterMap().isEmpty());
     
-    t.register(new Object()); // nothing happens
+    t.register(new Converts.EagerProvider(new Object())); // nothing happens
     
     assertTrue(t.getConverterMap().isEmpty());
   }
@@ -201,13 +101,13 @@ public class TransmuterTest {
     assertFalse(t.isRegistered(TypeToken.OBJECT, TypeToken.STRING));
     assertTrue(map.isEmpty());
     
-    t.register(new StringConverter());
+    t.register(new Converts.EagerProvider(new StringConverter()));
     
     assertTrue(t.isRegistered(Object.class, String.class));
     assertTrue(t.isRegistered(TypeToken.OBJECT, TypeToken.STRING));
     assertEquals(1, map.size());
     
-    t.register(new StringConverter());
+    t.register(new Converts.EagerProvider(new StringConverter()));
     
     assertTrue(t.isRegistered(Object.class, String.class));
     assertTrue(t.isRegistered(TypeToken.OBJECT, TypeToken.STRING));
@@ -219,13 +119,13 @@ public class TransmuterTest {
   public void registerPrivate() {
     assertFalse(t.isRegistered(Object.class, String.class));
     
-    t.register(new Object() {
+    t.register(new Converts.EagerProvider(new Object() {
       @SuppressWarnings("unused") // just to shut up Eclipse's warnings
       @Converts
       private String stringify(Object o) {
         return String.valueOf(o);
       }
-    });
+    }));
     
     assertFalse(t.isRegistered(Object.class, String.class));
   }
@@ -234,13 +134,13 @@ public class TransmuterTest {
   public void registerPackagePrivate() {
     assertFalse(t.isRegistered(Object.class, String.class));
     
-    t.register(new Object() {
+    t.register(new Converts.EagerProvider(new Object() {
       @SuppressWarnings("unused") // just to shut up Eclipse's warnings
       @Converts
       String stringify(Object o) {
         return String.valueOf(o);
       }
-    });
+    }));
     
     assertFalse(t.isRegistered(Object.class, String.class));
   }
@@ -249,13 +149,13 @@ public class TransmuterTest {
   public void registerProtected() {
     assertFalse(t.isRegistered(Object.class, String.class));
     
-    t.register(new Object() {
+    t.register(new Converts.EagerProvider(new Object() {
       @SuppressWarnings("unused") // just to shut up Eclipse's warnings
       @Converts
       protected String stringify(Object o) {
         return String.valueOf(o);
       }
-    });
+    }));
     
     assertFalse(t.isRegistered(Object.class, String.class));
   }
@@ -264,13 +164,13 @@ public class TransmuterTest {
   public void registerInnerClass() {
     assertFalse(t.isRegistered(Object.class, String.class));
     
-    t.register(new Object() {
+    t.register(new Converts.EagerProvider(new Object() {
       @SuppressWarnings("unused") // just to shut up Eclipse's warnings
       @Converts
       public String stringify(Object o) {
         return String.valueOf(o);
       }
-    });
+    }));
     
     assertTrue(t.isRegistered(Object.class, String.class));
     
@@ -284,117 +184,14 @@ public class TransmuterTest {
   public void registerVararg() {
     assertFalse(t.isRegistered(Object[].class, String.class));
     
-    t.register(new VarargConverter());
+    t.register(new Converts.EagerProvider(new VarargConverter()));
     
     assertTrue(t.isRegistered(Object[].class, String.class));
   }
   
   @Test
-  public void registerGenericMethod() {
-    assertTrue(t.getConverterMap().isEmpty());
-    
-    try {
-      t.register(new GenericMethodConverter());
-      fail();
-    } catch(ConverterRegistrationException e) {
-      assertEquals(2, e.getCauses().size());
-      
-      assertEquals(InvalidParameterTypeException.class, e.getCauses().get(0).getClass());
-      assertTrue(((InvalidParameterTypeException) e.getCauses().get(0)).getType() instanceof TypeVariable<?>);
-      
-      assertEquals(InvalidReturnTypeException.class, e.getCauses().get(1).getClass());
-      assertTrue(((InvalidReturnTypeException) e.getCauses().get(1)).getType() instanceof TypeVariable<?>);
-    }
-    
-    assertTrue(t.getConverterMap().isEmpty());
-  }
-  
-  @Test
-  public void registerMethodFromPartialGenericClass() throws SecurityException, NoSuchMethodException {
-    assertFalse(t.isRegistered(LIST_OF_STRING, TypeToken.STRING));
-    
-    try {
-      t.register(new PartialGenericConverter<List<String>>()); // no way of getting this information with Java
-      fail();
-    } catch(ConverterRegistrationException e) {
-      assertEquals(1, e.getCauses().size());
-      assertEquals(InvalidParameterTypeException.class, e.getCauses().get(0).getClass());
-      
-      InvalidParameterTypeException ex = (InvalidParameterTypeException) e.getCauses().get(0);
-      assertEquals(extractMethod(PartialGenericConverter.class, "convert", Object.class), ex.getMethod());
-      assertTrue(ex.getType() instanceof TypeVariable<?>);
-      assertEquals("From", ((TypeVariable<?>) ex.getType()).getName());
-    }
-    
-    assertFalse(t.isRegistered(LIST_OF_STRING, TypeToken.STRING));
-    
-    try {
-      t.register(new PartialGenericConverter<Object>()); // raw
-      fail();
-    } catch(ConverterRegistrationException e) {
-      assertEquals(1, e.getCauses().size());
-      assertEquals(InvalidParameterTypeException.class, e.getCauses().get(0).getClass());
-      final Method convertMethod = extractMethod(PartialGenericConverter.class, "convert", Object.class);
-      
-      InvalidParameterTypeException ex = (InvalidParameterTypeException) e.getCauses().get(0);
-      assertEquals(convertMethod, ex.getMethod());
-      assertTrue(ex.getType() instanceof TypeVariable<?>);
-      assertEquals("From", ((TypeVariable<?>) ex.getType()).getName());
-    }
-    
-    assertFalse(t.isRegistered(LIST_OF_STRING, TypeToken.STRING));
-  }
-  
-  @Test
-  public void registerMethodFromGenericClass() throws SecurityException, NoSuchMethodException {
-    assertFalse(t.isRegistered(LIST_OF_STRING, TypeToken.STRING));
-    
-    try {
-      t.register(new GenericConverter<List<String>, String>()); // no way of getting this information with Java
-      fail();
-    } catch(ConverterRegistrationException e) {
-      assertEquals(2, e.getCauses().size());
-      assertEquals(InvalidParameterTypeException.class, e.getCauses().get(0).getClass());
-      assertEquals(InvalidReturnTypeException.class, e.getCauses().get(1).getClass());
-      
-      InvalidParameterTypeException ex = (InvalidParameterTypeException) e.getCauses().get(0);
-      assertEquals(extractMethod(GenericConverter.class, "convert", Object.class), ex.getMethod());
-      assertTrue(ex.getType() instanceof TypeVariable<?>);
-      assertEquals("From", ((TypeVariable<?>) ex.getType()).getName());
-      
-      InvalidReturnTypeException ex1 = (InvalidReturnTypeException) e.getCauses().get(1);
-      assertEquals(extractMethod(GenericConverter.class, "convert", Object.class), ex1.getMethod());
-      assertTrue(ex1.getType() instanceof TypeVariable<?>);
-      assertEquals("To", ((TypeVariable<?>) ex1.getType()).getName());
-    }
-    
-    assertFalse(t.isRegistered(LIST_OF_STRING, TypeToken.STRING));
-    
-    try {
-      t.register(new GenericConverter<Object, Object>()); // raw
-      fail();
-    } catch(ConverterRegistrationException e) {
-      assertEquals(2, e.getCauses().size());
-      assertEquals(InvalidParameterTypeException.class, e.getCauses().get(0).getClass());
-      assertEquals(InvalidReturnTypeException.class, e.getCauses().get(1).getClass());
-      
-      InvalidParameterTypeException ex = (InvalidParameterTypeException) e.getCauses().get(0);
-      assertEquals(extractMethod(GenericConverter.class, "convert", Object.class), ex.getMethod());
-      assertTrue(ex.getType() instanceof TypeVariable<?>);
-      assertEquals("From", ((TypeVariable<?>) ex.getType()).getName());
-      
-      InvalidReturnTypeException ex1 = (InvalidReturnTypeException) e.getCauses().get(1);
-      assertEquals(extractMethod(GenericConverter.class, "convert", Object.class), ex1.getMethod());
-      assertTrue(ex1.getType() instanceof TypeVariable<?>);
-      assertEquals("To", ((TypeVariable<?>) ex1.getType()).getName());
-    }
-    
-    assertFalse(t.isRegistered(LIST_OF_STRING, TypeToken.STRING));
-  }
-  
-  @Test
   public void unregisterNullAndNonexistent() {
-    t.register(new VarargConverter());
+    t.register(new Converts.EagerProvider(new VarargConverter()));
     
     assertTrue(t.isRegistered(Object[].class, String.class));
     assertEquals(1, t.getConverterMap().size());
@@ -424,7 +221,7 @@ public class TransmuterTest {
   public void isRegistered() {
     assertTrue(t.getConverterMap().isEmpty());
     
-    t.register(new MultipleConverter());
+    t.register(new Converts.EagerProvider(new MultipleConverter()));
     
     assertTrue(t.isRegistered(new ConverterType(double.class, String.class)));
     assertTrue(t.isRegistered(TypeToken.STRING, LIST_OF_STRING));
@@ -433,7 +230,7 @@ public class TransmuterTest {
   
   @Test
   public void convert() {
-    t.register(new StringConverter());
+    t.register(new Converts.EagerProvider(new StringConverter()));
     
     assertEquals("sbrubbles", t.convert("sbrubbles", Object.class, String.class));
     assertEquals("sbrubbles", t.convert("sbrubbles", String.class, String.class));
@@ -442,7 +239,7 @@ public class TransmuterTest {
     assertEquals("1", t.convert(1, Integer.class, String.class));
     assertEquals("1", t.convert(1, String.class));
     
-    t.register(new MultipleConverter());
+    t.register(new Converts.EagerProvider(new MultipleConverter()));
     
     assertArrayEquals(new Object[] { "sbrubbles" }, t.convert("sbrubbles", TypeToken.STRING, LIST_OF_STRING).toArray());
     assertArrayEquals(new Object[] { "sbrubbles" }, t.convert("sbrubbles", LIST_OF_STRING).toArray());
@@ -454,7 +251,7 @@ public class TransmuterTest {
   
   @Test
   public void convertWithNullArguments() {
-    t.register(new StringConverter());
+    t.register(new Converts.EagerProvider(new StringConverter()));
     
     assertEquals("null", t.convert(null, Object.class, String.class));
     
@@ -502,7 +299,7 @@ public class TransmuterTest {
         return map.size();
       }
     };
-    t.register(parameterized);
+    t.register(new Converts.EagerProvider(parameterized));
     
     final TypeToken<Map<String, String>> MAP_STRING_TO_STRING = new TypeToken<Map<String, String>>() { /**/ };
     final TypeToken<Map<ConverterType, Converter>> MAP_CONVERTERTYPE_TO_CONVERTER = 
@@ -533,7 +330,7 @@ public class TransmuterTest {
         return map.size();
       }
     };
-    t.register(raw);
+    t.register(new Converts.EagerProvider(raw));
     
     assertTrue(0 == t.convert(new HashMap<String, String>(), INT));
     
@@ -563,7 +360,7 @@ public class TransmuterTest {
   @Test
   public void multipleValidConverters() throws SecurityException, NoSuchMethodException {
     final MultipleValidConverter converter = new MultipleValidConverter();
-    t.register(converter);
+    t.register(new Converts.EagerProvider(converter));
     try {
       t.convert(new ArrayList<String>(), ARRAYLIST_OF_STRING, TypeToken.STRING);
       fail();
@@ -585,7 +382,7 @@ public class TransmuterTest {
   @Test
   public void getCompatibleConvertersFor() throws SecurityException, NoSuchMethodException {
     final MultipleValidConverter converter = new MultipleValidConverter();
-    t.register(converter);
+    t.register(new Converts.EagerProvider(converter));
     
     TestUtils.assertMatchingCollections(
         t.getCompatibleConvertersFor(new ConverterType(ARRAYLIST_OF_STRING, TypeToken.STRING)),
@@ -609,7 +406,7 @@ public class TransmuterTest {
   @Test
   public void getConverterFor() throws SecurityException, NoSuchMethodException {
     final MultipleValidConverter converter = new MultipleValidConverter();
-    t.register(converter);
+    t.register(new Converts.EagerProvider(converter));
     
     assertEquals(
         t.getConverterFor(new ConverterType(Serializable.class, String.class)),
@@ -661,7 +458,7 @@ public class TransmuterTest {
     
     assertFalse(t.isRegistered(ARRAY_OF_STRING, LIST_OF_STRING));
     
-    t.register(new StringArrayToListStringConverter());
+    t.register(new Converts.EagerProvider(new StringArrayToListStringConverter()));
     
     assertTrue(t.isRegistered(ARRAY_OF_STRING, LIST_OF_STRING));
   }

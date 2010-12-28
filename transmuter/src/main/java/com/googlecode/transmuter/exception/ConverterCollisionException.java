@@ -12,7 +12,7 @@ import com.googlecode.transmuter.converter.ConverterType;
 
 
 /**
- * Thrown when an attempt to {@link Transmuter#register(Object) register} a converter fails due to the presence of 
+ * Thrown when an attempt to {@link Transmuter#register(Iterable) register} a converter fails due to the presence of 
  * another converter with the same registered type.
  * 
  * @author Humberto S. N. dos Anjos

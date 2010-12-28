@@ -6,7 +6,7 @@ import com.googlecode.transmuter.Transmuter;
 import com.googlecode.transmuter.util.exception.MultipleCausesException;
 
 /**
- * Thrown by the {@link Transmuter#register(Object) register} operation on failure, bundling the causes. 
+ * Thrown by the {@link Transmuter#register(Iterable) register} operation on failure, bundling the causes. 
  * 
  * @author Humberto S. N. dos Anjos
  */
