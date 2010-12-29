@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import com.googlecode.transmuter.converter.Converter;
 import com.googlecode.transmuter.exception.ConverterProviderException;
@@ -93,5 +94,75 @@ public @interface Converts {
     public Iterator<Converter> iterator() {
       return converters.iterator();
     }
+  }
+
+  public static class LazyProvider implements Iterable<Converter> {
+    private Object source;
+    private static final List<Converter> EMPTY_LIST = Collections.emptyList();
+    
+    public LazyProvider(Object source) {
+      this.source = source;
+    }
+
+    @Override
+    public Iterator<Converter> iterator() {
+      return (source != null)
+           ? new LazyIterator()
+           : EMPTY_LIST.iterator();
+    }
+    
+    private class LazyIterator implements Iterator<Converter> {
+      private int cursor;
+      private Method[] methods;
+      
+      @SuppressWarnings("synthetic-access")
+      public LazyIterator() {
+        cursor = 0;
+        methods = source.getClass().getMethods();
+      }
+
+      @Override
+      public boolean hasNext() {
+        int nextConverterIndex = nextConverter();
+        return 0 <= nextConverterIndex && nextConverterIndex < methods.length;
+      }
+
+      @SuppressWarnings("synthetic-access")
+      @Override
+      public Converter next() {
+        if(! hasNext())
+          throw new NoSuchElementException();
+        
+        cursor = nextConverter();
+        
+        try {
+          return new Converter(source, methods[cursor]);
+        } catch (MultipleCausesException e) {
+          throw new ConverterProviderException(e.getCauses());
+        } catch (Exception e) {
+          throw new ConverterProviderException(e);
+        } finally {
+          cursor++; // no matter what happens, cursor must be updated
+        }
+      }
+
+      private int nextConverter() {
+        for(int i = cursor; i < methods.length; i++) {
+          Method method = methods[i];
+          
+          if(! method.isAnnotationPresent(Converts.class))
+            continue;
+          
+          return i;
+        }
+        
+        return -1;
+      }
+      
+      @Override
+      public void remove() {
+        throw new UnsupportedOperationException();
+      }
+    }  
   }
 }
