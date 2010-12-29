@@ -29,7 +29,7 @@ import com.googlecode.transmuter.fixture.MultipleConverter;
 import com.googlecode.transmuter.fixture.PartialGenericConverter;
 import com.googlecode.transmuter.fixture.VarargConverter;
 
-public class ConvertsProviderTest {
+public class EagerProviderTest {
   @Test
   public void simpleProvider() throws SecurityException, NoSuchMethodException {
     MultipleConverter object = new MultipleConverter();

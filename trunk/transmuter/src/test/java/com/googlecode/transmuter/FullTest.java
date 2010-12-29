@@ -23,7 +23,8 @@ import com.googlecode.transmuter.util.StringUtilsTest;
   ObjectUtilsTest.class,
   ReflectionUtilsTest.class,
   CollectionUtilsTest.class,
-  ConvertsProviderTest.class,
+  EagerProviderTest.class,
+  LazyProviderTest.class,
   ConverterTypeTest.class,
   ConverterMapTest.class,
   TransmuterTest.class })
