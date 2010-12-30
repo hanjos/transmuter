@@ -6,6 +6,8 @@ import static com.googlecode.transmuter.TestUtils.assertWrongParameterCount;
 import static com.googlecode.transmuter.TestUtils.extractMethod;
 import static com.googlecode.transmuter.util.CollectionUtils.toList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -16,6 +18,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.junit.Test;
 
@@ -319,5 +322,55 @@ public class LazyProviderTest {
     
     assertEquals(1, count);
     assertMatchingCollections(Arrays.asList(stringifyArray), toList(provider));
+  }
+  
+  @Test
+  public void iterator() throws SecurityException, NoSuchMethodException {
+    MultipleConverter object = new MultipleConverter();
+    Converts.LazyProvider provider = new Converts.LazyProvider(object);
+    
+    List<Converter> converters = Arrays.asList(
+        new Converter(object, extractMethod(MultipleConverter.class, "converter", double.class)),
+        new Converter(object, extractMethod(MultipleConverter.class, "convert", String.class)));
+    
+    Iterator<Converter> iterator = provider.iterator();
+    
+    // first element
+    assertTrue(iterator.hasNext());
+    Converter first = iterator.next();
+    assertTrue(converters.contains(first));
+    
+    // second element
+    assertTrue(iterator.hasNext());
+    Converter second = iterator.next();
+    assertTrue(converters.contains(second));
+    assertNotSame(first, second);
+    
+    // no more elements
+    assertFalse(iterator.hasNext());
+    
+    try {
+      iterator.next();
+      fail();
+    } catch (NoSuchElementException ignored) {
+      // expected
+    }
+  }
+  
+  @Test
+  public void emptyIterator() {
+    Converts.LazyProvider provider = new Converts.LazyProvider(null);
+    
+    Iterator<Converter> iterator = provider.iterator();
+    
+    // no elements
+    assertFalse(iterator.hasNext());
+    
+    try {
+      iterator.next();
+      fail();
+    } catch (NoSuchElementException ignored) {
+      // expected
+    }
   }
 }
