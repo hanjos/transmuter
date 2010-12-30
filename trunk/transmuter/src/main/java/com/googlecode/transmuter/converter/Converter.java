@@ -8,8 +8,8 @@ import com.googlecode.transmuter.util.exception.MultipleCausesException;
 import com.googlecode.transmuter.util.exception.ObjectInstantiationException;
 
 /**
- * A {@link Binding binding} which has a {@link ConverterType converter type}, and so can safely be used with a 
- * {@link Transmuter transmuter}.
+ * A {@linkplain Binding binding} which has a {@linkplain ConverterType converter type}, and so can safely be used 
+ * with a {@linkplain Transmuter transmuter}.
  * 
  * @author Humberto S. N. dos Anjos
  */

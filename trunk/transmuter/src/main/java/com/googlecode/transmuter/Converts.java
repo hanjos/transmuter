@@ -113,27 +113,29 @@ public @interface Converts {
     
     private class LazyIterator implements Iterator<Converter> {
       private int cursor;
+      private int nextCursor;
       private Method[] methods;
       
       @SuppressWarnings("synthetic-access")
       public LazyIterator() {
-        cursor = 0;
         methods = source.getClass().getMethods();
+        cursor = -1;
+        nextCursor = nextConverter();
       }
 
       @Override
       public boolean hasNext() {
-        int nextConverterIndex = nextConverter();
-        return 0 <= nextConverterIndex && nextConverterIndex < methods.length;
+        return 0 <= nextCursor && nextCursor < methods.length;
       }
 
       @SuppressWarnings("synthetic-access")
       @Override
       public Converter next() {
-        if(! hasNext())
+        if(! hasNext()) // end of iteration
           throw new NoSuchElementException();
         
-        cursor = nextConverter();
+        cursor = nextCursor;
+        nextCursor = nextConverter();
         
         try {
           return new Converter(source, methods[cursor]);
@@ -141,13 +143,12 @@ public @interface Converts {
           throw new ConverterProviderException(e.getCauses());
         } catch (Exception e) {
           throw new ConverterProviderException(e);
-        } finally {
-          cursor++; // no matter what happens, cursor must be updated
         }
       }
 
+      /* Returns the index of the next converter, or -1 if there are no more left. */
       private int nextConverter() {
-        for(int i = cursor; i < methods.length; i++) {
+        for(int i = cursor + 1; i < methods.length; i++) {
           Method method = methods[i];
           
           if(! method.isAnnotationPresent(Converts.class))
