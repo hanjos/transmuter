@@ -9,13 +9,11 @@ import com.googlecode.transmuter.util.exception.ObjectInstantiationException;
 
 /**
  * A {@linkplain Binding binding} which has a {@linkplain ConverterType converter type}, and so can safely be used 
- * with a {@linkplain Transmuter transmuter}.
+ * by a {@linkplain Transmuter transmuter}.
  * 
  * @author Humberto S. N. dos Anjos
  */
-// TODO improve prose
 public class Converter extends Binding {
-  /* This converter's type. */
   private ConverterType type;
   
   /**
