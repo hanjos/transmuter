@@ -18,7 +18,7 @@ public class Notification implements Iterable<Exception> {
   
   private List<Exception> errors;
   private List<Exception> unmodifiableErrors; // since Collections.unmodifiableList is backed by the actual instance,
-                                              // we need only to calculate it once.
+                                              // we need to calculate it only once.
 
   // constructors
   /**
