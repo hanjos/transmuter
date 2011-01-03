@@ -7,6 +7,7 @@ import static com.googlecode.transmuter.util.ObjectUtils.nonNull;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -414,8 +415,11 @@ public class Transmuter {
     Map<ConverterType, Converter> temp = new DependentConverterMap(getConverterMap());
     List<Exception> exceptions = new ArrayList<Exception>();
     
-    for(Converter converter : converters) {
+    // XXX can't use foreach here, since the next() operation itself may fail
+    Iterator<? extends Converter> iterator = converters.iterator();
+    while(iterator.hasNext()) {
       try {
+        Converter converter = iterator.next();
         temp.put(converter.getType(), converter);
       } catch (MultipleCausesException e) {
         exceptions.addAll(e.getCauses());

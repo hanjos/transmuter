@@ -49,34 +49,34 @@ public @interface Converts {
     private List<Converter> converters;
     
     /**
-     * Scans the given object for public methods marked with @Converts, which will be assumed to be valid 
-     * converter methods and made available as {@link Converter converters} via {@link #iterator()}.
+     * Scans the given object for public methods marked with {@code @Converts}, which will be assumed to be valid 
+     * converter methods and made available as {@linkplain Converter converters} via {@link #iterator()}.
      * <p>
-     * If the given object is null, or has no @Converts-marked public methods, this constructor will end successfully 
-     * and an empty iterator will be created.  
+     * If the given object is null, or has no {@code @Converts}-marked public methods, this constructor will end 
+     * successfully and an empty iterator will be created.  
      * 
-     * @param object an object with presumed converter methods.
+     * @param source an object with presumed converter methods.
      * @throws ConverterProviderException thrown if any errors are found during the scan and extraction process.
      */
-    public EagerProvider(Object object) throws ConverterProviderException {
-      this.converters = Collections.unmodifiableList(extractConvertersFrom(object));
+    public EagerProvider(Object source) throws ConverterProviderException {
+      this.converters = Collections.unmodifiableList(extractConvertersFrom(source));
     }
 
-    private List<Converter> extractConvertersFrom(Object object) throws ConverterProviderException {
+    private List<Converter> extractConvertersFrom(Object source) throws ConverterProviderException {
       List<Converter> converters = new ArrayList<Converter>();
       
-      if(object == null)
+      if(source == null)
         return converters; // nothing to do here
       
       List<Exception> exceptions = new ArrayList<Exception>();
       
       // all public methods
-      for(Method method : object.getClass().getMethods()) {
+      for(Method method : source.getClass().getMethods()) {
         if(! method.isAnnotationPresent(Converts.class))
           continue;
         
         try {
-          converters.add(new Converter(object, method));
+          converters.add(new Converter(source, method));
         } catch (MultipleCausesException e) {
           exceptions.addAll(e.getCauses());
         } catch(Exception e) {
@@ -106,7 +106,8 @@ public @interface Converts {
    * {@link ConverterProviderException} exception. In that case, no converters from the given object will be available, 
    * even if they're valid.
    * <p>
-   * This provider only scans the object during the iteration.
+   * The extraction process happens only during iteration, so this provider may be instanced without a hitch, only to 
+   * fail later.
    * 
    * @author Humberto S. N. dos Anjos
    */

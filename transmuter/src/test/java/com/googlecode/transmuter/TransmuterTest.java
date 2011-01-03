@@ -1,5 +1,7 @@
 package com.googlecode.transmuter;
 
+import static com.googlecode.transmuter.TestUtils.assertInvalidReturnType;
+import static com.googlecode.transmuter.TestUtils.assertWrongParameterCount;
 import static com.googlecode.transmuter.TestUtils.extractMethod;
 import static com.googlecode.transmuter.type.TypeToken.ValueType.DOUBLE;
 import static org.junit.Assert.assertArrayEquals;
@@ -21,8 +23,10 @@ import org.junit.Test;
 
 import com.googlecode.transmuter.converter.Converter;
 import com.googlecode.transmuter.converter.ConverterType;
+import com.googlecode.transmuter.exception.ConverterRegistrationException;
 import com.googlecode.transmuter.exception.NoCompatibleConvertersFoundException;
 import com.googlecode.transmuter.exception.TooManyConvertersFoundException;
+import com.googlecode.transmuter.fixture.FlawedConverter;
 import com.googlecode.transmuter.fixture.MultipleConverter;
 import com.googlecode.transmuter.fixture.MultipleValidConverter;
 import com.googlecode.transmuter.fixture.StringArrayToListStringConverter;
@@ -63,7 +67,7 @@ public class TransmuterTest {
   }
   
   @Test
-  public void registerFlawedConverter() throws SecurityException {
+  public void registerFlawedConverter() throws SecurityException, NoSuchMethodException {
     assertTrue(t.getConverterMap().isEmpty());
     assertFalse(t.isRegistered(double.class, String.class));
     assertFalse(t.isRegistered(TypeToken.STRING, LIST_OF_STRING));
@@ -75,7 +79,31 @@ public class TransmuterTest {
     assertTrue(t.isRegistered(double.class, String.class));
     assertTrue(t.isRegistered(TypeToken.STRING, LIST_OF_STRING));
     
-    // TODO implement a lazy provider to generate an error during iteration
+    final Object flawed = new FlawedConverter();
+    try {
+      t.register(new Converts.LazyProvider(flawed));
+      fail();
+    } catch (ConverterRegistrationException e) {
+      final Class<?> flawedClass = flawed.getClass();
+      final List<? extends Exception> causes = e.getCauses();
+      
+      assertWrongParameterCount(causes,
+          extractMethod(flawedClass, "tooManyParameters", Object.class, Object.class),
+          1, 1);
+      assertWrongParameterCount(causes, 
+          extractMethod(flawedClass, "tooFewParameters"),
+          1, 1);
+      assertWrongParameterCount(causes, 
+          extractMethod(flawedClass, "voidAndTooManyParameters", int.class, int.class, int.class, int.class),
+          1, 1);
+      assertInvalidReturnType(causes, 
+          extractMethod(flawedClass, "voidAsReturnType", Object.class), 
+          void.class, 1);
+      assertInvalidReturnType(causes, 
+          extractMethod(flawedClass, "voidAndTooManyParameters", int.class, int.class, int.class, int.class), 
+          void.class, 1);
+      
+    }
     
     assertEquals(2, t.getConverterMap().size());
     assertTrue(t.isRegistered(double.class, String.class));
