@@ -22,9 +22,12 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
 
   * Fix `Converts.EagerProvider`'s iterator to block `remove` operations (`Collections.unmodifiableList` should do the trick).
 
+  * Add another provider which, instead of ignoring non-public @Converts methods (silent bugs suck), throws an exception can be thrown (extra effort needed just to signal errors). 
+    * Not done at all, but I don't think it's worth the bother.
+
 === Doing ===
 
-  * Add another provider which, instead of ignoring non-public @Converts methods (silent bugs suck), throws an exception can be thrown (extra effort needed just to signal errors). 
+  * Expand Notification use throughout the API. 
 
 
 === To Do ===
@@ -47,8 +50,6 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
   * Compatible converter search algorithm injection.
 
 == To think about ==
-
-  * Expand Notification use throughout the API. 
 
   * Add a result type to Notification?
     * [http://en.wikipedia.org/wiki/Monad_(functional_programming)#Maybe_monad Maybe] monad/[http://en.wikipedia.org/wiki/Option_type Option] type?
