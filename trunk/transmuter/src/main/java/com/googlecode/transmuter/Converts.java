@@ -20,11 +20,12 @@ import com.googlecode.transmuter.util.exception.MultipleCausesException;
 /**
  * Marks a method as a prospective converter method. 
  * <p>
- * Not all methods can be converter methods. This annotation should be used only on methods which can be successfully
- * {@linkplain EagerProvider provided}. 
+ * Not all methods can be converter methods. This annotation should be used only on methods which can be 
+ * {@linkplain EagerProvider successfully} {@linkplain LazyProvider provided}. 
  * 
  * @author Humberto S. N. dos Anjos
  * @see EagerProvider
+ * @see LazyProvider
  */
 @Documented
 @Inherited
@@ -96,10 +97,28 @@ public @interface Converts {
     }
   }
 
+  /**
+   * Scans a given object for all public methods marked with the {@link Converts} annotation, 
+   * {@linkplain Converter binding} them with the given object and making {@linkplain Iterator iterators} available  
+   * as per {@link Iterable} protocol.
+   * <p>
+   * Any errors encountered during the extraction process will be bundled together and thrown as a single 
+   * {@link ConverterProviderException} exception. In that case, no converters from the given object will be available, 
+   * even if they're valid.
+   * <p>
+   * This provider only scans the object during the iteration.
+   * 
+   * @author Humberto S. N. dos Anjos
+   */
   public static class LazyProvider implements Iterable<Converter> {
     private Object source;
     private static final List<Converter> EMPTY_LIST = Collections.emptyList();
     
+    /**
+     * Stores the given object for later scanning.  
+     * 
+     * @param source an object with presumed converter methods.
+     */
     public LazyProvider(Object source) {
       this.source = source;
     }
@@ -111,21 +130,22 @@ public @interface Converts {
            : EMPTY_LIST.iterator();
     }
     
+    /* (non-Javadoc)
+     * The iterator which does all the work. Scans the object in search of convertable methods.
+     */
     private class LazyIterator implements Iterator<Converter> {
       private int cursor;
-      private int nextCursor;
       private Method[] methods;
       
       @SuppressWarnings("synthetic-access")
       public LazyIterator() {
         methods = source.getClass().getMethods();
-        cursor = -1;
-        nextCursor = nextConverter();
+        cursor = nextConverter(-1);
       }
 
       @Override
       public boolean hasNext() {
-        return 0 <= nextCursor && nextCursor < methods.length;
+        return 0 <= cursor && cursor < methods.length;
       }
 
       @SuppressWarnings("synthetic-access")
@@ -134,24 +154,21 @@ public @interface Converts {
         if(! hasNext()) // end of iteration
           throw new NoSuchElementException();
         
-        cursor = nextCursor;
-        nextCursor = nextConverter();
-        
         try {
           return new Converter(source, methods[cursor]);
         } catch (MultipleCausesException e) {
           throw new ConverterProviderException(e.getCauses());
         } catch (Exception e) {
           throw new ConverterProviderException(e);
+        } finally {
+          cursor = nextConverter(cursor); // update the cursor!
         }
       }
 
       /* Returns the index of the next converter, or -1 if there are no more left. */
-      private int nextConverter() {
+      private int nextConverter(int cursor) {
         for(int i = cursor + 1; i < methods.length; i++) {
-          Method method = methods[i];
-          
-          if(! method.isAnnotationPresent(Converts.class))
+          if(! methods[i].isAnnotationPresent(Converts.class))
             continue;
           
           return i;
