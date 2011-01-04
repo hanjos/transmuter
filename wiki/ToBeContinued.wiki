@@ -19,6 +19,7 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
     * I would've expected `svn:mime-type` to be pre-configured with the most common types...
 
   * Generalize the `register` operation for the programmer to be able to say how to obtain the bindings. 
+    * It takes an `Iterable<Converter>` now.
 
   * Fix `Converts.EagerProvider`'s iterator to block `remove` operations (`Collections.unmodifiableList` should do the trick).
 
