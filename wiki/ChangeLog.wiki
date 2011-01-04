@@ -1,0 +1,15 @@
+#summary Changes between versions.
+#labels Featured,Phase-Implementation
+
+= 0.2-SNAPSHOT =
+  * Changed `Binding`'s `validate` to `initialize`.
+  
+  * Created a `Binding` subclass called `Converter` which ensures we have a well-formed converter binding.
+
+  * `Transmuter`'s `register` now takes an `Iterable` of converters, so an object with `@Converts` isn't stricly needed anymore.
+
+  * Several providers which use the `Iterable` protocol to read objects with `@Converts` methods are given.
+
+= 0.1 =
+
+  * First release.
