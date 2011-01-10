@@ -414,18 +414,26 @@ public class Transmuter {
     
     Map<ConverterType, Converter> temp = new DependentConverterMap(getConverterMap());
     List<Exception> exceptions = new ArrayList<Exception>();
-    
-    // XXX can't use foreach here, since the next() operation itself may fail
     Iterator<? extends Converter> iterator = converters.iterator();
-    while(iterator.hasNext()) {
-      try {
-        Converter converter = iterator.next();
-        temp.put(converter.getType(), converter);
-      } catch (MultipleCausesException e) {
-        exceptions.addAll(e.getCauses());
-      } catch(Exception e) {
-        exceptions.add(e);
+    
+    // XXX can't use foreach here, since the hasNext() and next() operations themselves may fail
+    try {
+      // if hasNext() fails, there's no iterating here; snitch and move on
+      while(iterator.hasNext()) {
+        try {
+          // an individual next() may fail, but not necessarily all them will; keep going
+          Converter converter = iterator.next();
+          temp.put(converter.getType(), converter);
+        } catch(MultipleCausesException e) {
+          exceptions.addAll(e.getCauses());
+        } catch(Exception e) {
+          exceptions.add(e);
+        }
       }
+    } catch(MultipleCausesException e) {
+      exceptions.addAll(e.getCauses());
+    } catch(Exception e) {
+      exceptions.add(e);
     }
     
     if(! exceptions.isEmpty())
