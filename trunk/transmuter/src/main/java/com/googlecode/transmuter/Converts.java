@@ -18,7 +18,7 @@ import com.googlecode.transmuter.exception.ConverterProviderException;
 import com.googlecode.transmuter.util.exception.MultipleCausesException;
 
 /**
- * Marks a method as a prospective converter method. 
+ * May be used to mark a method as a prospective converter method. 
  * <p>
  * Not all methods can be converter methods. This annotation should be used only on methods which can be 
  * {@linkplain EagerProvider successfully} {@linkplain LazyProvider provided}. 
@@ -132,7 +132,7 @@ public @interface Converts {
     }
     
     /* (non-Javadoc)
-     * The iterator which does all the work. Scans the object in search of convertable methods.
+     * The iterator which does all the work. Scans the object in search of convertible methods.
      */
     private class LazyIterator implements Iterator<Converter> {
       private int cursor;

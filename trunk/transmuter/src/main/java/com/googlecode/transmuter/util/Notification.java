@@ -12,13 +12,13 @@ import java.util.List;
  * 
  * @author Humberto S. N. dos Anjos
  */
-// TODO improve prose
 public class Notification implements Iterable<Exception> {
   private static final List<Exception> EMPTY_LIST = Collections.emptyList();
   
   private List<Exception> errors;
-  private List<Exception> unmodifiableErrors; // since Collections.unmodifiableList is backed by the actual instance,
-                                              // we need to calculate it only once.
+  
+  // since Collections.unmodifiableList is backed by the actual instance, we only need to calculate it once
+  private List<Exception> unmodifiableErrors;
 
   // constructors
   /**
