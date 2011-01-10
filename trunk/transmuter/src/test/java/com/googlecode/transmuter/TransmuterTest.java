@@ -15,6 +15,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -489,5 +490,35 @@ public class TransmuterTest {
     t.register(new Converts.EagerProvider(new StringArrayToListStringConverter()));
     
     assertTrue(t.isRegistered(ARRAY_OF_STRING, LIST_OF_STRING));
+  }
+  
+  @Test
+  public void faultyHasNext() {
+    Iterable<Converter> faulty = new Iterable<Converter>() {
+      @Override
+      public Iterator<Converter> iterator() {
+        return new Iterator<Converter>() {
+          @Override
+          public boolean hasNext() {
+            throw new UnsupportedOperationException();
+          }
+
+          @Override
+          public Converter next() { return null; }
+
+          @Override
+          public void remove() { /* empty block */ }
+        };
+      }
+    };
+    
+    try {
+      t.register(faulty);
+    } catch (ConverterRegistrationException e) {
+      List<? extends Exception> causes = e.getCauses();
+      
+      assertEquals(1, causes.size());
+      assertEquals(UnsupportedOperationException.class, causes.get(0).getClass());
+    }
   }
 }
