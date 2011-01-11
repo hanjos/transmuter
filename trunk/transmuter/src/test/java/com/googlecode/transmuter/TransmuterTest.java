@@ -26,6 +26,7 @@ import com.googlecode.transmuter.converter.Converter;
 import com.googlecode.transmuter.converter.ConverterType;
 import com.googlecode.transmuter.exception.ConverterRegistrationException;
 import com.googlecode.transmuter.exception.NoCompatibleConvertersFoundException;
+import com.googlecode.transmuter.exception.NotificationNotFoundException;
 import com.googlecode.transmuter.exception.TooManyConvertersFoundException;
 import com.googlecode.transmuter.fixture.FlawedConverter;
 import com.googlecode.transmuter.fixture.MultipleConverter;
@@ -34,6 +35,7 @@ import com.googlecode.transmuter.fixture.StringArrayToListStringConverter;
 import com.googlecode.transmuter.fixture.StringConverter;
 import com.googlecode.transmuter.fixture.VarargConverter;
 import com.googlecode.transmuter.type.TypeToken;
+import com.googlecode.transmuter.util.Notification;
 
 
 public class TransmuterTest {
@@ -519,6 +521,25 @@ public class TransmuterTest {
       
       assertEquals(1, causes.size());
       assertEquals(UnsupportedOperationException.class, causes.get(0).getClass());
+    }
+  }
+  
+  @Test
+  public void tryRegisterReturningNull() {
+    Transmuter t = new Transmuter() {
+      @Override
+      protected Notification tryRegister(Iterable<? extends Converter> converters) {
+        return null;
+      }
+    };
+    
+    try {
+      t.register(null);
+    } catch (ConverterRegistrationException e) {
+      List<? extends Exception> causes = e.getCauses();
+      
+      assertEquals(1, causes.size());
+      assertEquals(NotificationNotFoundException.class, causes.get(0).getClass());
     }
   }
 }
