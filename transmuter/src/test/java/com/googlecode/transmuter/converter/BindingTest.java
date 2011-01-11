@@ -22,7 +22,9 @@ import com.googlecode.transmuter.converter.exception.InvocationException;
 import com.googlecode.transmuter.converter.exception.InaccessibleMethodException;
 import com.googlecode.transmuter.converter.exception.MethodInstanceIncompatibilityException;
 import com.googlecode.transmuter.converter.exception.NullInstanceWithNonStaticMethodException;
+import com.googlecode.transmuter.exception.NotificationNotFoundException;
 import com.googlecode.transmuter.type.TypeToken;
+import com.googlecode.transmuter.util.Notification;
 import com.googlecode.transmuter.util.exception.ObjectInstantiationException;
 
 public class BindingTest {
@@ -213,5 +215,22 @@ public class BindingTest {
     final Method listEquals = TestUtils.extractMethod(List.class, "equals", Object.class);
     assertEquals(ArrayList.class, new Binding(new ArrayList<Object>(), listEquals).getInstanceClass());
     assertEquals(LinkedList.class, new Binding(new LinkedList<Object>(), listEquals).getInstanceClass());
+  }
+  
+  @Test
+  public void tryInitializeReturningNull() {
+    try {
+      new Binding("", substringMethod) {
+        @Override
+        protected Notification tryInitialize(Object instance, Method method) {
+          return null;
+        }
+      };
+    } catch (ObjectInstantiationException e) {
+      List<? extends Exception> causes = e.getCauses();
+      
+      assertEquals(1, causes.size());
+      assertEquals(NotificationNotFoundException.class, causes.get(0).getClass());
+    }
   }
 }

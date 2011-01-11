@@ -16,6 +16,7 @@ import com.googlecode.transmuter.converter.exception.InaccessibleMethodException
 import com.googlecode.transmuter.converter.exception.InvocationException;
 import com.googlecode.transmuter.converter.exception.MethodInstanceIncompatibilityException;
 import com.googlecode.transmuter.converter.exception.NullInstanceWithNonStaticMethodException;
+import com.googlecode.transmuter.exception.NotificationNotFoundException;
 import com.googlecode.transmuter.util.Notification;
 import com.googlecode.transmuter.util.StringUtils;
 import com.googlecode.transmuter.util.exception.MultipleCausesException;
@@ -77,6 +78,9 @@ public class Binding {
   protected void initialize(Object instance, Method method) throws ObjectInstantiationException {
     try {
       Notification notification = tryInitialize(instance, method);
+      
+      if(notification == null)
+        throw new ObjectInstantiationException(getClass(), new NotificationNotFoundException());
       
       if(notification.hasErrors())
         throw new ObjectInstantiationException(getClass(), notification.getErrors());

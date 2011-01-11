@@ -19,8 +19,10 @@ import com.googlecode.transmuter.converter.exception.InvocationException;
 import com.googlecode.transmuter.exception.ConverterCollisionException;
 import com.googlecode.transmuter.exception.ConverterRegistrationException;
 import com.googlecode.transmuter.exception.NoCompatibleConvertersFoundException;
+import com.googlecode.transmuter.exception.NotificationNotFoundException;
 import com.googlecode.transmuter.exception.TooManyConvertersFoundException;
 import com.googlecode.transmuter.type.TypeToken;
+import com.googlecode.transmuter.util.Notification;
 import com.googlecode.transmuter.util.exception.MultipleCausesException;
 import com.googlecode.transmuter.util.exception.ObjectInstantiationException;
 
@@ -395,61 +397,90 @@ public class Transmuter {
   }
   
   /**
+   * Attempts to register all given {@linkplain Converter converters} in this instance, keyed by their 
+   * {@linkplain ConverterType types}. Does nothing if the given iterable is {@code null}.
+   * <p>
+   * Delegates to {@link #tryRegister(Iterable) tryRegister} for the actual legwork, so subclasses which 
+   * wish to alter the registration algorithm should override it instead of this method.
+   * <p> 
+   * This method simply checks {@code tryRegister}'s final report to determine if an exception must be thrown. 
+   * The exception will hold all the problems found with the given arguments. In that case, no converters from 
+   * {@code converters} will be registered, even if they're valid.
+   * 
+   * @param converters a bundle of converters
+   * @throws ConverterRegistrationException if there is some error during the operation.
+   * @see #tryRegister(Iterable)
+   */
+  public void register(Iterable<? extends Converter> converters) throws ConverterRegistrationException {
+    try {
+      Notification notification = tryRegister(converters);
+      
+      if(notification == null) // no notification given
+        throw new ConverterRegistrationException(new NotificationNotFoundException());
+      
+      if(notification.hasErrors())
+        throw new ConverterRegistrationException(notification.getErrors());
+    } catch(ConverterRegistrationException e) {
+      throw e;
+    } catch(MultipleCausesException e) {
+      // call me a paranoid, but just in case
+      throw new ObjectInstantiationException(getClass(), e.getCauses());
+    } catch(Exception e) {
+      // should never happen :P
+      throw new ObjectInstantiationException(getClass(), e);
+    }
+  }
+  
+  /**
    * Registers all given {@linkplain Converter converters} in this instance, keyed by their 
    * {@linkplain ConverterType types}. Does nothing if the given iterable is {@code null}.
    * <p>
    * This method will iterate through all the converters and {@linkplain DependentConverterMap check} if there is no 
-   * registered converter with the same type, registering all the converters in one fell swoop if no problem is found. 
+   * registered converter with the same type, registering all the converters in one fell swoop if no problem is found.
    * <p>
-   * Errors encountered during the process will be bundled together and thrown as a single exception. In that case, 
-   * no converters from {@code converters} will be registered, even if they're valid.
+   * This method returns a {@link Notification} object, which accumulates any problems verified here and reports the 
+   * final status of the registration.
    * 
    * @param converters a bundle of converters
-   * @throws ConverterRegistrationException if there is some error during the operation.
+   * @return a {@link Notification} with all errors found during registration. Should not be null.
    * @see DependentConverterMap
    */
-  public void register(Iterable<? extends Converter> converters) throws ConverterRegistrationException {
+  protected Notification tryRegister(Iterable<? extends Converter> converters) {
+    Notification notification = new Notification();
+    
     if(converters == null)
-      return;
+      return notification;
     
     Map<ConverterType, Converter> temp = new DependentConverterMap(getConverterMap());
-    List<Exception> exceptions = new ArrayList<Exception>();
     Iterator<? extends Converter> iterator = converters.iterator();
     
     // XXX can't use foreach here, since the hasNext() and next() operations themselves may fail
     try {
-      // if hasNext() fails, there's no iterating here; snitch and move on
+      // if hasNext() fails, there's no iterating at all here; snitch and move on
       while(iterator.hasNext()) {
         try {
           // an individual next() may fail, but not necessarily all them will; keep going
           Converter converter = iterator.next();
           temp.put(converter.getType(), converter);
         } catch(MultipleCausesException e) {
-          exceptions.addAll(e.getCauses());
+          notification.add(e.getCauses());
         } catch(Exception e) {
-          exceptions.add(e);
+          notification.add(e);
         }
       }
-    } catch(MultipleCausesException e) {
-      exceptions.addAll(e.getCauses());
-    } catch(Exception e) {
-      exceptions.add(e);
-    }
-    
-    if(! exceptions.isEmpty())
-      throw new ConverterRegistrationException(exceptions);
-    
-    try {
+      
+      if(notification.hasErrors()) // some next()s blew up
+        return notification;
+      
+      // everything worked so far...
       getConverterMap().putAll(temp);
-      return;
-    } catch (MultipleCausesException e) {
-      exceptions.addAll(e.getCauses());
+    } catch(MultipleCausesException e) {
+      notification.add(e.getCauses());
     } catch(Exception e) {
-      exceptions.add(e);
+      notification.add(e);
     }
     
-    // something happened at putAll()
-    throw new ConverterRegistrationException(exceptions);
+    return notification;
   }
   
   /**
