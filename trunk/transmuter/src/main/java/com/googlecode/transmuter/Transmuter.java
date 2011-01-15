@@ -451,15 +451,16 @@ public class Transmuter {
     if(converters == null)
       return notification;
     
-    Map<ConverterType, Converter> temp = new DependentConverterMap(getConverterMap());
-    Iterator<? extends Converter> iterator = converters.iterator();
-    
     // XXX can't use foreach here, since the hasNext() and next() operations themselves may fail
     try {
+      Map<ConverterType, Converter> temp = new DependentConverterMap(getConverterMap());
+      Iterator<? extends Converter> iterator = converters.iterator();
+    
       // if hasNext() fails, there's no iterating at all here; snitch and move on
       while(iterator.hasNext()) {
         try {
-          // an individual next() may fail, but not necessarily all them will; keep going
+          // an individual next() may fail, but not necessarily all them will; 
+          // keep going and store all mishaps 
           Converter converter = iterator.next();
           temp.put(converter.getType(), converter);
         } catch(MultipleCausesException e) {
@@ -523,13 +524,12 @@ public class Transmuter {
    * @param toType the output type.
    */
   public void unregister(Type fromType, Type toType) {
-    if(fromType == null || TypeToken.ValueType.VOID.matches(fromType)
-    || toType == null || TypeToken.ValueType.VOID.matches(toType))
+    if(nonNullOrVoid(fromType) || nonNullOrVoid(toType))
       return;
     
     unregister(new ConverterType(fromType, toType));
   }
-  
+
   /**
    * Unregisters the converter for the converter type represented by the given types. 
    * Does nothing if no such converter exists. 
@@ -538,11 +538,18 @@ public class Transmuter {
    * @param toType the output type.
    */
   public void unregister(TypeToken<?> fromType, TypeToken<?> toType) {
-    if(fromType == null || TypeToken.ValueType.VOID.matches(fromType)
-    || toType == null || TypeToken.ValueType.VOID.matches(toType))
+    if(nonNullOrVoid(fromType) || nonNullOrVoid(toType))
       return;
     
     unregister(new ConverterType(fromType, toType));
+  }
+  
+  private boolean nonNullOrVoid(Type type) {
+    return type == null || TypeToken.ValueType.VOID.matches(type);
+  }
+  
+  private boolean nonNullOrVoid(TypeToken<?> type) {
+    return type == null || TypeToken.ValueType.VOID.matches(type);
   }
   
   /**
