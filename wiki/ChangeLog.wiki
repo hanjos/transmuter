@@ -10,7 +10,7 @@
 
   * Several providers which use the `Iterable` protocol to read objects with `@Converts` methods are given.
 
-  * Using `try` methods (those which return `Notification`s) in `Binding.initialize` and `Transmuter.register`.
+  * Implemented `try` methods (those which do all the work and return `Notification`s) for `Binding.initialize` and `Transmuter.register`.
 
 = 0.1 =
 
