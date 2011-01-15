@@ -14,6 +14,7 @@ import static org.junit.Assert.fail;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -88,7 +89,7 @@ public class TransmuterTest {
       fail();
     } catch (ConverterRegistrationException e) {
       final Class<?> flawedClass = flawed.getClass();
-      final List<? extends Exception> causes = e.getCauses();
+      final Collection<? extends Exception> causes = e.getCauses();
       
       assertWrongParameterCount(causes,
           extractMethod(flawedClass, "tooManyParameters", Object.class, Object.class),
@@ -517,10 +518,14 @@ public class TransmuterTest {
     try {
       t.register(faulty);
     } catch (ConverterRegistrationException e) {
-      List<? extends Exception> causes = e.getCauses();
+      Collection<? extends Exception> causes = e.getCauses();
       
       assertEquals(1, causes.size());
-      assertEquals(UnsupportedOperationException.class, causes.get(0).getClass());
+      
+      Iterator<? extends Exception> iterator = causes.iterator();
+      Exception first = iterator.next();
+      
+      assertEquals(UnsupportedOperationException.class, first.getClass());
     }
   }
   
@@ -536,10 +541,14 @@ public class TransmuterTest {
     try {
       t.register(null);
     } catch (ConverterRegistrationException e) {
-      List<? extends Exception> causes = e.getCauses();
+      Collection<? extends Exception> causes = e.getCauses();
       
       assertEquals(1, causes.size());
-      assertEquals(NotificationNotFoundException.class, causes.get(0).getClass());
+      
+      Iterator<? extends Exception> iterator = causes.iterator();
+      Exception first = iterator.next();
+      
+      assertEquals(NotificationNotFoundException.class, first.getClass());
     }
   }
 }

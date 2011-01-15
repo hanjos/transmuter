@@ -3,13 +3,12 @@ package com.googlecode.transmuter.exception;
 import static com.googlecode.transmuter.util.ObjectUtils.isEmpty;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import com.googlecode.transmuter.Transmuter;
 import com.googlecode.transmuter.converter.Converter;
 import com.googlecode.transmuter.converter.ConverterType;
-
 
 /**
  * Thrown when an attempt to {@link Transmuter#register(Iterable) register} a converter fails due to the presence of 
@@ -20,12 +19,11 @@ import com.googlecode.transmuter.converter.ConverterType;
 public class ConverterCollisionException extends RuntimeException {
   private static final long serialVersionUID = 1L;
   
-  private List<? extends Converter> converters;
+  private Collection<? extends Converter> converters;
   private ConverterType converterType;
   
-  private static String buildMessage(ConverterType converterType, Converter... converters) {
-    return "more than one converter for " + converterType + ": " 
-         + ((converters != null) ? Arrays.toString(converters) : "null");
+  private static String buildMessage(ConverterType converterType, Collection<? extends Converter> converters) {
+    return "More than one converter for " + converterType + ": " + converters;
   }
   
   /**
@@ -36,10 +34,19 @@ public class ConverterCollisionException extends RuntimeException {
    */
   @SuppressWarnings("unchecked")
   public ConverterCollisionException(ConverterType converterType, Converter... converters) {
+    this(converterType, (! isEmpty(converters)) ? Arrays.asList(converters) : Collections.EMPTY_LIST);
+  }
+  
+  /**
+   * Builds a new instance.
+   * 
+   * @param converterType the converter type.
+   * @param converters the conflicting converters.
+   */
+  public ConverterCollisionException(ConverterType converterType, Collection<? extends Converter> converters) {
     super(buildMessage(converterType, converters));
     
-    this.converters = Collections.unmodifiableList(
-        (! isEmpty(converters)) ? Arrays.asList(converters) : Collections.EMPTY_LIST);
+    this.converters = Collections.unmodifiableCollection(converters);
     this.converterType = converterType;
   }
 
@@ -57,7 +64,7 @@ public class ConverterCollisionException extends RuntimeException {
    * 
    * @return a list with the conflicting converters.
    */
-  public List<? extends Converter> getConverters() {
+  public Collection<? extends Converter> getConverters() {
     return converters;
   }
 }

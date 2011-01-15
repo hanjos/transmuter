@@ -14,6 +14,7 @@ import static org.junit.Assert.fail;
 import java.lang.reflect.Method;
 import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -115,11 +116,14 @@ public class EagerProviderTest {
     } catch(ConverterProviderException e) {
       assertEquals(2, e.getCauses().size());
       
-      assertEquals(InvalidParameterTypeException.class, e.getCauses().get(0).getClass());
-      assertTrue(((InvalidParameterTypeException) e.getCauses().get(0)).getType() instanceof TypeVariable<?>);
+      Iterator<? extends Exception> iterator = e.getCauses().iterator();
+      Exception first = iterator.next();
+      Exception second = iterator.next();
+      assertEquals(InvalidParameterTypeException.class, first.getClass());
+      assertTrue(((InvalidParameterTypeException) first).getType() instanceof TypeVariable<?>);
       
-      assertEquals(InvalidReturnTypeException.class, e.getCauses().get(1).getClass());
-      assertTrue(((InvalidReturnTypeException) e.getCauses().get(1)).getType() instanceof TypeVariable<?>);
+      assertEquals(InvalidReturnTypeException.class, second.getClass());
+      assertTrue(((InvalidReturnTypeException) second).getType() instanceof TypeVariable<?>);
     }
   }
   
@@ -130,9 +134,11 @@ public class EagerProviderTest {
       fail();
     } catch(ConverterProviderException e) {
       assertEquals(1, e.getCauses().size());
-      assertEquals(InvalidParameterTypeException.class, e.getCauses().get(0).getClass());
       
-      InvalidParameterTypeException ex = (InvalidParameterTypeException) e.getCauses().get(0);
+      Exception first = e.getCauses().iterator().next();
+      assertEquals(InvalidParameterTypeException.class, first.getClass());
+      
+      InvalidParameterTypeException ex = (InvalidParameterTypeException) first;
       assertEquals(extractMethod(PartialGenericConverter.class, "convert", Object.class), ex.getMethod());
       assertTrue(ex.getType() instanceof TypeVariable<?>);
       assertEquals("From", ((TypeVariable<?>) ex.getType()).getName());
@@ -143,10 +149,12 @@ public class EagerProviderTest {
       fail();
     } catch(ConverterProviderException e) {
       assertEquals(1, e.getCauses().size());
-      assertEquals(InvalidParameterTypeException.class, e.getCauses().get(0).getClass());
+      
+      Exception first = e.getCauses().iterator().next();
+      assertEquals(InvalidParameterTypeException.class, first.getClass());
       final Method convertMethod = extractMethod(PartialGenericConverter.class, "convert", Object.class);
       
-      InvalidParameterTypeException ex = (InvalidParameterTypeException) e.getCauses().get(0);
+      InvalidParameterTypeException ex = (InvalidParameterTypeException) first;
       assertEquals(convertMethod, ex.getMethod());
       assertTrue(ex.getType() instanceof TypeVariable<?>);
       assertEquals("From", ((TypeVariable<?>) ex.getType()).getName());
@@ -160,15 +168,20 @@ public class EagerProviderTest {
       fail();
     } catch(ConverterProviderException e) {
       assertEquals(2, e.getCauses().size());
-      assertEquals(InvalidParameterTypeException.class, e.getCauses().get(0).getClass());
-      assertEquals(InvalidReturnTypeException.class, e.getCauses().get(1).getClass());
       
-      InvalidParameterTypeException ex = (InvalidParameterTypeException) e.getCauses().get(0);
+      Iterator<? extends Exception> iterator = e.getCauses().iterator();
+      Exception first = iterator.next();
+      Exception second = iterator.next();
+      
+      assertEquals(InvalidParameterTypeException.class, first.getClass());
+      assertEquals(InvalidReturnTypeException.class, second.getClass());
+      
+      InvalidParameterTypeException ex = (InvalidParameterTypeException) first;
       assertEquals(extractMethod(GenericConverter.class, "convert", Object.class), ex.getMethod());
       assertTrue(ex.getType() instanceof TypeVariable<?>);
       assertEquals("From", ((TypeVariable<?>) ex.getType()).getName());
       
-      InvalidReturnTypeException ex1 = (InvalidReturnTypeException) e.getCauses().get(1);
+      InvalidReturnTypeException ex1 = (InvalidReturnTypeException) second;
       assertEquals(extractMethod(GenericConverter.class, "convert", Object.class), ex1.getMethod());
       assertTrue(ex1.getType() instanceof TypeVariable<?>);
       assertEquals("To", ((TypeVariable<?>) ex1.getType()).getName());
@@ -179,15 +192,20 @@ public class EagerProviderTest {
       fail();
     } catch(ConverterProviderException e) {
       assertEquals(2, e.getCauses().size());
-      assertEquals(InvalidParameterTypeException.class, e.getCauses().get(0).getClass());
-      assertEquals(InvalidReturnTypeException.class, e.getCauses().get(1).getClass());
       
-      InvalidParameterTypeException ex = (InvalidParameterTypeException) e.getCauses().get(0);
+      Iterator<? extends Exception> iterator = e.getCauses().iterator();
+      Exception first = iterator.next();
+      Exception second = iterator.next();
+      
+      assertEquals(InvalidParameterTypeException.class, first.getClass());
+      assertEquals(InvalidReturnTypeException.class, second.getClass());
+      
+      InvalidParameterTypeException ex = (InvalidParameterTypeException) first;
       assertEquals(extractMethod(GenericConverter.class, "convert", Object.class), ex.getMethod());
       assertTrue(ex.getType() instanceof TypeVariable<?>);
       assertEquals("From", ((TypeVariable<?>) ex.getType()).getName());
       
-      InvalidReturnTypeException ex1 = (InvalidReturnTypeException) e.getCauses().get(1);
+      InvalidReturnTypeException ex1 = (InvalidReturnTypeException) second;
       assertEquals(extractMethod(GenericConverter.class, "convert", Object.class), ex1.getMethod());
       assertTrue(ex1.getType() instanceof TypeVariable<?>);
       assertEquals("To", ((TypeVariable<?>) ex1.getType()).getName());
@@ -202,7 +220,7 @@ public class EagerProviderTest {
       new Converts.EagerProvider(flawed);
       fail();
     } catch(ConverterProviderException e) {
-      final List<? extends Exception> causes = e.getCauses();
+      final Collection<? extends Exception> causes = e.getCauses();
       final Class<?> flawedClass = flawed.getClass();
       
       assertWrongParameterCount(causes,

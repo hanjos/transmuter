@@ -10,6 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,8 +19,8 @@ import org.junit.Test;
 
 import com.googlecode.transmuter.Converts;
 import com.googlecode.transmuter.TestUtils;
-import com.googlecode.transmuter.converter.exception.InvocationException;
 import com.googlecode.transmuter.converter.exception.InaccessibleMethodException;
+import com.googlecode.transmuter.converter.exception.InvocationException;
 import com.googlecode.transmuter.converter.exception.MethodInstanceIncompatibilityException;
 import com.googlecode.transmuter.converter.exception.NullInstanceWithNonStaticMethodException;
 import com.googlecode.transmuter.exception.NotificationNotFoundException;
@@ -74,7 +75,9 @@ public class BindingTest {
       assertEquals(Binding.class, e.getObjectType());
       
       assertEquals(1, e.getCauses().size());
-      assertEquals(IllegalArgumentException.class, e.getCauses().get(0).getClass());
+      
+      Exception first = e.getCauses().iterator().next();
+      assertEquals(IllegalArgumentException.class, first.getClass());
     }
   }
 
@@ -98,9 +101,11 @@ public class BindingTest {
       assertEquals(Binding.class, e.getObjectType());
       
       assertEquals(1, e.getCauses().size());
-      assertEquals(MethodInstanceIncompatibilityException.class, e.getCauses().get(0).getClass());
       
-      MethodInstanceIncompatibilityException ex = (MethodInstanceIncompatibilityException) e.getCauses().get(0);
+      Exception first = e.getCauses().iterator().next();
+      assertEquals(MethodInstanceIncompatibilityException.class, first.getClass());
+      
+      MethodInstanceIncompatibilityException ex = (MethodInstanceIncompatibilityException) first;
       assertEquals(instance, ex.getInstance());
       assertEquals(method, ex.getMethod());
     }
@@ -116,9 +121,11 @@ public class BindingTest {
       assertEquals(Binding.class, e.getObjectType());
       
       assertEquals(1, e.getCauses().size());
-      assertEquals(NullInstanceWithNonStaticMethodException.class, e.getCauses().get(0).getClass());
       
-      NullInstanceWithNonStaticMethodException ex = (NullInstanceWithNonStaticMethodException) e.getCauses().get(0);
+      Exception first = e.getCauses().iterator().next();
+      assertEquals(NullInstanceWithNonStaticMethodException.class, first.getClass());
+      
+      NullInstanceWithNonStaticMethodException ex = (NullInstanceWithNonStaticMethodException) first;
       assertEquals(method, ex.getMethod());
     }
   }
@@ -133,7 +140,9 @@ public class BindingTest {
     } catch(ObjectInstantiationException e) {
       assertEquals(Binding.class, e.getObjectType());
       
-      InaccessibleMethodException ex = (InaccessibleMethodException) e.getCauses().get(0);
+      assertEquals(1, e.getCauses().size());
+      
+      InaccessibleMethodException ex = (InaccessibleMethodException) e.getCauses().iterator().next();
       assertEquals(getRawType, ex.getMethod());
     }
   }
@@ -227,10 +236,12 @@ public class BindingTest {
         }
       };
     } catch (ObjectInstantiationException e) {
-      List<? extends Exception> causes = e.getCauses();
+      Collection<? extends Exception> causes = e.getCauses();
       
       assertEquals(1, causes.size());
-      assertEquals(NotificationNotFoundException.class, causes.get(0).getClass());
+      
+      Exception first = e.getCauses().iterator().next();
+      assertEquals(NotificationNotFoundException.class, first.getClass());
     }
   }
 }

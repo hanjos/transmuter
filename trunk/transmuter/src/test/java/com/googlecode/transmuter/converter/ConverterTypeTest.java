@@ -8,6 +8,7 @@ import static org.junit.Assert.fail;
 import java.awt.Point;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.Iterator;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +41,11 @@ public class ConverterTypeTest {
       assertEquals(ConverterType.class, e.getObjectType());
       
       assertEquals(1, e.getCauses().size());
-      assertEquals(IllegalArgumentException.class, e.getCauses().get(0).getClass());
+      
+      Iterator<? extends Exception> iterator = e.getCauses().iterator();
+      Exception first = iterator.next();
+      
+      assertEquals(IllegalArgumentException.class, first.getClass());
     }
     
     try {
@@ -50,7 +55,11 @@ public class ConverterTypeTest {
       assertEquals(ConverterType.class, e.getObjectType());
       
       assertEquals(1, e.getCauses().size());
-      assertEquals(IllegalArgumentException.class, e.getCauses().get(0).getClass());
+      
+      Iterator<? extends Exception> iterator = e.getCauses().iterator();
+      Exception first = iterator.next();
+      
+      assertEquals(IllegalArgumentException.class, first.getClass());
     }
     
     try {
@@ -60,7 +69,11 @@ public class ConverterTypeTest {
       assertEquals(ConverterType.class, e.getObjectType());
       
       assertEquals(1, e.getCauses().size());
-      assertEquals(IllegalArgumentException.class, e.getCauses().get(0).getClass());
+      
+      Iterator<? extends Exception> iterator = e.getCauses().iterator();
+      Exception first = iterator.next();
+      
+      assertEquals(IllegalArgumentException.class, first.getClass());
     }
     
     Method substring_2 = String.class.getMethod("substring", int.class, int.class);
@@ -71,9 +84,13 @@ public class ConverterTypeTest {
       assertEquals(ConverterType.class, e.getObjectType());
       
       assertEquals(1, e.getCauses().size());
-      assertEquals(WrongParameterCountException.class, e.getCauses().get(0).getClass());
       
-      WrongParameterCountException ex = (WrongParameterCountException) e.getCauses().get(0);
+      Iterator<? extends Exception> iterator = e.getCauses().iterator();
+      Exception first = iterator.next();
+      
+      assertEquals(WrongParameterCountException.class, first.getClass());
+      
+      WrongParameterCountException ex = (WrongParameterCountException) first;
       assertEquals(1, ex.getExpected());
       assertEquals(2, ex.getActual());
       assertEquals(substring_2, ex.getMethod());
@@ -87,9 +104,13 @@ public class ConverterTypeTest {
       assertEquals(ConverterType.class, e.getObjectType());
       
       assertEquals(1, e.getCauses().size());
-      assertEquals(WrongParameterCountException.class, e.getCauses().get(0).getClass());
       
-      WrongParameterCountException ex = (WrongParameterCountException) e.getCauses().get(0);
+      Iterator<? extends Exception> iterator = e.getCauses().iterator();
+      Exception first = iterator.next();
+      
+      assertEquals(WrongParameterCountException.class, first.getClass());
+      
+      WrongParameterCountException ex = (WrongParameterCountException) first;
       assertEquals(1, ex.getExpected());
       assertEquals(0, ex.getActual());
       assertEquals(toString, ex.getMethod());
@@ -103,9 +124,13 @@ public class ConverterTypeTest {
       assertEquals(ConverterType.class, e.getObjectType());
       
       assertEquals(1, e.getCauses().size());
-      assertEquals(InvalidReturnTypeException.class, e.getCauses().get(0).getClass());
       
-      InvalidReturnTypeException ex = (InvalidReturnTypeException) e.getCauses().get(0);
+      Iterator<? extends Exception> iterator = e.getCauses().iterator();
+      Exception first = iterator.next();
+      
+      assertEquals(InvalidReturnTypeException.class, first.getClass());
+      
+      InvalidReturnTypeException ex = (InvalidReturnTypeException) first;
       assertEquals(void.class, ex.getType());
       assertEquals(wait_timeout, ex.getMethod());
     }
@@ -120,7 +145,11 @@ public class ConverterTypeTest {
       assertEquals(ConverterType.class, e.getObjectType());
       
       assertEquals(1, e.getCauses().size());
-      assertEquals(IllegalArgumentException.class, e.getCauses().get(0).getClass());
+      
+      Iterator<? extends Exception> iterator = e.getCauses().iterator();
+      Exception first = iterator.next();
+      
+      assertEquals(IllegalArgumentException.class, first.getClass());
     }
     
     Method substring = String.class.getMethod("substring", int.class);
@@ -232,10 +261,12 @@ public class ConverterTypeTest {
       
       assertEquals(1, e.getCauses().size());
       
-      Exception exception = e.getCauses().get(0);
-      assertEquals(MethodOwnerTypeIncompatibilityException.class, exception.getClass());
+      Iterator<? extends Exception> iterator = e.getCauses().iterator();
+      Exception first = iterator.next();
       
-      MethodOwnerTypeIncompatibilityException castException = (MethodOwnerTypeIncompatibilityException) exception;
+      assertEquals(MethodOwnerTypeIncompatibilityException.class, first.getClass());
+      
+      MethodOwnerTypeIncompatibilityException castException = (MethodOwnerTypeIncompatibilityException) first;
       assertEquals(Object.class, castException.getOwnerType());
       assertEquals(matches, castException.getMethod());
     }
@@ -251,7 +282,10 @@ public class ConverterTypeTest {
       
       assertEquals(1, e.getCauses().size());
       
-      MethodOwnerTypeIncompatibilityException ex0 = (MethodOwnerTypeIncompatibilityException) e.getCauses().get(0);
+      Iterator<? extends Exception> iterator = e.getCauses().iterator();
+      Exception first = iterator.next();
+      
+      MethodOwnerTypeIncompatibilityException ex0 = (MethodOwnerTypeIncompatibilityException) first;
       assertEquals(valueOfBoolean, ex0.getMethod());
       assertEquals(Object.class, ex0.getOwnerType());
     }

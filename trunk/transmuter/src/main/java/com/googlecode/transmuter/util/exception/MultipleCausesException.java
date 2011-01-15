@@ -1,6 +1,7 @@
 package com.googlecode.transmuter.util.exception;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -17,14 +18,14 @@ public class MultipleCausesException extends RuntimeException {
   
   protected static final List<Exception> EMPTY_EXCEPTION_LIST = Arrays.asList(new Exception[0]);
   
-  private static String buildMessage(List<? extends Exception> causes) {
+  private static String buildMessage(Collection<? extends Exception> causes) {
     if(causes.isEmpty())
       return "";
     
     return "Multiple exceptions found:\n    " + StringUtils.concatenate(";\n    ", causes);
   }
 
-  private List<? extends Exception> causes;
+  private Collection<? extends Exception> causes;
   
   /**
    * Builds a new instance.
@@ -40,10 +41,10 @@ public class MultipleCausesException extends RuntimeException {
    * 
    * @param causes the exceptions to be bundled.
    */
-  public MultipleCausesException(List<? extends Exception> causes) {
+  public MultipleCausesException(Collection<? extends Exception> causes) {
     super(buildMessage((causes != null) ? causes : EMPTY_EXCEPTION_LIST));
     
-    this.causes = Collections.unmodifiableList((causes != null) ? causes : EMPTY_EXCEPTION_LIST);
+    this.causes = Collections.unmodifiableCollection((causes != null) ? causes : EMPTY_EXCEPTION_LIST);
   }
   
   /**
@@ -52,10 +53,10 @@ public class MultipleCausesException extends RuntimeException {
    * @param message the message to be shown. 
    * @param causes the exceptions to be bundled.
    */
-  public MultipleCausesException(String message, List<? extends Exception> causes) {
+  public MultipleCausesException(String message, Collection<? extends Exception> causes) {
     super(message);
     
-    this.causes = Collections.unmodifiableList((causes != null) ? causes : EMPTY_EXCEPTION_LIST);
+    this.causes = Collections.unmodifiableCollection((causes != null) ? causes : EMPTY_EXCEPTION_LIST);
   }
 
   /**
@@ -63,7 +64,7 @@ public class MultipleCausesException extends RuntimeException {
    * 
    * @return the bundled exceptions.
    */
-  public List<? extends Exception> getCauses() {
+  public Collection<? extends Exception> getCauses() {
     return causes;
   }
   
@@ -73,6 +74,6 @@ public class MultipleCausesException extends RuntimeException {
    */
   @Override
   public Throwable getCause() {
-    return causes.isEmpty() ? null : causes.get(0); 
+    return causes.isEmpty() ? null : causes.iterator().next(); 
   }
 }
