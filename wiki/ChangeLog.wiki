@@ -12,6 +12,8 @@
 
   * Implemented `try` methods (those which do all the work and return `Notification`s) for `Binding.initialize` and `Transmuter.register`.
 
+  * Multiple causes exceptions now store a collection of exceptions instead of a list.
+
 = 0.1 =
 
   * First release.
