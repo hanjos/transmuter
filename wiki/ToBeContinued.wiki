@@ -30,7 +30,8 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
 
 === Doing ===
 
-  * Expand Notification use throughout the API. 
+  * Expand `Notification` use throughout the API.
+    * Got `Binding.initialize` and `Transmuter.register` already!
 
 
 === To Do ===
