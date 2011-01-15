@@ -424,10 +424,10 @@ public class Transmuter {
       throw e;
     } catch(MultipleCausesException e) {
       // call me a paranoid, but just in case
-      throw new ObjectInstantiationException(getClass(), e.getCauses());
+      throw new ConverterRegistrationException(e.getCauses());
     } catch(Exception e) {
       // should never happen :P
-      throw new ObjectInstantiationException(getClass(), e);
+      throw new ConverterRegistrationException(e);
     }
   }
   
