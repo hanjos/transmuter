@@ -26,6 +26,8 @@ This page is a brain dump for future features, refactorings, TODOs and stuff whi
   * Add another provider which, instead of ignoring non-public @Converts methods (silent bugs suck), throws an exception can be thrown (extra effort needed just to signal errors). 
     * Not done at all, but I don't think it's worth the bother.
 
+  * Multiple causes exceptions now store a collection of exceptions instead of a list.
+
 === Doing ===
 
   * Expand Notification use throughout the API. 
