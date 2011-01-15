@@ -1,5 +1,6 @@
 package com.googlecode.transmuter.exception;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.googlecode.transmuter.Converts;
@@ -18,7 +19,7 @@ public class ConverterProviderException extends MultipleCausesException {
     super(causes);
   }
 
-  public ConverterProviderException(List<? extends Exception> causes) {
+  public ConverterProviderException(Collection<? extends Exception> causes) {
     super(causes);
   }
 

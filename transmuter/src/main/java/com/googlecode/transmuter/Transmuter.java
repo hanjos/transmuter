@@ -5,12 +5,12 @@ import static com.googlecode.transmuter.util.ObjectUtils.classOf;
 import static com.googlecode.transmuter.util.ObjectUtils.nonNull;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import com.googlecode.transmuter.converter.Converter;
 import com.googlecode.transmuter.converter.ConverterType;
@@ -587,7 +587,7 @@ public class Transmuter {
     if(converter != null)
       return converter;
     
-    List<Converter> compatibles = getCompatibleConvertersFor(converterType);
+    Set<Converter> compatibles = getCompatibleConvertersFor(converterType);
     
     if(compatibles.isEmpty())
       throw new NoCompatibleConvertersFoundException(converterType);
@@ -595,7 +595,8 @@ public class Transmuter {
     if(compatibles.size() > 1)
       throw new TooManyConvertersFoundException(converterType, compatibles);
     
-    return compatibles.get(0);
+    // first and only element
+    return compatibles.iterator().next();
   }
   
   /**
@@ -605,8 +606,8 @@ public class Transmuter {
    * @param converterType a converter type.
    * @return a list with all the compatible converters found.  
    */
-  protected List<Converter> getCompatibleConvertersFor(ConverterType converterType) {
-    List<Converter> compatibles = new ArrayList<Converter>();
+  protected Set<Converter> getCompatibleConvertersFor(ConverterType converterType) {
+    Set<Converter> compatibles = new HashSet<Converter>();
     if(converterType == null)
       return compatibles;
     

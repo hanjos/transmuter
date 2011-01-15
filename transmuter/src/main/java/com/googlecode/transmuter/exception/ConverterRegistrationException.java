@@ -1,6 +1,6 @@
 package com.googlecode.transmuter.exception;
 
-import java.util.List;
+import java.util.Collection;
 
 import com.googlecode.transmuter.Transmuter;
 import com.googlecode.transmuter.util.exception.MultipleCausesException;
@@ -27,7 +27,7 @@ public class ConverterRegistrationException extends MultipleCausesException {
    * 
    * @param causes the exceptions to be bundled.
    */
-  public ConverterRegistrationException(List<? extends Exception> causes) {
+  public ConverterRegistrationException(Collection<? extends Exception> causes) {
     super(causes);
   }
 }

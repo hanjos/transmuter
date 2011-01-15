@@ -1,7 +1,7 @@
 package com.googlecode.transmuter.util.exception;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 
 import com.googlecode.transmuter.util.StringUtils;
 
@@ -15,7 +15,7 @@ public class ObjectInstantiationException extends MultipleCausesException {
 
   private Class<?> objectType;
   
-  private static String buildMessage(Class<?> objectType, List<? extends Exception> causes) {
+  private static String buildMessage(Class<?> objectType, Collection<? extends Exception> causes) {
     String msg = "Error while instantiating " + objectType;
     
     if(causes == null || causes.isEmpty())
@@ -40,7 +40,7 @@ public class ObjectInstantiationException extends MultipleCausesException {
    * @param objectType the failed constructor's type. 
    * @param causes the exceptions to be bundled. 
    */
-  public ObjectInstantiationException(Class<?> objectType, List<? extends Exception> causes) {
+  public ObjectInstantiationException(Class<?> objectType, Collection<? extends Exception> causes) {
     super(buildMessage(objectType, causes), causes);
     
     this.objectType = objectType;

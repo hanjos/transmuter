@@ -8,7 +8,7 @@ import static org.junit.Assert.assertTrue;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 import com.googlecode.transmuter.converter.Converter;
 import com.googlecode.transmuter.converter.ConverterType;
@@ -43,7 +43,7 @@ public class TestUtils {
     assertTrue(b.containsAll(a));
   }
 
-  public static void assertWrongParameterCount(final List<? extends Exception> causes, 
+  public static void assertWrongParameterCount(final Collection<? extends Exception> causes, 
       Method method, int expected, int expectedCount) {
     int count = 0;
     for(Exception cause : causes) {
@@ -60,7 +60,7 @@ public class TestUtils {
     assertEquals(expectedCount, count);
   }
 
-  public static void assertInvalidReturnType(final List<? extends Exception> causes, 
+  public static void assertInvalidReturnType(final Collection<? extends Exception> causes, 
       Method method, Type returnType, int expectedCount) {
     int count = 0;
     for(Exception cause : causes) {
@@ -76,8 +76,8 @@ public class TestUtils {
     assertEquals(expectedCount, count);
   }
 
-  public static void assertConverterCollision(final List<? extends Exception> causes, 
-      ConverterType converterType, List<Converter> converters, int expectedCount) {
+  public static void assertConverterCollision(final Collection<? extends Exception> causes, 
+      ConverterType converterType, Set<Converter> converters, int expectedCount) {
     int count = 0;
     for(Exception cause : causes) {
       if(cause.getClass() != ConverterCollisionException.class)
