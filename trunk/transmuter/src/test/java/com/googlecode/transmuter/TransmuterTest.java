@@ -27,7 +27,6 @@ import com.googlecode.transmuter.converter.Converter;
 import com.googlecode.transmuter.converter.ConverterType;
 import com.googlecode.transmuter.exception.ConverterRegistrationException;
 import com.googlecode.transmuter.exception.NoCompatibleConvertersFoundException;
-import com.googlecode.transmuter.exception.NotificationNotFoundException;
 import com.googlecode.transmuter.exception.TooManyConvertersFoundException;
 import com.googlecode.transmuter.fixture.FlawedConverter;
 import com.googlecode.transmuter.fixture.MultipleConverter;
@@ -37,6 +36,7 @@ import com.googlecode.transmuter.fixture.StringConverter;
 import com.googlecode.transmuter.fixture.VarargConverter;
 import com.googlecode.transmuter.type.TypeToken;
 import com.googlecode.transmuter.util.Notification;
+import com.googlecode.transmuter.util.exception.NotificationNotFoundException;
 
 
 public class TransmuterTest {

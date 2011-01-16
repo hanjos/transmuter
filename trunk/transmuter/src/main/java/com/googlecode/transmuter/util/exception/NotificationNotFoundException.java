@@ -1,4 +1,4 @@
-package com.googlecode.transmuter.exception;
+package com.googlecode.transmuter.util.exception;
 
 import com.googlecode.transmuter.util.Notification;
 

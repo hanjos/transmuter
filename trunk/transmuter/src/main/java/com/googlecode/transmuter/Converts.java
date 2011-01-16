@@ -18,7 +18,7 @@ import com.googlecode.transmuter.exception.ConverterProviderException;
 import com.googlecode.transmuter.util.exception.MultipleCausesException;
 
 /**
- * May be used to mark a method as a prospective converter method. 
+ * Intended to mark a method as a prospective converter method. 
  * <p>
  * Not all methods can be converter methods. This annotation should be used only on methods which can be 
  * {@linkplain EagerProvider successfully} {@linkplain LazyProvider provided}. 
