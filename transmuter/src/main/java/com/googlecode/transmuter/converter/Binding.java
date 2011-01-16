@@ -16,10 +16,10 @@ import com.googlecode.transmuter.converter.exception.InaccessibleMethodException
 import com.googlecode.transmuter.converter.exception.InvocationException;
 import com.googlecode.transmuter.converter.exception.MethodInstanceIncompatibilityException;
 import com.googlecode.transmuter.converter.exception.NullInstanceWithNonStaticMethodException;
-import com.googlecode.transmuter.exception.NotificationNotFoundException;
 import com.googlecode.transmuter.util.Notification;
 import com.googlecode.transmuter.util.StringUtils;
 import com.googlecode.transmuter.util.exception.MultipleCausesException;
+import com.googlecode.transmuter.util.exception.NotificationNotFoundException;
 import com.googlecode.transmuter.util.exception.ObjectInstantiationException;
 
 /**
