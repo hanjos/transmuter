@@ -269,6 +269,20 @@ public class Transmuter {
   // operations
   /**
    * Performs a conversion, taking {@code from} and generating a new object of type {@code toType}.
+   * <p>
+   * Due to erasure-imposed limitations, {@code from}'s runtime class will be considered as the input type.
+   * This means that all the invocations below:
+   * 
+   * <pre>
+   * convert(new ArrayList&lt;String&gt;(), String.class);
+   * convert(new ArrayList&lt;Map&lt;java.util.Date, Set&lt;Thread&gt;&gt;&gt;&gt;(), String.class);
+   * convert(new ArrayList(), String.class);
+   * </pre>
+   * 
+   * will attempt to use the same converter.
+   * <p>
+   * For parameterized input types, 
+   * {@linkplain #convert(Object, TypeToken, TypeToken) the appropriate input type should be specified}.
    * 
    * @param from the object to convert.
    * @param toType the type of the converted object.
@@ -279,6 +293,7 @@ public class Transmuter {
    * @throws TooManyConvertersFoundException if more than one converter for {@code from}'s type to {@code toType} was found.
    * @throws IllegalArgumentException if {@code from} or {@code toType} is null (or {@code void} for {@code toType}). 
    * @throws InvocationException if there was an error during the converter's invocation.
+   * @see #convert(Object, TypeToken, TypeToken)
    */
   public <From, To> To convert(From from, Class<To> toType) {
     return convert(from, TypeToken.get(toType));
@@ -286,6 +301,20 @@ public class Transmuter {
   
   /**
    * Performs a conversion, taking {@code from} and generating a new object of type {@code toType}.
+   * <p>
+   * Due to erasure-imposed limitations, {@code from}'s runtime class will be considered as the input type.
+   * This means that all the invocations below:
+   * 
+   * <pre>
+   * convert(new ArrayList&lt;String&gt;(), TypeToken.STRING);
+   * convert(new ArrayList&lt;Map&lt;java.util.Date, Set&lt;Thread&gt;&gt;&gt;&gt;(), TypeToken.STRING);
+   * convert(new ArrayList(), TypeToken.STRING);
+   * </pre>
+   * 
+   * will attempt to use the same converter.
+   * <p>
+   * For parameterized input types, 
+   * {@linkplain #convert(Object, TypeToken, TypeToken) the appropriate input type should be specified}.
    * 
    * @param from the object to convert.
    * @param toType the type of the converted object.
@@ -296,6 +325,7 @@ public class Transmuter {
    * @throws TooManyConvertersFoundException if more than one converter for {@code from}'s type to {@code toType} was found.
    * @throws IllegalArgumentException if {@code from} or {@code toType} is null (or {@code void} for {@code toType}). 
    * @throws InvocationException if there was an error during the converter's invocation.
+   * @see #convert(Object, TypeToken, TypeToken)
    */
   @SuppressWarnings("unchecked")
   public <From, To> To convert(From from, TypeToken<To> toType) {
@@ -347,7 +377,7 @@ public class Transmuter {
 
   /**
    * Performs a conversion, taking {@code from} and generating a new object of type {@code toType}.
-   * 
+   * <p>
    * This method doesn't use generics for compile-time checking, returning the result as a raw {@link Object}. 
    * So, due to erasure-imposed limitations, {@code from}'s runtime class will be considered as the input type.
    * This means that both invocations below:
@@ -374,7 +404,7 @@ public class Transmuter {
   /**
    * Performs a conversion, taking {@code from} (which is considered to be of type {@code fromType} for the purposes
    * of this operation) and generating a new object of type {@code toType}.
-   * 
+   * <p>
    * This method doesn't use generics for compile-time checking, returning the result as a raw {@link Object}. 
    * 
    * @param from the object to convert.
