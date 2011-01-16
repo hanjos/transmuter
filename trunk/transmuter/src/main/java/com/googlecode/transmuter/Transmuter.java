@@ -24,13 +24,10 @@ import com.googlecode.transmuter.exception.TooManyConvertersFoundException;
 import com.googlecode.transmuter.type.TypeToken;
 import com.googlecode.transmuter.util.Notification;
 import com.googlecode.transmuter.util.exception.MultipleCausesException;
-import com.googlecode.transmuter.util.exception.ObjectInstantiationException;
 
 /**
- * The main object in the library. A transmuter provides a centralized type conversion operation, using previously 
- * registered methods as converters. Objects containing converter methods (public methods marked with the 
- * {@link Converts} annotation) may register them in the transmuter. These methods may later be used as converters 
- * when a conversion operation is made with matching types.
+ * The main object in the library. A transmuter provides a centralized type conversion operation, using registered 
+ * converters. These converters may later be used when a conversion operation is made with matching types.
  * <p>
  * There cannot be more than one registered converter with the exact same {@linkplain ConverterType type}; the 
  * existing one must be explicitly unregistered before the new one is included.
@@ -52,7 +49,7 @@ public class Transmuter {
      * Validates the converter type and the converter (using {@link #validatePut(ConverterType, Converter) validatePut}) 
      * before insertion, throwing an exception if a problem is found.
      * <p>
-     * In particular, converter cannot be overwritten; they must be specifically removed from this map before a new 
+     * In particular, a converter cannot be overwritten; they must be specifically removed from this map before a new 
      * {@code put} operation with the given converter type can be done.
      * 
      * @return {@code null} if there was no previous converter for {@code converterType}, or {@code converter} if 
@@ -85,7 +82,6 @@ public class Transmuter {
      * @throws IllegalArgumentException if either {@code converterType} or {@code converter} are {@code null}.
      * @throws ConverterTypeIncompatibleWithConverterException if {@code converterType} and {@code converter} are not 
      * compatible.
-     * @throws ObjectInstantiationException if a converter type cannot be obtained from {@code converter}.
      * @throws ConverterCollisionException if this map already has a different converter associated to 
      * {@code converterType}.
      * @see #checkForCompatibility(ConverterType, Converter)
@@ -456,7 +452,7 @@ public class Transmuter {
       Map<ConverterType, Converter> temp = new DependentConverterMap(getConverterMap());
       Iterator<? extends Converter> iterator = converters.iterator();
     
-      // if hasNext() fails, there's no iterating at all here; snitch and move on
+      // if hasNext() fails, there's no iterating to do; snitch and move on
       while(iterator.hasNext()) {
         try {
           // an individual next() may fail, but not necessarily all them will; 
@@ -470,7 +466,7 @@ public class Transmuter {
         }
       }
       
-      if(notification.hasErrors()) // some next()s blew up
+      if(notification.hasErrors()) // somebody blew up
         return notification;
       
       // everything worked so far...
@@ -524,7 +520,7 @@ public class Transmuter {
    * @param toType the output type.
    */
   public void unregister(Type fromType, Type toType) {
-    if(nonNullOrVoid(fromType) || nonNullOrVoid(toType))
+    if(nullOrVoid(fromType) || nullOrVoid(toType))
       return;
     
     unregister(new ConverterType(fromType, toType));
@@ -538,17 +534,18 @@ public class Transmuter {
    * @param toType the output type.
    */
   public void unregister(TypeToken<?> fromType, TypeToken<?> toType) {
-    if(nonNullOrVoid(fromType) || nonNullOrVoid(toType))
+    if(nullOrVoid(fromType) || nullOrVoid(toType))
       return;
     
     unregister(new ConverterType(fromType, toType));
   }
   
-  private boolean nonNullOrVoid(Type type) {
+  // I could write a doc comment, but these two are quite self-explaining 
+  private boolean nullOrVoid(Type type) {
     return type == null || TypeToken.ValueType.VOID.matches(type);
   }
   
-  private boolean nonNullOrVoid(TypeToken<?> type) {
+  private boolean nullOrVoid(TypeToken<?> type) {
     return type == null || TypeToken.ValueType.VOID.matches(type);
   }
   
@@ -600,11 +597,11 @@ public class Transmuter {
   }
   
   /**
-   * Returns a list of all the compatible converters found in this instance. Will be empty if the given converter type
-   * is {@code null} or has no compatible converters. 
+   * Returns a set of all the converters registered in this instance which are compatible with the given converter 
+   * type. Will be empty if the given converter type is {@code null} or has no compatible converters. 
    * 
    * @param converterType a converter type.
-   * @return a list with all the compatible converters found.  
+   * @return a set with all the compatible converters found.  
    */
   protected Set<Converter> getCompatibleConvertersFor(ConverterType converterType) {
     Set<Converter> compatibles = new HashSet<Converter>();
