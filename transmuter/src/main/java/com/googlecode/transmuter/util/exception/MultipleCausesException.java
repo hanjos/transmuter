@@ -39,6 +39,16 @@ public class MultipleCausesException extends RuntimeException {
   /**
    * Builds a new instance.
    * 
+   * @param message the message.
+   * @param causes the exceptions to be bundled.
+   */
+  public MultipleCausesException(String message, Exception... causes) {
+    this(message, (causes != null) ? Arrays.asList(causes) : EMPTY_EXCEPTION_LIST);
+  }
+  
+  /**
+   * Builds a new instance.
+   * 
    * @param causes the exceptions to be bundled.
    */
   public MultipleCausesException(Collection<? extends Exception> causes) {
