@@ -1,5 +1,5 @@
 #summary Some of the terms used in this project.
-#labels Featured,Phase-Implementation,Phase-Use,Phase-Design
+#labels Featured,Phase-Design,Phase-Implementation,Phase-Use
 
 === Binding ===
 
