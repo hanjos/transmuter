@@ -1,5 +1,5 @@
 #summary How to get Transmuter for use
-#labels Featured,Phase-Deploy
+#labels Featured,Phase-Use
 
 You can either download it directly from the [http://code.google.com/p/transmuter/downloads/list Downloads] page, or add it as a Maven dependency:
 
