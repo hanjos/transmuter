@@ -36,7 +36,7 @@ public class SomeConverter {
 == Registering the converters in the transmuter ==
 
 Use a provider to `register` an instance of the class in the transmuter.
-A provider is any object or method which will return the converters to register (actually an [http://download.oracle.com/javase/6/docs/api/java/lang/Iterable.html Iterable]). In this case, Transmuter has some providers for use with `@Converts`:
+A provider is any object or method which will return the converters to register (actually an [http://download.oracle.com/javase/6/docs/api/java/lang/Iterable.html Iterable] of converters). In this case, Transmuter has some providers for use with `@Converts`:
 
 {{{
 // in some method...
