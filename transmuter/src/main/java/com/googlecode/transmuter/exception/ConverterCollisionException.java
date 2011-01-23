@@ -6,9 +6,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import com.googlecode.transmuter.Transmuter;
 import com.googlecode.transmuter.converter.Converter;
 import com.googlecode.transmuter.converter.ConverterType;
+import com.googlecode.transmuter.core.Transmuter;
 
 /**
  * Thrown when an attempt to {@link Transmuter#register(Iterable) register} a converter fails due to the presence of 

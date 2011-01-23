@@ -2,7 +2,7 @@ package com.googlecode.transmuter.exception;
 
 import java.util.Collection;
 
-import com.googlecode.transmuter.Transmuter;
+import com.googlecode.transmuter.core.Transmuter;
 import com.googlecode.transmuter.util.exception.MultipleCausesException;
 
 /**

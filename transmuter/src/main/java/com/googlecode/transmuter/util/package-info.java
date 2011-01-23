@@ -1,4 +1,4 @@
 /**
- * A collection of utility classes.
+ * A collection of miscellaneous utility classes.
  */
 package com.googlecode.transmuter.util;

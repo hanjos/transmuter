@@ -1,4 +1,4 @@
-package com.googlecode.transmuter;
+package com.googlecode.transmuter.converter;
 
 import static com.googlecode.transmuter.TestUtils.assertInvalidReturnType;
 import static com.googlecode.transmuter.TestUtils.assertMatchingCollections;
@@ -23,9 +23,10 @@ import java.util.NoSuchElementException;
 import org.junit.Test;
 
 import com.googlecode.transmuter.converter.Converter;
+import com.googlecode.transmuter.converter.Converts;
+import com.googlecode.transmuter.converter.exception.ConverterProviderException;
 import com.googlecode.transmuter.converter.exception.InvalidParameterTypeException;
 import com.googlecode.transmuter.converter.exception.InvalidReturnTypeException;
-import com.googlecode.transmuter.exception.ConverterProviderException;
 import com.googlecode.transmuter.fixture.FlawedConverter;
 import com.googlecode.transmuter.fixture.GenericConverter;
 import com.googlecode.transmuter.fixture.GenericMethodConverter;

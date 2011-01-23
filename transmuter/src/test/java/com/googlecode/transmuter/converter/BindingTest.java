@@ -17,7 +17,6 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.googlecode.transmuter.Converts;
 import com.googlecode.transmuter.TestUtils;
 import com.googlecode.transmuter.converter.exception.InaccessibleMethodException;
 import com.googlecode.transmuter.converter.exception.InvocationException;

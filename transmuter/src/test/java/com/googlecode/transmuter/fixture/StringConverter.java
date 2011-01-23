@@ -1,6 +1,6 @@
 package com.googlecode.transmuter.fixture;
 
-import com.googlecode.transmuter.Converts;
+import com.googlecode.transmuter.converter.Converts;
 
 public class StringConverter {
   @Converts

@@ -1,4 +1,4 @@
-package com.googlecode.transmuter;
+package com.googlecode.transmuter.core;
 
 import static com.googlecode.transmuter.TestUtils.assertInvalidReturnType;
 import static com.googlecode.transmuter.TestUtils.assertWrongParameterCount;
@@ -23,8 +23,11 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.googlecode.transmuter.TestUtils;
 import com.googlecode.transmuter.converter.Converter;
 import com.googlecode.transmuter.converter.ConverterType;
+import com.googlecode.transmuter.converter.Converts;
+import com.googlecode.transmuter.core.Transmuter;
 import com.googlecode.transmuter.exception.ConverterRegistrationException;
 import com.googlecode.transmuter.exception.NoCompatibleConvertersFoundException;
 import com.googlecode.transmuter.exception.TooManyConvertersFoundException;

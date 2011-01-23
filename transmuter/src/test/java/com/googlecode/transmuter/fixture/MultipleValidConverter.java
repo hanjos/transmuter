@@ -3,7 +3,7 @@ package com.googlecode.transmuter.fixture;
 import java.io.Serializable;
 import java.util.List;
 
-import com.googlecode.transmuter.Converts;
+import com.googlecode.transmuter.converter.Converts;
 
 
 public class MultipleValidConverter {

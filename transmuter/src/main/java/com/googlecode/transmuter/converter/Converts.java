@@ -1,4 +1,4 @@
-package com.googlecode.transmuter;
+package com.googlecode.transmuter.converter;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -13,8 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import com.googlecode.transmuter.converter.Converter;
-import com.googlecode.transmuter.exception.ConverterProviderException;
+import com.googlecode.transmuter.converter.exception.ConverterProviderException;
 import com.googlecode.transmuter.util.exception.MultipleCausesException;
 
 /**

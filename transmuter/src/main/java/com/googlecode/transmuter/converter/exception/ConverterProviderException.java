@@ -1,8 +1,8 @@
-package com.googlecode.transmuter.exception;
+package com.googlecode.transmuter.converter.exception;
 
 import java.util.Collection;
 
-import com.googlecode.transmuter.Converts;
+import com.googlecode.transmuter.converter.Converts;
 import com.googlecode.transmuter.util.exception.MultipleCausesException;
 
 /**

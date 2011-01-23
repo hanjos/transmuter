@@ -1,4 +1,4 @@
-package com.googlecode.transmuter;
+package com.googlecode.transmuter.core;
 
 import static com.googlecode.transmuter.util.ObjectUtils.areEqual;
 import static com.googlecode.transmuter.util.ObjectUtils.classOf;
