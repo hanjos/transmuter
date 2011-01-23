@@ -1,5 +1,5 @@
 #summary Changes between versions.
-#labels Featured,Phase-Implementation,Phase-Use
+#labels Featured,Phase-Use
 
 = 0.2-SNAPSHOT =
   * Changed `Binding`'s `validate` to `initialize`.
