@@ -1,13 +1,17 @@
-#summary How to make a transmuter release
+#summary How to make a Transmuter release
 #labels Featured,Phase-Implementation
 
 = Steps =
 
-  * Get the code and documentation to the point of release :)
+== Source Control ==
   * Run `mvn release:clean release:prepare` (*not* `release:perform`!). This will update the POM to the new version and store the new version in SVN's `tag` folder.
   * Run `mvn deploy`, which will publish the new version to a local directory in your machine.
-  * Commit the new version to the `repos/releases` folder. This is what `release:perform` was supposed to do, but for some reason doesn't.
+  * Commit the new version to the `repos/releases` folder. This is what `release:perform` was supposed to do, but for some reason doesn't... :(
+
+== Library ==
   * Upload the generated library to the [http://code.google.com/p/transmuter/downloads/list Downloads tab].
+
+== Documentation ==
   * Generate the docs separately. 
   * Commit them to `tags/<new-version>/docs`. Take care of the `svn:mime-type` to ensure the docs are configured to be read as HTML instead of text.
   * Add a link in the [http://code.google.com/p/transmuter/ main page] to the new documentation. 
