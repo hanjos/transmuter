@@ -1,5 +1,5 @@
 #summary Some usage examples.
-#labels Featured
+#labels Featured,Phase-Use
 
 Obs.: check the ProjectGlossary fo the specific terminology used here.
 
