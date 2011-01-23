@@ -1,0 +1,21 @@
+#summary How to get Transmuter for use
+#labels Featured,Phase-Deploy
+
+You can either download it directly from the [http://code.google.com/p/transmuter/downloads/list Downloads] page, or add it as a Maven dependency:
+
+  * The repository:
+{{{
+<repository>
+  <id>transmuter-releases</id>
+  <url>http://transmuter.googlecode.com/svn/repos/releases</url>
+</repository>
+}}}
+
+  * And the actual dependency:
+{{{
+<dependency>
+  <groupId>com.googlecode.transmuter</groupId>
+  <artifactId>transmuter</artifactId>
+  <version>0.1</version>
+</dependency>
+}}}
