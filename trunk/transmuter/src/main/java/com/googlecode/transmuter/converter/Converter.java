@@ -2,7 +2,7 @@ package com.googlecode.transmuter.converter;
 
 import java.lang.reflect.Method;
 
-import com.googlecode.transmuter.Transmuter;
+import com.googlecode.transmuter.core.Transmuter;
 import com.googlecode.transmuter.util.Notification;
 import com.googlecode.transmuter.util.exception.MultipleCausesException;
 import com.googlecode.transmuter.util.exception.ObjectInstantiationException;

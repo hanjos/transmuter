@@ -1,4 +1,4 @@
-package com.googlecode.transmuter;
+package com.googlecode.transmuter.core;
 
 import static com.googlecode.transmuter.TestUtils.extractMethod;
 import static org.junit.Assert.assertEquals;
@@ -18,10 +18,12 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.googlecode.transmuter.Transmuter.ConverterMap;
 import com.googlecode.transmuter.converter.Converter;
 import com.googlecode.transmuter.converter.ConverterType;
+import com.googlecode.transmuter.converter.Converts;
 import com.googlecode.transmuter.converter.exception.ConverterTypeIncompatibleWithConverterException;
+import com.googlecode.transmuter.core.Transmuter;
+import com.googlecode.transmuter.core.Transmuter.ConverterMap;
 import com.googlecode.transmuter.exception.ConverterCollisionException;
 import com.googlecode.transmuter.fixture.MultipleConverter;
 import com.googlecode.transmuter.fixture.MultipleValidConverter;

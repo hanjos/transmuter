@@ -1,4 +1,4 @@
 /**
- * The classes used to define converters.
+ * Defines converters and converter-related classes.
  */
 package com.googlecode.transmuter.converter;
