@@ -3,9 +3,13 @@
 
 Obs.: check the ProjectGlossary fo the specific terminology used here.
 
-=== Creating converters ===
+= Example =
 
-Create a class with all converter methods marked with the Converts annotation:
+== Getting converters ==
+
+There are several ways of creating converters. One option readily offered by Transmuter is using the [http://transmuter.googlecode.com/svn/tags/transmuter-0.1/docs/apidocs/com/googlecode/transmuter/Converts.html @Converts] annotation.
+
+To use it, create a class with all intended converter methods marked with it:
 
 {{{
 public class SomeConverter {
@@ -21,22 +25,28 @@ public class SomeConverter {
   public java.util.Date stringToDate(String string) {
     // more code
   }
+
+  // not an converter method
+  public Object willNotBeRegistered(List<String> whatever) {
+    // yet even more code
+  }
 }
 }}}
 
-=== Registering the converters in the transmuter ===
+== Registering the converters in the transmuter ==
 
-Just `register` an instance of the class in the transmuter:
+Use a provider to `register` an instance of the class in the transmuter.
+A provider is any object or method which will return the converters to register (actually an [http://download.oracle.com/javase/6/docs/api/java/lang/Iterable.html Iterable]). In this case, Transmuter has some providers for use with `@Converts`:
 
 {{{
 // in some method...
 SomeConverter someConverter = new SomeConverter();
-transmuter.register(someConverter);
+transmuter.register(new Converts.EagerProvider(someConverter));
 }}}
 
 The transmuter will iterate through the instance's methods and register all the converter methods found, binding them to the instance.
 
-=== Doing a conversion ===
+== Doing a conversion ==
 
 Just call `convert`:
 
