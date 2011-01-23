@@ -1,5 +1,5 @@
 #summary Some of the terms used in this project.
-#labels Featured
+#labels Featured,Phase-Implementation
 
 === Binding ===
 
@@ -20,6 +20,10 @@ A method which can be used by the [#Transmuter transmuter] to perform a [#Conver
   * be public
   * take a single parameter
   * not return `void`
+
+=== Converter provider ===
+
+An object (usually implementing [http://download.oracle.com/javase/6/docs/api/java/lang/Iterable.html Iterable]) which makes several converters available.
 
 === Converter type ===
 
