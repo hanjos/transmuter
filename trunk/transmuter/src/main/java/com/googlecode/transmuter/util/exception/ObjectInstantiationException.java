@@ -13,7 +13,7 @@ import com.googlecode.transmuter.util.StringUtils;
 public class ObjectInstantiationException extends MultipleCausesException {
   private static final long serialVersionUID = 1L;
 
-  private Class<?> objectType;
+  private final Class<?> objectType;
   
   private static String buildMessage(Class<?> objectType, Collection<? extends Exception> causes) {
     String msg = "Error while instantiating " + objectType;

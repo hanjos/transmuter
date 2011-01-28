@@ -8,7 +8,7 @@ package com.googlecode.transmuter.type.exception;
 public class MissingTypeParameterException extends RuntimeException {
   private static final long serialVersionUID = 1L;
 
-  private Class<?> baseClass;
+  private final Class<?> baseClass;
   
   /**
    * Builds a new instance.

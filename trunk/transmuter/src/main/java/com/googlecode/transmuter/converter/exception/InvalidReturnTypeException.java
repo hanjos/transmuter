@@ -21,8 +21,8 @@ public class InvalidReturnTypeException extends RuntimeException {
     return method.getGenericReturnType();
   }
   
-  private Method method;
-  private Type type;
+  private final Method method;
+  private final Type type;
 
   /**
    * Builds a new instance.

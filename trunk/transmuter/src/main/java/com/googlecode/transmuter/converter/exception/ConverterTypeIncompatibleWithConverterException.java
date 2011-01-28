@@ -15,8 +15,8 @@ public class ConverterTypeIncompatibleWithConverterException extends RuntimeExce
     return converter + " is not compatible with " + converterType;
   }
   
-  private ConverterType converterType;
-  private Converter converter;
+  private final ConverterType converterType;
+  private final Converter converter;
   
   /**
    * Builds a new instance.

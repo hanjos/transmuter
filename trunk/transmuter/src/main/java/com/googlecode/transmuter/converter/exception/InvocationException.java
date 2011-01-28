@@ -10,7 +10,7 @@ import com.googlecode.transmuter.converter.Binding;
 public class InvocationException extends RuntimeException {
   private static final long serialVersionUID = 1L;
   
-  private Binding binding;
+  private final Binding binding;
 
   /**
    * Builds a new instance.
