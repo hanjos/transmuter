@@ -41,10 +41,10 @@ public final class StringUtils {
     if(objects.length == 1)
       return firstObjectAsString;
     
-    delim = delim != null ? delim : "";
+    final String nonNullDelim = delim != null ? delim : "";
     StringBuilder sb = new StringBuilder(firstObjectAsString);
     for(int i = 1; i < objects.length; i++)
-      sb.append(delim).append(String.valueOf(objects[i]));
+      sb.append(nonNullDelim).append(String.valueOf(objects[i]));
     
     return sb.toString();
   }
@@ -72,14 +72,14 @@ public final class StringUtils {
     if(isEmpty(objects))
       return "";
     
-    delim = delim != null ? delim : "";
+    final String nonNullDelim = delim != null ? delim : "";
     Iterator<?> iterator = objects.iterator();
     
     Object first = iterator.next();
     StringBuilder sb = new StringBuilder().append(first);
     
     while(iterator.hasNext())
-      sb.append(delim).append(iterator.next());
+      sb.append(nonNullDelim).append(iterator.next());
     
     return sb.toString();
   }

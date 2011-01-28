@@ -22,9 +22,9 @@ public class WrongParameterCountException extends RuntimeException {
          + " from " + ReflectionUtils.simpleMethodToString(method);
   }
 
-  private Method method;
-  private int actual;
-  private int expected;
+  private final Method method;
+  private final int actual;
+  private final int expected;
   
   /**
    * Builds a new instance.

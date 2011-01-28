@@ -15,8 +15,8 @@ import com.googlecode.transmuter.converter.ConverterType;
 public class TooManyConvertersFoundException extends RuntimeException {
   private static final long serialVersionUID = 1L;
   
-  private ConverterType converterType;
-  private Collection<? extends Converter> converters;
+  private final ConverterType converterType;
+  private final Collection<? extends Converter> converters;
   
   /**
    * Builds a new instance.

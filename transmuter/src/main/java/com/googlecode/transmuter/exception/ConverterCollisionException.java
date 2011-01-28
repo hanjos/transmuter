@@ -19,8 +19,8 @@ import com.googlecode.transmuter.core.Transmuter;
 public class ConverterCollisionException extends RuntimeException {
   private static final long serialVersionUID = 1L;
   
-  private Collection<? extends Converter> converters;
-  private ConverterType converterType;
+  private final Collection<? extends Converter> converters;
+  private final ConverterType converterType;
   
   private static String buildMessage(ConverterType converterType, Collection<? extends Converter> converters) {
     return "More than one converter for " + converterType + ": " + converters;

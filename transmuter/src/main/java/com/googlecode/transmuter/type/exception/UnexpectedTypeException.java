@@ -40,8 +40,8 @@ public class UnexpectedTypeException extends RuntimeException {
     return message.toString();
   }
   
-  private Type type;
-  private List<Type> expected;
+  private final Type type;
+  private final List<Type> expected;
 
   /**
    * Builds a new instance.

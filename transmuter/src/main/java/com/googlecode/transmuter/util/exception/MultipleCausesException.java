@@ -16,7 +16,7 @@ import com.googlecode.transmuter.util.StringUtils;
 public class MultipleCausesException extends RuntimeException {
   private static final long serialVersionUID = 1L;
   
-  protected static final List<Exception> EMPTY_EXCEPTION_LIST = Arrays.asList(new Exception[0]);
+  protected static final List<Exception> EMPTY_EXCEPTION_LIST = Collections.emptyList();
   
   private static String buildMessage(Collection<? extends Exception> causes) {
     if(causes.isEmpty())
@@ -25,7 +25,7 @@ public class MultipleCausesException extends RuntimeException {
     return "Multiple exceptions found:\n    " + StringUtils.concatenate(";\n    ", causes);
   }
 
-  private Collection<? extends Exception> causes;
+  private final Collection<? extends Exception> causes;
   
   /**
    * Builds a new instance.

@@ -16,7 +16,7 @@ public class NullInstanceWithNonStaticMethodException extends RuntimeException {
     return "Cannot bind a null instance to non-static method " + method;
   }
 
-  private Method method;
+  private final Method method;
   
   /**
    * Builds a new instance.

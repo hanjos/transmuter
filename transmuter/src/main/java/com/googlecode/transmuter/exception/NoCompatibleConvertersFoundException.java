@@ -10,7 +10,7 @@ import com.googlecode.transmuter.converter.ConverterType;
 public class NoCompatibleConvertersFoundException extends RuntimeException {
   private static final long serialVersionUID = 1L;
   
-  private ConverterType converterType;
+  private final ConverterType converterType;
 
   /**
    * Builds a new instance.

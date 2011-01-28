@@ -15,8 +15,8 @@ public class MethodOwnerTypeIncompatibilityException extends RuntimeException {
     return "The method " + method + " is not compatible with " + ownerType;
   }
   
-  private Method method;
-  private Type ownerType;
+  private final Method method;
+  private final Type ownerType;
 
   /**
    * Builds a new instance.

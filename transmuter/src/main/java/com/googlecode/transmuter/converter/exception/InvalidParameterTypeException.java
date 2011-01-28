@@ -21,8 +21,8 @@ public class InvalidParameterTypeException extends RuntimeException {
     return method.getGenericParameterTypes()[0];
   }
   
-  private Method method;
-  private Type type;
+  private final Method method;
+  private final Type type;
   
   /**
    * Builds a new instance.

@@ -12,7 +12,7 @@ import com.googlecode.transmuter.converter.Binding;
 public class InaccessibleMethodException extends RuntimeException {
   private static final long serialVersionUID = 1L;
   
-  private Method method;
+  private final Method method;
 
   /**
    * Builds a new instance.

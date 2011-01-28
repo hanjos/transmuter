@@ -14,8 +14,8 @@ public class MethodInstanceIncompatibilityException extends RuntimeException {
     return "The method " + method + " cannot be invoked on " + instance;
   }
 
-  private Object instance;
-  private Method method;
+  private final Object instance;
+  private final Method method;
   
   /**
    * Builds a new instance.
