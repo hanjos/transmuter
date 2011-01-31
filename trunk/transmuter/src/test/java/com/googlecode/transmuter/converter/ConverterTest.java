@@ -1,15 +1,14 @@
 package com.googlecode.transmuter.converter;
 
-import static com.googlecode.transmuter.TestUtils.extractMethod;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
-import java.lang.reflect.Method;
-
+import com.googlecode.transmuter.util.exception.ObjectInstantiationException;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.googlecode.transmuter.util.exception.ObjectInstantiationException;
+import java.lang.reflect.Method;
+
+import static com.googlecode.transmuter.TestUtils.extractMethod;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class ConverterTest {
   private String string;

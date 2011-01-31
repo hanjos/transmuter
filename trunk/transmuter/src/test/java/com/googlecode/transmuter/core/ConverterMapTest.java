@@ -1,28 +1,9 @@
 package com.googlecode.transmuter.core;
 
-import static com.googlecode.transmuter.TestUtils.extractMethod;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.Serializable;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import com.googlecode.transmuter.converter.Converter;
 import com.googlecode.transmuter.converter.ConverterType;
 import com.googlecode.transmuter.converter.Converts;
 import com.googlecode.transmuter.converter.exception.ConverterTypeIncompatibleWithConverterException;
-import com.googlecode.transmuter.core.Transmuter;
 import com.googlecode.transmuter.core.Transmuter.ConverterMap;
 import com.googlecode.transmuter.exception.ConverterCollisionException;
 import com.googlecode.transmuter.fixture.MultipleConverter;
@@ -30,6 +11,15 @@ import com.googlecode.transmuter.fixture.MultipleValidConverter;
 import com.googlecode.transmuter.fixture.StringConverter;
 import com.googlecode.transmuter.type.TypeToken;
 import com.googlecode.transmuter.util.exception.ObjectInstantiationException;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.*;
+
+import static com.googlecode.transmuter.TestUtils.extractMethod;
+import static org.junit.Assert.*;
 
 public class ConverterMapTest {
   private static final TypeToken<List<String>> LIST_OF_STRING = new TypeToken<List<String>>() { /**/ };

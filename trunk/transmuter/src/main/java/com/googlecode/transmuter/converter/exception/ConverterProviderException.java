@@ -1,9 +1,9 @@
 package com.googlecode.transmuter.converter.exception;
 
-import java.util.Collection;
-
 import com.googlecode.transmuter.converter.Converts;
 import com.googlecode.transmuter.util.exception.MultipleCausesException;
+
+import java.util.Collection;
 
 /**
  * Intended to be thrown on errors from converter providers, such as {@link Converts.EagerProvider}, which will be bundled 

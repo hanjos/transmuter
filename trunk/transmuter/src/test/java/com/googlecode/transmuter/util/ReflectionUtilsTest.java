@@ -1,31 +1,16 @@
 package com.googlecode.transmuter.util;
 
-import static com.googlecode.transmuter.TestUtils.extractDeclaredMethod;
-import static com.googlecode.transmuter.util.ReflectionUtils.getOwnerType;
-import static com.googlecode.transmuter.util.ReflectionUtils.getTypeName;
-import static com.googlecode.transmuter.util.ReflectionUtils.getTypeNames;
-import static com.googlecode.transmuter.util.ReflectionUtils.isCompatible;
-import static com.googlecode.transmuter.util.ReflectionUtils.simpleMethodToString;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import com.googlecode.transmuter.converter.exception.MethodOwnerTypeIncompatibilityException;
+import com.googlecode.transmuter.type.TypeToken;
+import org.junit.Test;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-import org.junit.Test;
-
-import com.googlecode.transmuter.converter.exception.MethodOwnerTypeIncompatibilityException;
-import com.googlecode.transmuter.type.TypeToken;
+import static com.googlecode.transmuter.TestUtils.extractDeclaredMethod;
+import static com.googlecode.transmuter.util.ReflectionUtils.*;
+import static org.junit.Assert.*;
 
 public class ReflectionUtilsTest {
   private static final Type ARRAY_OF_ARRAY_OF_LIST_OF_SUPER_STRING = 

@@ -1,8 +1,8 @@
 package com.googlecode.transmuter.util;
 
-import static com.googlecode.transmuter.util.ObjectUtils.isEmpty;
-
 import java.util.Iterator;
+
+import static com.googlecode.transmuter.util.ObjectUtils.isEmpty;
 
 /**
  * Some utility methods for Strings. This class cannot be inherited from or instantiated.

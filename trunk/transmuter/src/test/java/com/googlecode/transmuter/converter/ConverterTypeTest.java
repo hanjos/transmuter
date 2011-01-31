@@ -1,24 +1,20 @@
 package com.googlecode.transmuter.converter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.awt.Point;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.Iterator;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import com.googlecode.transmuter.converter.exception.InvalidReturnTypeException;
 import com.googlecode.transmuter.converter.exception.MethodOwnerTypeIncompatibilityException;
 import com.googlecode.transmuter.converter.exception.WrongParameterCountException;
 import com.googlecode.transmuter.fixture.GenericConverter;
 import com.googlecode.transmuter.type.TypeToken;
 import com.googlecode.transmuter.util.exception.ObjectInstantiationException;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.awt.*;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.Iterator;
+
+import static org.junit.Assert.*;
 
 public class ConverterTypeTest {
   private ConverterType object2string;

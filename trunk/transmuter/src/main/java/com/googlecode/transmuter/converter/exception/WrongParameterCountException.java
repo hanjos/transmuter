@@ -1,8 +1,8 @@
 package com.googlecode.transmuter.converter.exception;
 
-import java.lang.reflect.Method;
-
 import com.googlecode.transmuter.util.ReflectionUtils;
+
+import java.lang.reflect.Method;
 
 
 /**

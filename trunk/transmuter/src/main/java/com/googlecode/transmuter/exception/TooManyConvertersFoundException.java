@@ -1,10 +1,10 @@
 package com.googlecode.transmuter.exception;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import com.googlecode.transmuter.converter.Converter;
 import com.googlecode.transmuter.converter.ConverterType;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Thrown when more than one compatible converter for the given converter type was found, and there is no way to decide 

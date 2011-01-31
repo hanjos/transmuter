@@ -1,16 +1,5 @@
 package com.googlecode.transmuter.converter;
 
-import static com.googlecode.gentyref.GenericTypeReflector.addWildcardParameters;
-import static com.googlecode.gentyref.GenericTypeReflector.getExactParameterTypes;
-import static com.googlecode.gentyref.GenericTypeReflector.getExactReturnType;
-import static com.googlecode.transmuter.util.ObjectUtils.hashCodeOf;
-import static com.googlecode.transmuter.util.ObjectUtils.nonNull;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.googlecode.gentyref.CaptureType;
 import com.googlecode.transmuter.converter.exception.InvalidParameterTypeException;
 import com.googlecode.transmuter.converter.exception.InvalidReturnTypeException;
@@ -21,6 +10,15 @@ import com.googlecode.transmuter.type.TypeToken.ValueType;
 import com.googlecode.transmuter.util.ReflectionUtils;
 import com.googlecode.transmuter.util.exception.ObjectInstantiationException;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.googlecode.gentyref.GenericTypeReflector.*;
+import static com.googlecode.transmuter.util.ObjectUtils.hashCodeOf;
+import static com.googlecode.transmuter.util.ObjectUtils.nonNull;
+
 /**
  * Represents a converter's "type": the input type (called {@code fromType}) paired with its output type 
  * (called {@code toType}). Converter types are immutable.
@@ -28,8 +26,8 @@ import com.googlecode.transmuter.util.exception.ObjectInstantiationException;
  * @author Humberto S. N. dos Anjos
  */
 public class ConverterType {
-  private TypeToken<?> fromType;
-  private TypeToken<?> toType;
+  private final TypeToken<?> fromType;
+  private final TypeToken<?> toType;
 
   /**
    * Creates a new converter type. Throws an exception if one of the arguments is null or 

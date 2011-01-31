@@ -1,22 +1,5 @@
 package com.googlecode.transmuter.converter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import com.googlecode.transmuter.TestUtils;
 import com.googlecode.transmuter.converter.exception.InaccessibleMethodException;
 import com.googlecode.transmuter.converter.exception.InvocationException;
@@ -26,6 +9,18 @@ import com.googlecode.transmuter.type.TypeToken;
 import com.googlecode.transmuter.util.Notification;
 import com.googlecode.transmuter.util.exception.NotificationNotFoundException;
 import com.googlecode.transmuter.util.exception.ObjectInstantiationException;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 public class BindingTest {
   private String string;

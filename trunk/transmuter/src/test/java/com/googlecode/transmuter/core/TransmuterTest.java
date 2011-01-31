@@ -1,45 +1,25 @@
 package com.googlecode.transmuter.core;
 
-import static com.googlecode.transmuter.TestUtils.assertInvalidReturnType;
-import static com.googlecode.transmuter.TestUtils.assertWrongParameterCount;
-import static com.googlecode.transmuter.TestUtils.extractMethod;
-import static com.googlecode.transmuter.type.TypeToken.ValueType.DOUBLE;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import com.googlecode.transmuter.TestUtils;
 import com.googlecode.transmuter.converter.Converter;
 import com.googlecode.transmuter.converter.ConverterType;
 import com.googlecode.transmuter.converter.Converts;
-import com.googlecode.transmuter.core.Transmuter;
 import com.googlecode.transmuter.exception.ConverterRegistrationException;
 import com.googlecode.transmuter.exception.NoCompatibleConvertersFoundException;
 import com.googlecode.transmuter.exception.TooManyConvertersFoundException;
-import com.googlecode.transmuter.fixture.FlawedConverter;
-import com.googlecode.transmuter.fixture.MultipleConverter;
-import com.googlecode.transmuter.fixture.MultipleValidConverter;
-import com.googlecode.transmuter.fixture.StringArrayToListStringConverter;
-import com.googlecode.transmuter.fixture.StringConverter;
-import com.googlecode.transmuter.fixture.VarargConverter;
+import com.googlecode.transmuter.fixture.*;
 import com.googlecode.transmuter.type.TypeToken;
 import com.googlecode.transmuter.util.Notification;
 import com.googlecode.transmuter.util.exception.NotificationNotFoundException;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.Serializable;
+import java.util.*;
+
+import static com.googlecode.transmuter.TestUtils.*;
+import static com.googlecode.transmuter.type.TypeToken.ValueType.DOUBLE;
+import static org.junit.Assert.*;
 
 
 public class TransmuterTest {

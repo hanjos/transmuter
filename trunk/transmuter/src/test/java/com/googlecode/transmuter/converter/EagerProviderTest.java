@@ -1,38 +1,18 @@
 package com.googlecode.transmuter.converter;
 
-import static com.googlecode.transmuter.TestUtils.assertInvalidReturnType;
-import static com.googlecode.transmuter.TestUtils.assertMatchingCollections;
-import static com.googlecode.transmuter.TestUtils.assertWrongParameterCount;
-import static com.googlecode.transmuter.TestUtils.extractMethod;
-import static com.googlecode.transmuter.util.CollectionUtils.toList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.TypeVariable;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
-
-import org.junit.Test;
-
-import com.googlecode.transmuter.converter.Converter;
-import com.googlecode.transmuter.converter.Converts;
 import com.googlecode.transmuter.converter.exception.ConverterProviderException;
 import com.googlecode.transmuter.converter.exception.InvalidParameterTypeException;
 import com.googlecode.transmuter.converter.exception.InvalidReturnTypeException;
-import com.googlecode.transmuter.fixture.FlawedConverter;
-import com.googlecode.transmuter.fixture.GenericConverter;
-import com.googlecode.transmuter.fixture.GenericMethodConverter;
-import com.googlecode.transmuter.fixture.MultipleConverter;
-import com.googlecode.transmuter.fixture.PartialGenericConverter;
-import com.googlecode.transmuter.fixture.VarargConverter;
+import com.googlecode.transmuter.fixture.*;
+import org.junit.Test;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.TypeVariable;
+import java.util.*;
+
+import static com.googlecode.transmuter.TestUtils.*;
+import static com.googlecode.transmuter.util.CollectionUtils.toList;
+import static org.junit.Assert.*;
 
 public class EagerProviderTest {
   @Test

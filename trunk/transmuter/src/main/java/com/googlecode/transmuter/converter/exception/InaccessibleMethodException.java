@@ -1,8 +1,8 @@
 package com.googlecode.transmuter.converter.exception;
 
-import java.lang.reflect.Method;
-
 import com.googlecode.transmuter.converter.Binding;
+
+import java.lang.reflect.Method;
 
 /**
  * Thrown when the method given to a {@link Binding} constructor cannot be externally accessed.

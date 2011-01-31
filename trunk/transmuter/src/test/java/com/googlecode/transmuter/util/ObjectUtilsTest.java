@@ -1,23 +1,11 @@
 package com.googlecode.transmuter.util;
 
-import static com.googlecode.transmuter.util.ObjectUtils.areEqual;
-import static com.googlecode.transmuter.util.ObjectUtils.classOf;
-import static com.googlecode.transmuter.util.ObjectUtils.hashCodeOf;
-import static com.googlecode.transmuter.util.ObjectUtils.isEmpty;
-import static com.googlecode.transmuter.util.ObjectUtils.nonNull;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-
 import org.junit.Test;
+
+import java.util.*;
+
+import static com.googlecode.transmuter.util.ObjectUtils.*;
+import static org.junit.Assert.*;
 
 public class ObjectUtilsTest {
   @Test

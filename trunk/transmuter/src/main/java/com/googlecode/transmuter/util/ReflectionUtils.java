@@ -1,15 +1,13 @@
 package com.googlecode.transmuter.util;
 
-import static com.googlecode.gentyref.GenericTypeReflector.capture;
-import static com.googlecode.gentyref.GenericTypeReflector.getExactSuperType;
-import static com.googlecode.gentyref.GenericTypeReflector.addWildcardParameters;
-import static com.googlecode.transmuter.util.ObjectUtils.isEmpty;
+import com.googlecode.transmuter.converter.exception.MethodOwnerTypeIncompatibilityException;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 
-import com.googlecode.transmuter.converter.exception.MethodOwnerTypeIncompatibilityException;
+import static com.googlecode.gentyref.GenericTypeReflector.*;
+import static com.googlecode.transmuter.util.ObjectUtils.isEmpty;
 
 /**
  * Contains utility methods for common reflection operations.
@@ -110,9 +108,9 @@ public final class ReflectionUtils {
    * 
    * @param types several type objects.
    * @return an array of Strings holding the types' {@link #getTypeName(Type) names}. This array has length 0 if the 
-   * given array of types is {@link ObjectUtils#isEmpty(Object...) empty}.
+   * given array of types is {@link ObjectUtils#isEmpty(Object[]) empty}.
    * @see #getTypeName(Type)
-   * @see ObjectUtils#isEmpty(Object...)
+   * @see ObjectUtils#isEmpty(Object[])
    */
   public static String[] getTypeNames(Type... types) {
     if(isEmpty(types))
@@ -133,11 +131,9 @@ public final class ReflectionUtils {
    * @return {@code true} if {@code ownerType} is a subtype of {@code method}'s declaring class.
    */
   public static boolean isCompatible(Method method, Type type) {
-    if(type == null || method == null)
-      return false;
-    
-    return getExactSuperType(capture(type), method.getDeclaringClass()) != null;
-  }
+      return !(type == null || method == null)
+          && getExactSuperType(capture(type), method.getDeclaringClass()) != null;
+    }
   
   /**
    * Returns the most specific class which holds the given method.

@@ -20,18 +20,14 @@
 
 package com.googlecode.transmuter.type;
 
-import static com.googlecode.transmuter.util.ObjectUtils.nonNull;
+import com.googlecode.transmuter.type.exception.MissingTypeParameterException;
+import com.googlecode.transmuter.type.exception.UnexpectedTypeException;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
+import java.lang.reflect.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.googlecode.transmuter.type.exception.MissingTypeParameterException;
-import com.googlecode.transmuter.type.exception.UnexpectedTypeException;
+import static com.googlecode.transmuter.util.ObjectUtils.nonNull;
 
 /**
  * Represents a generic type {@code T}.
@@ -94,8 +90,8 @@ public abstract class TypeToken<T> {
     /** Represents Java's {@code void} type. */
     public static final ValueType<Void> VOID;
     
-    private static Map<Class<?>, ValueType<?>> primitiveReverseMap;
-    private static Map<Class<?>, ValueType<?>> wrapperReverseMap;
+    private static final Map<Class<?>, ValueType<?>> primitiveReverseMap;
+    private static final Map<Class<?>, ValueType<?>> wrapperReverseMap;
     
     static {
       // must be instanced first to enable the constructor to register the new instances
@@ -669,11 +665,7 @@ public abstract class TypeToken<T> {
 
     // Interfaces didn't work, try the superclass.
     Type sType = clazz.getGenericSuperclass();
-    if (isAssignableFrom(sType, to, new HashMap<String, Type>(typeVarMap))) {
-      return true;
-    }
-
-    return false;
+    return isAssignableFrom(sType, to, new HashMap<String, Type>(typeVarMap));
   }
 
   /**
@@ -701,14 +693,10 @@ public abstract class TypeToken<T> {
    */
   private static boolean matches(Type from, Type to,
       Map<String, Type> typeMap) {
-    if (to.equals(from)) return true;
-
-    if (from instanceof TypeVariable<?>) {
-      return to.equals(typeMap.get(((TypeVariable<?>)from).getName()));
+      return to.equals(from)
+          || (from instanceof TypeVariable<?>
+            && to.equals(typeMap.get(((TypeVariable<?>) from).getName())));
     }
-
-    return false;
-  }
 
   /**
    * Hashcode for this object.
