@@ -1,14 +1,14 @@
 package com.googlecode.transmuter.exception;
 
-import static com.googlecode.transmuter.util.ObjectUtils.isEmpty;
+import com.googlecode.transmuter.converter.Converter;
+import com.googlecode.transmuter.converter.ConverterType;
+import com.googlecode.transmuter.core.Transmuter;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import com.googlecode.transmuter.converter.Converter;
-import com.googlecode.transmuter.converter.ConverterType;
-import com.googlecode.transmuter.core.Transmuter;
+import static com.googlecode.transmuter.util.ObjectUtils.isEmpty;
 
 /**
  * Thrown when an attempt to {@link Transmuter#register(Iterable) register} a converter fails due to the presence of 

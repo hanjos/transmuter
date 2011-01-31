@@ -1,20 +1,18 @@
 package com.googlecode.transmuter;
 
-import static com.googlecode.transmuter.util.ObjectUtils.areEqual;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import com.googlecode.transmuter.converter.Converter;
+import com.googlecode.transmuter.converter.ConverterType;
+import com.googlecode.transmuter.converter.exception.InvalidReturnTypeException;
+import com.googlecode.transmuter.converter.exception.WrongParameterCountException;
+import com.googlecode.transmuter.exception.ConverterCollisionException;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Set;
 
-import com.googlecode.transmuter.converter.Converter;
-import com.googlecode.transmuter.converter.ConverterType;
-import com.googlecode.transmuter.converter.exception.InvalidReturnTypeException;
-import com.googlecode.transmuter.converter.exception.WrongParameterCountException;
-import com.googlecode.transmuter.exception.ConverterCollisionException;
+import static com.googlecode.transmuter.util.ObjectUtils.areEqual;
+import static org.junit.Assert.*;
 
 public class TestUtils {
   public static Method extractMethod(Class<?> cls, String name, Class<?>... parameterTypes) 

@@ -1,17 +1,5 @@
 package com.googlecode.transmuter.converter;
 
-import static com.googlecode.gentyref.GenericTypeReflector.getExactParameterTypes;
-import static com.googlecode.gentyref.GenericTypeReflector.getExactReturnType;
-import static com.googlecode.transmuter.util.ObjectUtils.areEqual;
-import static com.googlecode.transmuter.util.ObjectUtils.hashCodeOf;
-import static com.googlecode.transmuter.util.ReflectionUtils.getTypeName;
-import static com.googlecode.transmuter.util.ReflectionUtils.getTypeNames;
-import static com.googlecode.transmuter.util.ReflectionUtils.isCompatible;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-
 import com.googlecode.transmuter.converter.exception.InaccessibleMethodException;
 import com.googlecode.transmuter.converter.exception.InvocationException;
 import com.googlecode.transmuter.converter.exception.MethodInstanceIncompatibilityException;
@@ -21,6 +9,16 @@ import com.googlecode.transmuter.util.StringUtils;
 import com.googlecode.transmuter.util.exception.MultipleCausesException;
 import com.googlecode.transmuter.util.exception.NotificationNotFoundException;
 import com.googlecode.transmuter.util.exception.ObjectInstantiationException;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+
+import static com.googlecode.gentyref.GenericTypeReflector.getExactParameterTypes;
+import static com.googlecode.gentyref.GenericTypeReflector.getExactReturnType;
+import static com.googlecode.transmuter.util.ObjectUtils.areEqual;
+import static com.googlecode.transmuter.util.ObjectUtils.hashCodeOf;
+import static com.googlecode.transmuter.util.ReflectionUtils.*;
 
 /**
  * Represents an immutable invokable object, made binding a method to an object (which may be {@code null} if the 

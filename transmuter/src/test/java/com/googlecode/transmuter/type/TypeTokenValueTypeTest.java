@@ -1,31 +1,13 @@
 package com.googlecode.transmuter.type;
 
-import static com.googlecode.transmuter.type.TypeToken.ValueType.BOOLEAN;
-import static com.googlecode.transmuter.type.TypeToken.ValueType.BYTE;
-import static com.googlecode.transmuter.type.TypeToken.ValueType.CHARACTER;
-import static com.googlecode.transmuter.type.TypeToken.ValueType.DOUBLE;
-import static com.googlecode.transmuter.type.TypeToken.ValueType.FLOAT;
-import static com.googlecode.transmuter.type.TypeToken.ValueType.INTEGER;
-import static com.googlecode.transmuter.type.TypeToken.ValueType.LONG;
-import static com.googlecode.transmuter.type.TypeToken.ValueType.SHORT;
-import static com.googlecode.transmuter.type.TypeToken.ValueType.VOID;
-import static com.googlecode.transmuter.type.TypeToken.ValueType.isPrimitive;
-import static com.googlecode.transmuter.type.TypeToken.ValueType.isWrapper;
-import static com.googlecode.transmuter.type.TypeToken.ValueType.matching;
-import static com.googlecode.transmuter.type.TypeToken.ValueType.valueOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import com.googlecode.transmuter.type.TypeToken.ValueType;
+import com.googlecode.transmuter.util.ObjectUtils;
+import org.junit.Test;
 
 import java.lang.reflect.Type;
 
-import org.junit.Test;
-
-import com.googlecode.transmuter.type.TypeToken;
-import com.googlecode.transmuter.type.TypeToken.ValueType;
-import com.googlecode.transmuter.util.ObjectUtils;
+import static com.googlecode.transmuter.type.TypeToken.ValueType.*;
+import static org.junit.Assert.*;
 
 
 public class TypeTokenValueTypeTest {

@@ -1,14 +1,14 @@
 package com.googlecode.transmuter.util;
 
-import static com.googlecode.transmuter.TestUtils.assertMatchingCollections;
-import static com.googlecode.transmuter.util.CollectionUtils.toList;
-import static org.junit.Assert.assertNull;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import org.junit.Test;
+import static com.googlecode.transmuter.TestUtils.assertMatchingCollections;
+import static com.googlecode.transmuter.util.CollectionUtils.toList;
+import static org.junit.Assert.assertNull;
 
 public class CollectionUtilsTest {
   // TODO better tests

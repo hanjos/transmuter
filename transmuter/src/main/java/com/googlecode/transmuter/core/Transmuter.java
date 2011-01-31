@@ -1,17 +1,5 @@
 package com.googlecode.transmuter.core;
 
-import static com.googlecode.transmuter.util.ObjectUtils.areEqual;
-import static com.googlecode.transmuter.util.ObjectUtils.classOf;
-import static com.googlecode.transmuter.util.ObjectUtils.nonNull;
-
-import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
 import com.googlecode.transmuter.converter.Converter;
 import com.googlecode.transmuter.converter.ConverterType;
 import com.googlecode.transmuter.converter.exception.ConverterTypeIncompatibleWithConverterException;
@@ -24,6 +12,12 @@ import com.googlecode.transmuter.type.TypeToken;
 import com.googlecode.transmuter.util.Notification;
 import com.googlecode.transmuter.util.exception.MultipleCausesException;
 import com.googlecode.transmuter.util.exception.NotificationNotFoundException;
+
+import java.lang.reflect.Type;
+import java.util.*;
+import java.util.Map.Entry;
+
+import static com.googlecode.transmuter.util.ObjectUtils.*;
 
 /**
  * The main object in the library. A transmuter provides a centralized type conversion operation, using registered 
@@ -184,10 +178,10 @@ public class Transmuter {
       if(map == null || map.isEmpty())
         return;
       
-      for(Entry<? extends ConverterType, ? extends Converter> entry : map.entrySet())
+      for(Map.Entry<? extends ConverterType, ? extends Converter> entry : map.entrySet())
         validatePut(entry.getKey(), entry.getValue());
       
-      for(Entry<? extends ConverterType, ? extends Converter> entry : map.entrySet())
+      for(Map.Entry<? extends ConverterType, ? extends Converter> entry : map.entrySet())
         super.put(entry.getKey(), entry.getValue());
     }
     
@@ -196,11 +190,9 @@ public class Transmuter {
      */
     @Override
     public boolean containsKey(Object key) {
-      if(key == null)
-        return false;
+        return key != null && super.containsKey(key);
       
-      return super.containsKey(key);
-    }
+      }
     
     /**
      * Ensures that a {@code null} key is never contained in this map, so invoking this operation on {@code null} 
@@ -244,7 +236,7 @@ public class Transmuter {
     protected boolean checkForCollision(ConverterType converterType, Converter converter) 
     throws ConverterCollisionException {
       return super.checkForCollision(converterType, converter)
-          || super.checkMapForCollision(converterType, converter, getMasterMap());
+          || ConverterMap.checkMapForCollision(converterType, converter, getMasterMap());
     }
     
     /**

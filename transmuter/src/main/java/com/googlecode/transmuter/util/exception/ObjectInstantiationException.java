@@ -1,9 +1,9 @@
 package com.googlecode.transmuter.util.exception;
 
+import com.googlecode.transmuter.util.StringUtils;
+
 import java.util.Arrays;
 import java.util.Collection;
-
-import com.googlecode.transmuter.util.StringUtils;
 
 /**
  * Thrown on an error while building an object (using a constructor, factory method or otherwise).

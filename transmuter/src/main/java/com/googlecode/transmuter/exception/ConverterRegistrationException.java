@@ -1,9 +1,9 @@
 package com.googlecode.transmuter.exception;
 
-import java.util.Collection;
-
 import com.googlecode.transmuter.core.Transmuter;
 import com.googlecode.transmuter.util.exception.MultipleCausesException;
+
+import java.util.Collection;
 
 /**
  * Thrown by the {@link Transmuter#register(Iterable) register} operation on failure, bundling the causes. 

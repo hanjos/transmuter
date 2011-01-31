@@ -1,10 +1,6 @@
 package com.googlecode.transmuter.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Collects information about errors, so that multiple errors can be accounted for in a single pass 
@@ -15,10 +11,11 @@ import java.util.List;
 public class Notification implements Iterable<Exception> {
   private static final List<Exception> EMPTY_LIST = Collections.emptyList();
   
-  private List<Exception> errors;
+  private final List<Exception> errors;
   
-  // since Collections.unmodifiableList is backed by the actual instance, we only need to calculate it once
-  private List<Exception> unmodifiableErrors;
+  // since Collections.unmodifiableList is backed by the actual instance,
+  // we only need to calculate it once
+  private final List<Exception> unmodifiableErrors;
 
   // constructors
   /**

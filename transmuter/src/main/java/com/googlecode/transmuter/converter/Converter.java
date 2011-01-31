@@ -1,11 +1,11 @@
 package com.googlecode.transmuter.converter;
 
-import java.lang.reflect.Method;
-
 import com.googlecode.transmuter.core.Transmuter;
 import com.googlecode.transmuter.util.Notification;
 import com.googlecode.transmuter.util.exception.MultipleCausesException;
 import com.googlecode.transmuter.util.exception.ObjectInstantiationException;
+
+import java.lang.reflect.Method;
 
 /**
  * A {@linkplain Binding binding} which has a {@linkplain ConverterType converter type}, and so can safely be used 

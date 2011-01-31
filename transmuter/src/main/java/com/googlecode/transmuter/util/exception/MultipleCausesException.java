@@ -1,11 +1,11 @@
 package com.googlecode.transmuter.util.exception;
 
+import com.googlecode.transmuter.util.StringUtils;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
-import com.googlecode.transmuter.util.StringUtils;
 
 /**
  * The superclass of exceptions which wrap a list of exceptions. Meant to be used when an operation may fail for 

@@ -1,12 +1,12 @@
 package com.googlecode.transmuter.util;
 
-import static com.googlecode.transmuter.util.StringUtils.concatenate;
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
 
-import org.junit.Test;
+import static com.googlecode.transmuter.util.StringUtils.concatenate;
+import static org.junit.Assert.assertEquals;
 
 public class StringUtilsTest {
   @SuppressWarnings("unchecked")

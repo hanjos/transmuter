@@ -1,20 +1,11 @@
 package com.googlecode.transmuter.converter;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
-
 import com.googlecode.transmuter.converter.exception.ConverterProviderException;
 import com.googlecode.transmuter.util.exception.MultipleCausesException;
+
+import java.lang.annotation.*;
+import java.lang.reflect.Method;
+import java.util.*;
 
 /**
  * Intended to mark a method as a prospective converter method. 
@@ -45,7 +36,7 @@ public @interface Converts {
    * @author Humberto S. N. dos Anjos
    */
   public static class EagerProvider implements Iterable<Converter> {
-    private List<Converter> converters;
+    private final List<Converter> converters;
     
     /**
      * Scans the given object for public methods marked with {@code @Converts}, which will be assumed to be valid 
@@ -111,7 +102,7 @@ public @interface Converts {
    * @author Humberto S. N. dos Anjos
    */
   public static class LazyProvider implements Iterable<Converter> {
-    private Object source;
+    private final Object source;
     private static final List<Converter> EMPTY_LIST = Collections.emptyList();
     
     /**
@@ -135,7 +126,7 @@ public @interface Converts {
      */
     private class LazyIterator implements Iterator<Converter> {
       private int cursor;
-      private Method[] methods;
+      private final Method[] methods;
       
       @SuppressWarnings("synthetic-access")
       public LazyIterator() {
