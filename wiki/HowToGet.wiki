@@ -16,6 +16,6 @@ You can either download it directly from the [http://code.google.com/p/transmute
 <dependency>
   <groupId>com.googlecode.transmuter</groupId>
   <artifactId>transmuter</artifactId>
-  <version>0.1</version>
+  <version>0.2</version>
 </dependency>
 }}}
