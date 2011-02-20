@@ -4,7 +4,7 @@
 = Steps =
 
 == Source Control ==
-  * Run `mvn release:clean release:prepare` (*not* `release:perform`!). This will update the POM to the new version and store the new version in SVN's `tag` folder.
+  * Run `mvn release:clean release:prepare` (*not* `release:perform`!) passing your Google Code username and password as parameters. This will update the POM to the new version and store the new version in SVN's `tag` folder.
   * Run `mvn deploy`, which will publish the new version to a local directory in your machine.
   * Commit the new version to the `repos/releases` folder. This is what `release:perform` was supposed to do, but for some reason doesn't... :(
 
