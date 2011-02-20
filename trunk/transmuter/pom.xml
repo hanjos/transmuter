@@ -89,8 +89,7 @@
         <configuration>
           <enableAssertions>false</enableAssertions>
           <excludes>
-            <!-- Not a test file! -->
-            <exclude>**/com/googlecode/transmuter/TestUtils.java</exclude>
+            <exclude>**/TestUtils.java</exclude>
           </excludes>
         </configuration>
       </plugin>
@@ -118,7 +117,7 @@
         <executions>
           <execution>
             <id>attach-sources</id>
-            <phase>package</phase>
+            <phase>verify</phase>
             <goals>
               <goal>jar</goal>
             </goals>
@@ -134,7 +133,6 @@
         <executions>
           <execution>
             <id>attach-javadocs</id>
-            <phase>package</phase>
             <goals>
               <goal>jar</goal>
             </goals>
