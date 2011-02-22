@@ -1,7 +1,7 @@
 #summary Changes between versions.
 #labels Featured,Phase-Use
 
-= 0.2-SNAPSHOT =
+= 0.2 =
   * Changed `Binding`'s `validate` to `initialize`.
   
   * Created a `Binding` subclass called `Converter` which ensures we have a well-formed converter binding.
