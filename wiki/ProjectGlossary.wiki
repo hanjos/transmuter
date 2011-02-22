@@ -35,32 +35,38 @@ The main object in the library. Registers [#Converter converters] (using their [
 
 === Type token ===
 
-An object used to represent Java types which is also usable with generics. Java's native reflection mechanisms are clumsy when representing generic types such as `List<? extends String>[]` and `Map<Long, Object>`, and don't take advantage of the compiler's generic inference. To obtain the complex types above, a common technique is to use type tokens, e.g.
+An object used to represent Java types which is also usable with generics. Java's native reflection mechanisms are clumsy when representing generic types such as `List<? extends String>[]` and `Map<Long, Object>`, and don't take advantage of the compiler's generic inference. 
+
+To obtain the complex types above, a common technique is to use type tokens, e.g.
 
 {{{
 // note the anonymous subclass creation: it's necessary!
 Type arrayOflistOfSomethingThatExtendsString = new TypeToken<List<? extends String>[]>() {}.getType();
 }}}
 
-The problem with the raw `Type` instance above is that there are no compile-time generic information for it; one could not use the created type with a generic method such as
+The problem with the raw `Type` instance above is that there's no compile-time generic information for it; one could not use the created type with a generic method such as
 
 {{{
-// it works, but casting is needed for the result
-public Object method(Type type) {
-  //...
-}
-
 // can't make a class of List<? extends String>[]...
 public <T> T method(Class<T> cls) { 
   //...
 }
 }}}
 
-So, if one wants to represent a complex type and still retain generics' benefits, one could use the type token directly:
+One would need a method like
+
+{{{
+// it works, but casting is needed for the result
+public Object method(Type type) {
+  //...
+}
+}}}
+
+But, if one wants to represent a complex type and still retain generics' benefits, one could use the type token directly:
 
 {{{
 // ...but we can make a type token of List<? extends String>[]!
-public <T> T method(TypeToken<T> cls) { 
+public <T> T method(TypeToken<T> token) { 
   //...
 }
 }}}
