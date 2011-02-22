@@ -8,7 +8,9 @@
 
   * `Transmuter`'s `register` now takes an `Iterable` of converters, so an object with `@Converts` isn't stricly needed anymore.
 
-  * Several providers which use the `Iterable` protocol to read objects with `@Converts` methods are given.
+  * `Transmuter`'s `getCompatibleConvertersFor` method returns now a set instead of a list.
+
+  * Two providers which use the `Iterable` protocol to read objects with `@Converts` methods are given.
 
   * Implemented `try` methods (those which do all the work and return `Notification`s) for `Binding.initialize` and `Transmuter.register`.
 
