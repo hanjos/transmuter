@@ -57,30 +57,6 @@ public class TransmuterTest {
   }
   
   @Test
-  public void getCompatibleConvertersFor() throws SecurityException, NoSuchMethodException {
-    final MultipleValidConverter converter = new MultipleValidConverter();
-    t.register(new Converts.EagerProvider(converter));
-    
-    TestUtils.assertMatchingCollections(
-        t.getCompatibleConvertersFor(new ConverterType(ARRAYLIST_OF_STRING, TypeToken.STRING)),
-        Arrays.asList(
-            new Converter(
-                converter, 
-                extractMethod(converter.getClass(), "toString", List.class)),
-            new Converter(
-                converter, 
-                extractMethod(converter.getClass(), "toString", Serializable.class))));
-    
-    TestUtils.assertMatchingCollections(
-        t.getCompatibleConvertersFor(new ConverterType(Serializable.class, String.class)),
-        Arrays.asList(
-            t.getConverterFor(new ConverterType(Serializable.class, String.class))));
-    
-    assertTrue(t.getCompatibleConvertersFor(null).isEmpty());
-    assertTrue(t.getCompatibleConvertersFor(new ConverterType(Object.class, Integer.class)).isEmpty());
-  }
-  
-  @Test
   public void getConverterFor() throws SecurityException, NoSuchMethodException {
     final MultipleValidConverter converter = new MultipleValidConverter();
     t.register(new Converts.EagerProvider(converter));
