@@ -19,7 +19,7 @@ import org.junit.Test;
 import com.googlecode.transmuter.converter.Converter;
 import com.googlecode.transmuter.converter.ConverterType;
 import com.googlecode.transmuter.converter.Converts;
-import com.googlecode.transmuter.exception.ConverterRegistrationException;
+import com.googlecode.transmuter.core.exception.ConverterRegistrationException;
 import com.googlecode.transmuter.fixture.FlawedConverter;
 import com.googlecode.transmuter.fixture.MultipleConverter;
 import com.googlecode.transmuter.fixture.StringConverter;

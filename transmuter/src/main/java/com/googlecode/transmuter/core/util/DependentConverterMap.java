@@ -6,7 +6,7 @@ import java.util.Map;
 
 import com.googlecode.transmuter.converter.Converter;
 import com.googlecode.transmuter.converter.ConverterType;
-import com.googlecode.transmuter.exception.ConverterCollisionException;
+import com.googlecode.transmuter.core.exception.ConverterCollisionException;
 
 /**
  * A {@link ConverterMap} which
