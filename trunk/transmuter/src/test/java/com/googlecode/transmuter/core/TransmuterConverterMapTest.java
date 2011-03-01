@@ -18,7 +18,7 @@ import com.googlecode.transmuter.converter.Converter;
 import com.googlecode.transmuter.converter.ConverterType;
 import com.googlecode.transmuter.converter.Converts;
 import com.googlecode.transmuter.converter.exception.ConverterTypeIncompatibleWithConverterException;
-import com.googlecode.transmuter.exception.ConverterCollisionException;
+import com.googlecode.transmuter.core.exception.ConverterCollisionException;
 import com.googlecode.transmuter.fixture.MultipleConverter;
 import com.googlecode.transmuter.fixture.StringConverter;
 import com.googlecode.transmuter.type.TypeToken;

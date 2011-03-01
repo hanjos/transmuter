@@ -1,4 +1,4 @@
-package com.googlecode.transmuter.exception;
+package com.googlecode.transmuter.core.exception;
 
 import com.googlecode.transmuter.converter.Converter;
 import com.googlecode.transmuter.converter.ConverterType;

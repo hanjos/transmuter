@@ -9,7 +9,7 @@ import java.util.Map;
 import com.googlecode.transmuter.converter.Converter;
 import com.googlecode.transmuter.converter.ConverterType;
 import com.googlecode.transmuter.converter.exception.ConverterTypeIncompatibleWithConverterException;
-import com.googlecode.transmuter.exception.ConverterCollisionException;
+import com.googlecode.transmuter.core.exception.ConverterCollisionException;
 
 /**
  * A map used for converter registration, validating the prospective mapping

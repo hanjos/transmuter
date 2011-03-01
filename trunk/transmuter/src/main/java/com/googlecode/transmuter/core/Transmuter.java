@@ -4,21 +4,18 @@ import static com.googlecode.transmuter.util.ObjectUtils.classOf;
 import static com.googlecode.transmuter.util.ObjectUtils.nonNull;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import com.googlecode.transmuter.converter.Converter;
 import com.googlecode.transmuter.converter.ConverterType;
 import com.googlecode.transmuter.converter.exception.InvocationException;
+import com.googlecode.transmuter.core.exception.ConverterRegistrationException;
+import com.googlecode.transmuter.core.exception.NoCompatibleConvertersFoundException;
+import com.googlecode.transmuter.core.exception.TooManyConvertersFoundException;
 import com.googlecode.transmuter.core.util.ConverterMap;
 import com.googlecode.transmuter.core.util.DependentConverterMap;
-import com.googlecode.transmuter.exception.ConverterRegistrationException;
-import com.googlecode.transmuter.exception.NoCompatibleConvertersFoundException;
-import com.googlecode.transmuter.exception.TooManyConvertersFoundException;
 import com.googlecode.transmuter.type.TypeToken;
-import com.googlecode.transmuter.util.CollectionUtils;
 import com.googlecode.transmuter.util.Notification;
 import com.googlecode.transmuter.util.exception.MultipleCausesException;
 import com.googlecode.transmuter.util.exception.NotificationNotFoundException;
@@ -33,40 +30,10 @@ import com.googlecode.transmuter.util.exception.NotificationNotFoundException;
  * @author Humberto S. N. dos Anjos
  */
 public class Transmuter {
-  
-  protected static class DefaultConverterSelector implements ConverterSelector {
-    @Override
-    public Converter getConverterFor(ConverterType type, Iterable<? extends Converter> converters) 
-    throws NoCompatibleConvertersFoundException, TooManyConvertersFoundException {
-      if(type == null || converters == null || ! converters.iterator().hasNext())
-        throw new NoCompatibleConvertersFoundException(type, CollectionUtils.toList(converters));
-      
-      List<Converter> compatibles = new ArrayList<Converter>();
-      for(Converter c : converters) {
-        if(c == null)
-          continue;
-        
-        if(type.equals(c.getType())) // found a perfect match!
-          return c;
-        
-        if(c.getType().isAssignableFrom(type)) { // this may do
-          compatibles.add(c);
-          continue;
-        }
-      }
-      
-      if(compatibles.size() == 1) // found only one compatible, use it
-        return compatibles.get(0);
-      
-      if(compatibles.isEmpty()) // no compatibles found, blow up
-        throw new NoCompatibleConvertersFoundException(type, CollectionUtils.toList(converters));
-      
-      // lots of compatibles found, how to pick only one?
-      throw new TooManyConvertersFoundException(type, compatibles);
-    }
-  }
-  
-  protected static final ConverterSelector DEFAULT_SELECTOR = new DefaultConverterSelector();
+  /**
+   * A pre-constructed {@linkplain ConverterSelector converter selector} for internal use.
+   */
+  protected static final ConverterSelector DEFAULT_SELECTOR = new BasicConverterSelector();
   
   private Map<ConverterType, Converter> converterMap;
   

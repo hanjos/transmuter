@@ -4,7 +4,7 @@ import com.googlecode.transmuter.converter.Converter;
 import com.googlecode.transmuter.converter.ConverterType;
 import com.googlecode.transmuter.converter.exception.InvalidReturnTypeException;
 import com.googlecode.transmuter.converter.exception.WrongParameterCountException;
-import com.googlecode.transmuter.exception.ConverterCollisionException;
+import com.googlecode.transmuter.core.exception.ConverterCollisionException;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;

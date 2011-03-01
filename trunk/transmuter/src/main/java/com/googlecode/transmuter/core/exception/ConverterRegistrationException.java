@@ -1,4 +1,4 @@
-package com.googlecode.transmuter.exception;
+package com.googlecode.transmuter.core.exception;
 
 import com.googlecode.transmuter.core.Transmuter;
 import com.googlecode.transmuter.util.exception.MultipleCausesException;
