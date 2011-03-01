@@ -185,32 +185,6 @@ public class Transmuter {
   public <From, To, SubFrom extends From> To convert(SubFrom from, TypeToken<From> fromType, TypeToken<To> toType) {
     return (To) convertRaw(from, fromType, toType);
   }
-
-  /**
-   * Performs a conversion, taking {@code from} and generating a new object of type {@code toType}.
-   * <p>
-   * This method doesn't use generics for compile-time checking, returning the result as a raw {@link Object}. 
-   * So, due to erasure-imposed limitations, {@code from}'s runtime class will be considered as the input type.
-   * This means that both invocations below:
-   * 
-   * <pre>
-   * convertRaw(new ArrayList&lt;String&gt;(), TypeToken.STRING);
-   * convertRaw(new ArrayList&lt;Map&lt;java.util.Date, Set&lt;Thread&gt;&gt;&gt;&gt;(), TypeToken.STRING);
-   * </pre>
-   * 
-   * will attempt to use the same converter.
-   * 
-   * @param from the object to convert.
-   * @param toType the type of the converted object.
-   * @return an instance of {@code toType}.
-   * @throws NoCompatibleConvertersFoundException if no converters for {@code from}'s type to {@code toType} were found.
-   * @throws TooManyConvertersFoundException if more than one converter for {@code from}'s type to {@code toType} was found.
-   * @throws IllegalArgumentException if {@code from} or {@code toType} is null (or {@code void} for {@code toType}). 
-   * @throws InvocationException if there was an error during the converter's invocation.
-   */
-  protected Object convertRaw(Object from, TypeToken<?> toType) {
-    return convertRaw(from, TypeToken.get(classOf(from)), toType);
-  }
   
   /**
    * Performs a conversion, taking {@code from} (which is considered to be of type {@code fromType} for the purposes
@@ -263,7 +237,7 @@ public class Transmuter {
       // call me a paranoid, but just in case
       throw new ConverterRegistrationException(e.getCauses());
     } catch(Exception e) {
-      // should never happen :P
+      // never happens :P
       throw new ConverterRegistrationException(e);
     }
   }
