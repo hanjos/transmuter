@@ -1,13 +1,13 @@
 package com.googlecode.transmuter.core;
 
 import static com.googlecode.transmuter.util.ObjectUtils.classOf;
+import static com.googlecode.transmuter.util.ObjectUtils.nonNull;
 
 import java.lang.reflect.Type;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import com.googlecode.transmuter.converter.Converter;
 import com.googlecode.transmuter.converter.ConverterType;
@@ -18,6 +18,7 @@ import com.googlecode.transmuter.exception.ConverterRegistrationException;
 import com.googlecode.transmuter.exception.NoCompatibleConvertersFoundException;
 import com.googlecode.transmuter.exception.TooManyConvertersFoundException;
 import com.googlecode.transmuter.type.TypeToken;
+import com.googlecode.transmuter.util.CollectionUtils;
 import com.googlecode.transmuter.util.Notification;
 import com.googlecode.transmuter.util.exception.MultipleCausesException;
 import com.googlecode.transmuter.util.exception.NotificationNotFoundException;
@@ -32,6 +33,41 @@ import com.googlecode.transmuter.util.exception.NotificationNotFoundException;
  * @author Humberto S. N. dos Anjos
  */
 public class Transmuter {
+  
+  protected static class DefaultConverterSelector implements ConverterSelector {
+    @Override
+    public Converter getConverterFor(ConverterType type, Iterable<? extends Converter> converters) 
+    throws NoCompatibleConvertersFoundException, TooManyConvertersFoundException {
+      if(type == null || converters == null || ! converters.iterator().hasNext())
+        throw new NoCompatibleConvertersFoundException(type, CollectionUtils.toList(converters));
+      
+      List<Converter> compatibles = new ArrayList<Converter>();
+      for(Converter c : converters) {
+        if(c == null)
+          continue;
+        
+        if(type.equals(c.getType())) // found a perfect match!
+          return c;
+        
+        if(c.getType().isAssignableFrom(type)) { // this may do
+          compatibles.add(c);
+          continue;
+        }
+      }
+      
+      if(compatibles.size() == 1) // found only one compatible, use it
+        return compatibles.get(0);
+      
+      if(compatibles.isEmpty()) // no compatibles found, blow up
+        throw new NoCompatibleConvertersFoundException(type, CollectionUtils.toList(converters));
+      
+      // lots of compatibles found, how to pick only one?
+      throw new TooManyConvertersFoundException(type, compatibles);
+    }
+  }
+  
+  protected static final ConverterSelector DEFAULT_SELECTOR = new DefaultConverterSelector();
+  
   private Map<ConverterType, Converter> converterMap;
   
   /**
@@ -380,46 +416,30 @@ public class Transmuter {
    */
   protected Converter getConverterFor(ConverterType converterType) 
   throws NoCompatibleConvertersFoundException, TooManyConvertersFoundException {
-    if(converterType == null)
-      throw new NoCompatibleConvertersFoundException(converterType);
-    
-    // TODO determine a search algorithm for a "most compatible" converter type
-    // ??? parameterize it?
-    Converter converter = getConverterMap().get(converterType);
-    if(converter != null)
-      return converter;
-    
-    Set<Converter> compatibles = getCompatibleConvertersFor(converterType);
-    
-    if(compatibles.isEmpty())
-      throw new NoCompatibleConvertersFoundException(converterType);
-    
-    if(compatibles.size() > 1)
-      throw new TooManyConvertersFoundException(converterType, compatibles);
-    
-    // first and only element
-    return compatibles.iterator().next();
+    return getConverterFor(converterType, DEFAULT_SELECTOR);
   }
   
   /**
-   * Returns a set of all the converters registered in this instance which are compatible with the given converter 
-   * type. Will be empty if the given converter type is {@code null} or has no compatible converters. 
+   * Attempts to return a converter compatible with the given converter type using the given selector. 
+   * <p>
+   * There can only be one exact match registered in the transmuter, which will be returned here; lacking that, 
+   * a compatible converter will be looked for. An exception will be thrown if no converter is found, or if more than 
+   * one compatible (non-exact match) converter is found if the selector cannot decide which should be returned.
    * 
    * @param converterType a converter type.
-   * @return a set with all the compatible converters found.  
+   * @param selector a converter selector.
+   * @return a converter compatible with the given converter type. May not an exact match.
+   * @throws IllegalArgumentException {@code selector} was {@code null}.
+   * @throws NoCompatibleConvertersFoundException no compatible converters were found.
+   * @throws TooManyConvertersFoundException more than one compatible converter was found, and the selector was unable
+   * to decide which should be picked.
    */
-  protected Set<Converter> getCompatibleConvertersFor(ConverterType converterType) {
-    Set<Converter> compatibles = new HashSet<Converter>();
-    if(converterType == null)
-      return compatibles;
+  protected Converter getConverterFor(ConverterType converterType, ConverterSelector selector) 
+  throws IllegalArgumentException, NoCompatibleConvertersFoundException, TooManyConvertersFoundException {
+    nonNull(selector, "selector");
     
-    for(Entry<ConverterType, Converter> entry : getConverterMap().entrySet()) {
-      if(entry.getKey().isAssignableFrom(converterType))
-        compatibles.add(entry.getValue());
-    }
-    
-    return compatibles;
-  } 
+    return selector.getConverterFor(converterType, getConverterMap().values());
+  }
   
   // properties
   /**
