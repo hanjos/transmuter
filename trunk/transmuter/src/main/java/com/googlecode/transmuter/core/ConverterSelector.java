@@ -13,15 +13,19 @@ import com.googlecode.transmuter.core.exception.TooManyConvertersFoundException;
  */
 public interface ConverterSelector {
   /**
-   * Searches for a converter in the given converters which either exactly matches or is compatible with the given 
-   * type.  
+   * Searches for a converter which either exactly matches or is compatible with the given converter type using 
+   * the given converters. 
+   * <p>
+   * Lacking an exact match, a compatible converter will be searched for. An exception will be thrown if no converter 
+   * is found, or if more than one compatible (non-exact match) converter is found and this selector cannot decide 
+   * which should be returned.
    * 
-   * @param type the type to match.
+   * @param type a converter type.
    * @param converters where to look for a matching converter.
-   * @return a converter with the same type or a compatible one.
-   * @throws NoCompatibleConvertersFoundException if no converters compatible with the given type were found.
-   * @throws TooManyConvertersFoundException if no exact match for the given type is found, and there is more than one 
-   *         compatible converter and no way to choose which is more appropriate.
+   * @return a converter compatible with the given converter type. May not an exact match.
+   * @throws NoCompatibleConvertersFoundException no compatible converters were found.
+   * @throws TooManyConvertersFoundException more than one compatible converter was found, and this selector was unable
+   * to decide which should be picked.
    */
   Converter getConverterFor(ConverterType type, Iterable<? extends Converter> converters) 
       throws NoCompatibleConvertersFoundException, TooManyConvertersFoundException;
