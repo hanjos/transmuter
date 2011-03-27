@@ -377,9 +377,7 @@ public class Transmuter {
    */
   protected Converter getConverterFor(ConverterType converterType, ConverterSelector selector) 
   throws IllegalArgumentException, NoCompatibleConvertersFoundException, TooManyConvertersFoundException {
-    nonNull(selector, "selector");
-    
-    return selector.getConverterFor(converterType, getConverterMap().values());
+    return nonNull(selector, "selector").getConverterFor(converterType, getConverterMap());
   }
   
   // properties
